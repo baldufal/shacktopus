@@ -1,7 +1,7 @@
-import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, Input, DrawerFooter, IconButton, Flex, Box, VStack } from "@chakra-ui/react";
+import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider } from "@chakra-ui/react";
 import "./menubar.scss";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Menubar() {
 
@@ -14,17 +14,16 @@ function Menubar() {
         onClose();
     };
 
+    const { colorMode, toggleColorMode } = useColorMode()
 
     return (
         <Box
             width="100%"
             p={4}
-            color="white"
             display="flex"
             justifyContent="space-between"
             alignItems="center">
             <IconButton
-                className="topbarbutton"
                 onClick={onOpen}
                 aria-label={"open menu"}
                 icon={<HamburgerIcon />} />
@@ -39,19 +38,30 @@ function Menubar() {
                     <DrawerCloseButton />
                     <DrawerHeader>Shacktopus</DrawerHeader>
 
-                    <DrawerBody>
-                        <VStack align={"start"}>
-
+                    <DrawerBody >
+                        <VStack align={"start"} >
 
                             <Button variant="link" onClick={() => handleLinkClick('/')}>
                                 Dashboard
                             </Button>
                             <Button variant="link" onClick={() => handleLinkClick('/thermocontrol')}>
-                                Thermo Control
+                                ThermoControl
+                            </Button>
+                            <Button variant="link" onClick={() => handleLinkClick('/settings')}>
+                                Settings
                             </Button>
                             <Button variant="link" onClick={() => handleLinkClick('/nothing-here')}>
                                 Nothing here
                             </Button>
+                            <Divider m="1em"></Divider>
+                            <Switch
+                                isChecked={colorMode === "dark"}
+                                onChange={() => toggleColorMode()}>
+                                Dark Mode
+                            </Switch>
+
+
+
                         </VStack>
                     </DrawerBody>
                 </DrawerContent>

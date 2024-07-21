@@ -2,6 +2,8 @@ import { Link, Outlet, Route, Routes } from "react-router-dom";
 import ThermocontrolPage from "../ThermocontrolPage/ThermocontrolPage";
 import Menubar from "../Menubar/Menubar";
 import { Box } from "@chakra-ui/react";
+import DashboardPage from "../DashboardPage/DashboardPage";
+import SettingsPage from "../SettingsPage/SettingsPage";
 
 function Router() {
 
@@ -13,9 +15,9 @@ function Router() {
             parent route elements. See the note about <Outlet> below. */}
       <Routes>
       <Route path="/" element={<Layout />}>
-      <Route index element={<Dashboard />} />
+      <Route index element={<DashboardPage />} />
         <Route path="thermocontrol" element={<ThermocontrolPage />} />
-
+        <Route path="settings" element={<SettingsPage />} />
 
         {/* Using path="*"" means "match anything", so this route
               acts like a catch-all for URLs that we don't have explicit
@@ -27,13 +29,6 @@ function Router() {
     )
 }
 
-function Dashboard() {
-    return (
-      <div>
-        <h2>Dashboard</h2>
-      </div>
-    );
-  }
 
 function Layout() {
     return (
