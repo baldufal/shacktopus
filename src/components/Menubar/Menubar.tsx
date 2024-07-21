@@ -44,8 +44,8 @@ function Menubar() {
                             <Button variant="link" onClick={() => handleLinkClick('/')}>
                                 Dashboard
                             </Button>
-                            <Button variant="link" onClick={() => handleLinkClick('/thermocontrol')}>
-                                ThermoControl
+                            <Button variant="link" onClick={() => handleLinkClick('/heating')}>
+                                Heating
                             </Button>
                             <Button variant="link" onClick={() => handleLinkClick('/settings')}>
                                 Settings

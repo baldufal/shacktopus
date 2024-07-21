@@ -1,8 +1,7 @@
 import { Box } from "@chakra-ui/react";
-import ThermocontrolDetails from "./ThermocontrolDetails";
+import ThermocontrolDetails from "./Thermocontrol/ThermocontrolDetails";
 
-function ThermocontrolPage() {
-
+function HeatingPage() {
 
     return (
         <Box as="main" flex="1" p={4} width="100%">
@@ -11,4 +10,4 @@ function ThermocontrolPage() {
     )
 }
 
-export default ThermocontrolPage;
+export default HeatingPage;

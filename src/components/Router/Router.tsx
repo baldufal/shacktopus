@@ -1,9 +1,9 @@
 import { Link, Outlet, Route, Routes } from "react-router-dom";
-import ThermocontrolPage from "../ThermocontrolPage/ThermocontrolPage";
 import Menubar from "../Menubar/Menubar";
 import { Box } from "@chakra-ui/react";
 import DashboardPage from "../DashboardPage/DashboardPage";
 import SettingsPage from "../SettingsPage/SettingsPage";
+import HeatingPage from "../HeatingPage/HeatingPage";
 
 function Router() {
 
@@ -16,7 +16,7 @@ function Router() {
       <Routes>
       <Route path="/" element={<Layout />}>
       <Route index element={<DashboardPage />} />
-        <Route path="thermocontrol" element={<ThermocontrolPage />} />
+        <Route path="heating" element={<HeatingPage />} />
         <Route path="settings" element={<SettingsPage />} />
 
         {/* Using path="*"" means "match anything", so this route

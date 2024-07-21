@@ -7,7 +7,7 @@ interface ThermocontrolDataType {
     emergency_heating_is_active: boolean;
     extra_ventilation: number;
     max_heating_power: number;
-    sensor_data_age: number;
+    climate_data_age: number;
     target_humidity: number;
     target_temperature: number;
     use_ventilation_for_cooling: boolean;
@@ -17,6 +17,8 @@ interface ThermocontrolDataType {
 function ThermocontrolDetails() {
 
     const [refreshInterval] = useLocalStorage('refreshInterval',5000);
+    const [thermocontrolAPI] = useLocalStorage('thermocontrol-api',"http://192.168.88.30:9079/json");
+
     const [data, setData] = useState<ThermocontrolDataType | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ function ThermocontrolDetails() {
         const fetchDataForPosts = async () => {
             try {
                 const postsData = await axios.get<ThermocontrolDataType>(
-                    'http://10.0.2.2:9079/json'
+                    thermocontrolAPI
                 );
                 //console.log(postsData)
                 setData(postsData.data);
@@ -101,7 +103,8 @@ function ThermocontrolDetails() {
 
     return (
         <Box width={"fit-content"} border={"2px"} borderColor={loading? "orange" : error? "red" : "green"} p={2}>
-            <VStack>
+            <VStack align={"start"}>
+                <Text className="shacktopus-heading">ThermoControl</Text>
                 <Text>Target Temperature</Text>
                 <TemperatureInput></TemperatureInput>
                 <Divider></Divider>
@@ -129,7 +132,7 @@ function ThermocontrolDetails() {
                 <Divider></Divider>
                 <Switch isChecked={data?.use_ventilation_for_cooling}>Use ventilation for cooling</Switch>
                 <Divider></Divider>
-                <Text>{"Data age: " + data?.sensor_data_age}</Text>
+                <Text>{"Data age: " + data?.climate_data_age}</Text>
                 {data?.emergency_heating_is_active ? <Text>Emergency heating is active!</Text> : null}
             </VStack>
         </Box>
