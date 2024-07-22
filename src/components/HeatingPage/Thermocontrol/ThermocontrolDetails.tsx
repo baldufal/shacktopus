@@ -2,12 +2,14 @@ import { Box, Button, Divider, HStack, Input, Slider, SliderFilledTrack, SliderT
 import { useEffect, useState } from "react";
 import axios from "axios";
 import useLocalStorage from "use-local-storage";
+import { computeHMAC } from "./computeHMAC";
 
 interface ThermocontrolDataType {
     emergency_heating_is_active: boolean;
     extra_ventilation: number;
     max_heating_power: number;
-    climate_data_age: number;
+    data_age_humidity: number;
+    data_age_temperature: number;
     target_humidity: number;
     target_temperature: number;
     use_ventilation_for_cooling: boolean;
@@ -18,6 +20,7 @@ function ThermocontrolDetails() {
 
     const [refreshInterval] = useLocalStorage('refreshInterval',5000);
     const [thermocontrolAPI] = useLocalStorage('thermocontrol-api',"http://192.168.88.30:9079/json");
+    const [thermocontrolKey] = useLocalStorage('thermocontrol-key', "");
 
     const [data, setData] = useState<ThermocontrolDataType | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -101,6 +104,37 @@ function ThermocontrolDetails() {
         )
     }
 
+    const handleButtonClick = async () => {
+        try {
+          // Fetch nonce
+          const nonceResponse = await axios.get('http://10.0.2.2:9079/nonce');
+          const fetchedNonce = nonceResponse.data.nonce;
+          console.log("nonce: " + fetchedNonce)
+    
+          // Build JSON string
+          const jsonData = JSON.stringify({ nonce: fetchedNonce, target_humidity: data?.target_humidity === 77 ? 70 : 77 });
+    
+          // Compute HMAC
+          const hmac = await computeHMAC(thermocontrolKey, jsonData);
+    
+          // Construct the request payload
+          const payload = `${hmac}${jsonData}`;
+
+          console.log("payload: " + payload)
+    
+          // Send POST request
+          await axios.post('http://10.0.2.2:9079/json', payload, {
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+          });
+    
+          console.log('Request sent successfully');
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+
     return (
         <Box width={"fit-content"} border={"2px"} borderColor={loading? "orange" : error? "red" : "green"} p={2}>
             <VStack align={"start"}>
@@ -132,7 +166,12 @@ function ThermocontrolDetails() {
                 <Divider></Divider>
                 <Switch isChecked={data?.use_ventilation_for_cooling}>Use ventilation for cooling</Switch>
                 <Divider></Divider>
-                <Text>{"Data age: " + data?.climate_data_age}</Text>
+                <Text>{"Data age temperature: " + data?.data_age_temperature}</Text>
+                <Text>{"Data age humidity: " + data?.data_age_humidity}</Text>
+
+                <Button onClick={handleButtonClick}>Change Target Humidity</Button>
+
+
                 {data?.emergency_heating_is_active ? <Text>Emergency heating is active!</Text> : null}
             </VStack>
         </Box>
