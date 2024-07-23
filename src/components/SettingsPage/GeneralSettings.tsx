@@ -2,8 +2,8 @@ import { Box, Button, HStack, Input, Text, useNumberInput, VStack } from "@chakr
 import useLocalStorage from "use-local-storage";
 import "./settingsPage.scss";
 
-const MIN_REFRESH_INTERVAL = 100;
-const MAX_REFRESH_INTERVAL = 3600000;
+const MIN_REFRESH_INTERVAL = 100; // 0.1s
+const MAX_REFRESH_INTERVAL = 60000; // 1m
 const STEP_REFRESH_INTERVAL = 500;
 
 function GeneralSettings() {
