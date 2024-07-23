@@ -1,4 +1,4 @@
-import { Box, Divider, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch, Text, useColorMode, useTheme, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import useLocalStorage from "use-local-storage";
@@ -23,10 +23,17 @@ interface ThermocontrolDataType extends ThermocontrolSettableDataType {
 
 function ThermocontrolDetails() {
 
+    const { colorMode } = useColorMode();
+    const theme = useTheme();
+
+    // Determine the colors based on the color mode
+    const bgColor = colorMode === 'dark' ? theme.colors.primary[200] : theme.colors.primary[500];
+    const fgColor = colorMode === 'dark' ? "black" : "white";
+
     const [refreshInterval] = useLocalStorage('refresh-interval', 5000);
     const [thermocontrolAPI] = useLocalStorage('thermocontrol-api', "http://192.168.88.30:9079");
     const [thermocontrolKey] = useLocalStorage('thermocontrol-key', "");
-    const DEBOUNCE_DELAY = 500;
+    const DEBOUNCE_DELAY = 100;
 
     const [dataFromAPI, setDataFromAPI] = useState<ThermocontrolDataType | null>(null);
     const [dataFromUI, setDataFromUI] = useState<ThermocontrolSettableDataType>(
@@ -108,6 +115,8 @@ function ThermocontrolDetails() {
             }
 
             setIsTyping(true);
+            // For marking data in ui as dirty
+            setLoading(true);
 
             const newTimeoutId = window.setTimeout(() => {
                 sendDataToAPI(thermocontrolAPI, thermocontrolKey, data);
@@ -122,7 +131,7 @@ function ThermocontrolDetails() {
     );
 
     return (
-        <Box width={"fit-content"} border={"2px"} borderColor={(loading || isTyping) ? "orange" : error ? "red" : "green"} p={2}>
+        <Box width={"fit-content"} border={"2px"} borderColor={loading ? "orange" : error ? "red" : "green"} p={2}>
             <VStack align={"start"}>
                 <Text className="shacktopus-heading">ThermoControl</Text>
                 <Text>Target temperature</Text>
@@ -146,40 +155,63 @@ function ThermocontrolDetails() {
                 ></HumidityInput>
                 <Divider></Divider>
                 <Text>Extra ventilation</Text>
-                <Slider
-                    defaultValue={1}
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={dataFromUI?.extra_ventilation}
-                    onChange={(power) => {
-                        const updatedData = { ...dataFromUI, extra_ventilation: power }
-                        setDataFromUI(updatedData);
-                        debouncedSendData(updatedData);
-                    }}>
-                    <SliderTrack >
-                        <SliderFilledTrack />
-                    </SliderTrack>
-                    <SliderThumb boxSize={6} />
-                </Slider>
+                <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
+                    <Slider
+                        defaultValue={0}
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        value={dataFromUI?.extra_ventilation}
+                        onChange={(power) => {
+                            const updatedData = { ...dataFromUI, extra_ventilation: power }
+                            setDataFromUI(updatedData);
+                            debouncedSendData(updatedData);
+                        }}>
+                        <SliderTrack >
+                            <SliderFilledTrack />
+                        </SliderTrack>
+                        <SliderThumb
+                            boxSize={6}
+                            bg={bgColor}>
+                            <Text
+                                color={fgColor}
+                                fontSize={"14px"}
+                                fontWeight={"700"}>
+                                {dataFromUI?.extra_ventilation}
+                            </Text>
+                        </SliderThumb>
+                    </Slider>
+                </Box>
                 <Divider></Divider>
                 <Text>Max heating power</Text>
-                <Slider
-                    defaultValue={1}
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={dataFromUI?.max_heating_power}
-                    onChange={(power) => {
-                        const updatedData = { ...dataFromUI, max_heating_power: power }
-                        setDataFromUI(updatedData);
-                        debouncedSendData(updatedData);
-                    }}>
-                    <SliderTrack >
-                        <SliderFilledTrack />
-                    </SliderTrack>
-                    <SliderThumb boxSize={6} />
-                </Slider>
+                <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
+                    <Slider
+                        defaultValue={0}
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        value={dataFromUI?.max_heating_power}
+                        onChange={(power) => {
+                            const updatedData = { ...dataFromUI, max_heating_power: power }
+                            setDataFromUI(updatedData);
+                            debouncedSendData(updatedData);
+                        }}>
+                        <SliderTrack >
+                            <SliderFilledTrack />
+                        </SliderTrack>
+                        <SliderThumb
+                            boxSize={6}
+                            bg={bgColor}>
+                            <Text
+                                color={fgColor}
+                                fontSize={"14px"}
+                                fontWeight={"700"}>
+                                {dataFromUI?.max_heating_power}
+                            </Text>
+                        </SliderThumb>
+                    </Slider>
+                </Box>
+
                 <Divider></Divider>
                 <Switch
                     isChecked={dataFromUI?.use_ventilation_for_heating}

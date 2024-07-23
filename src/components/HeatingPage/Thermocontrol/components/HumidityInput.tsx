@@ -4,7 +4,7 @@ import { ThermocontrolSettableDataType } from "../ThermocontrolDetails"
 function HumidityInput(props: {dataFromUI: ThermocontrolSettableDataType, onChange : (humidity: number) => void}) {
     const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
         useNumberInput({
-            step: 5,
+            step: 1,
             defaultValue: 0,
             min: 0,
             max: 100,
