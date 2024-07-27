@@ -5,7 +5,6 @@ function TemperatureInput(props: {dataFromUI: ThermocontrolSettableDataType, onC
     const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
         useNumberInput({
             step: 0.5,
-            defaultValue: 18,
             min: 5,
             max: 30,
             precision: 1,

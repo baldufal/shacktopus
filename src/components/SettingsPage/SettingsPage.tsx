@@ -1,7 +1,7 @@
 import { Divider, VStack } from "@chakra-ui/react";
 import GeneralSettings from "./GeneralSettings";
-import ThermocontrolSettings from "./ThermocontrolSettings";
 import "./settingsPage.scss";
+import LoginSettings from "./LoginSettings";
 
 function SettingsPage() {
 
@@ -10,7 +10,7 @@ function SettingsPage() {
         <VStack className="settings-stack " align={"start"} spacing={"2em"}>
             <GeneralSettings/>
             <Divider/>
-            <ThermocontrolSettings/>
+            <LoginSettings/>
         </VStack>
     );
 }

@@ -1,10 +1,8 @@
 import { Box, Divider, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch, Text, useColorMode, useTheme, VStack } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
-import axios from "axios";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useLocalStorage from "use-local-storage";
 import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
-import { sendDataToAPI } from "./thermocontrolAPI";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -25,15 +23,11 @@ function ThermocontrolDetails() {
 
     const { colorMode } = useColorMode();
     const theme = useTheme();
-
-    // Determine the colors based on the color mode
     const bgColor = colorMode === 'dark' ? theme.colors.primary[200] : theme.colors.primary[500];
     const fgColor = colorMode === 'dark' ? "black" : "white";
 
-    const [refreshInterval] = useLocalStorage('refresh-interval', 5000);
-    const [thermocontrolAPI] = useLocalStorage('thermocontrol-api', "http://192.168.88.30:9079");
-    const [thermocontrolKey] = useLocalStorage('thermocontrol-key', "");
-    const DEBOUNCE_DELAY = 100;
+    const REFRESH_INTERVAL = 300;
+    const DEBOUNCE_DELAY = 200;
 
     const [dataFromAPI, setDataFromAPI] = useState<ThermocontrolDataType | null>(null);
     const [dataFromUI, setDataFromUI] = useState<ThermocontrolSettableDataType>(
@@ -41,91 +35,135 @@ function ThermocontrolDetails() {
             extra_ventilation: 0,
             max_heating_power: 0,
             target_humidity: 0,
-            target_temperature: 0,
+            target_temperature: 5,
             use_ventilation_for_cooling: false,
             use_ventilation_for_heating: false
         });
+    const updateDataFromUI = (apiData: ThermocontrolDataType): void => {
+        setDataFromUI({
+            extra_ventilation: apiData.extra_ventilation,
+            max_heating_power: apiData.max_heating_power,
+            target_humidity: apiData.target_humidity,
+            target_temperature: apiData.target_temperature,
+            use_ventilation_for_cooling: apiData.use_ventilation_for_cooling,
+            use_ventilation_for_heating: apiData.use_ventilation_for_heating
+        });
+    };
+
     // Stop periodic UI updates while we are editing
     const [isTyping, setIsTyping] = useState<boolean>(false);
+    const isTypingRef = useRef(isTyping);
     // API request was sent and not yet answered
     const [loading, setLoading] = useState<boolean>(true);
     // Last API request returned an error
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<boolean | undefined>(undefined);
     // Used for debouncing
     const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
+    const [timeoutId2, setTimeoutId2] = useState<number | undefined>(undefined);
+    const [permissionError, setPermissionError] = useState<string | undefined>(undefined);
 
+    const updateSocketRef = useRef<WebSocket | undefined>(undefined);
+    const setSocketRef = useRef<WebSocket | undefined>(undefined);
+    const [token] = useLocalStorage('jwt', "");
 
-    // Effect to fetch data periodically
     useEffect(() => {
-        let isMounted = true;
+        isTypingRef.current = isTyping;
+    }, [isTyping]);
 
-        const updateDataFromUI = (apiData: ThermocontrolDataType): void => {
-            setDataFromUI({
-                extra_ventilation: apiData.extra_ventilation,
-                max_heating_power: apiData.max_heating_power,
-                target_humidity: apiData.target_humidity,
-                target_temperature: apiData.target_temperature,
-                use_ventilation_for_cooling: apiData.use_ventilation_for_cooling,
-                use_ventilation_for_heating: apiData.use_ventilation_for_heating
-            });
-        };
-
-        const fetchDataForPosts = async () => {
-            if (isTyping) {
+    // Debounced function to handle UI data changes
+    const handleMessage = useCallback(
+        (message: MessageEvent) => {
+            setLoading(false);
+            if (isTypingRef.current) {
                 console.log("Skipping data fetch because of ongoing user input");
                 return;
             }
             try {
-                const response = await axios.get<ThermocontrolDataType>(
-                    `${thermocontrolAPI}/json`
-                );
-                if (isMounted) {
-                    setDataFromAPI(response.data);
-                    updateDataFromUI(response.data);
-                    setError(null);
+                const json = JSON.parse(message.data)
+                if (json.health === "good") {
+                    const data = json.data;
+                    setDataFromAPI(data);
+                    updateDataFromUI(data);
+                    setError(undefined);
+                }else{
+                    setError(true);
+                    console.log("TC update health != good")
                 }
             } catch (error) {
-                if (isMounted) {
-                    if (axios.isAxiosError(error)) {
-                        setError(error.message);
-                    } else {
-                        setError("error");
-                    }
-                }
-            } finally {
-                setLoading(false);
+                setError(true);
+                console.log(error)
             }
+        },
+        [isTyping]
+    );
+
+    useEffect(() => {
+        if (!token) {
+            setPermissionError("Not logged in!");
+            return;
+        }
+        const updateSocket = new WebSocket(`wss://192.168.0.249:8443/thermocontrol/updates?token=${token}`);
+        updateSocketRef.current = updateSocket;
+
+        const setSocket = new WebSocket(`wss://192.168.0.249:8443/thermocontrol/set?token=${token}`);
+        setSocketRef.current = setSocket;
+
+        updateSocket.onopen = () => {
+            console.log('WebSocket for TC updates opened');
+            setPermissionError(undefined);
+        };
+        setSocket.onopen = () => {
+            console.log('WebSocket for TC set opened');
+            setPermissionError(undefined);
         };
 
-        fetchDataForPosts();
+        updateSocket.onmessage = handleMessage;
 
-        const interval = setInterval(fetchDataForPosts, refreshInterval);
+        updateSocket.onclose = () => {
+            console.log('WebSocket for TC updates closed');
+            setPermissionError("No permission to read data. Check login.")
+            setError(true);
+        };
+        setSocket.onclose = () => {
+            console.log('WebSocket for TC set closed');
+            setPermissionError((oldError) => oldError ? oldError : "No permission to change data. Check login.")
+        };
+
 
         return () => {
-            isMounted = false;
-            clearInterval(interval);
+            if (updateSocketRef.current) {
+                updateSocketRef.current.close();
+            }
+            if (setSocketRef.current) {
+                setSocketRef.current.close();
+            }
         };
-    }, [isTyping]);
+    }, [token]);
 
     // Debounced function to handle UI data changes
     const debouncedSendData = useCallback(
         (data: ThermocontrolSettableDataType) => {
-            if (timeoutId) {
+            if (timeoutId)
                 clearTimeout(timeoutId);
-            }
+            if (timeoutId2)
+                clearTimeout(timeoutId2);
 
             setIsTyping(true);
             // For marking data in ui as dirty
             setLoading(true);
 
+
             const newTimeoutId = window.setTimeout(() => {
-                sendDataToAPI(thermocontrolAPI, thermocontrolKey, data);
+                if (setSocketRef.current && setSocketRef.current.OPEN)
+                    setSocketRef.current!.send(JSON.stringify(data));
             }, DEBOUNCE_DELAY);
             setTimeoutId(newTimeoutId);
 
-            window.setTimeout(() => {
+
+            const newTimeoutId2 = window.setTimeout(() => {
                 setIsTyping(false);
-            }, DEBOUNCE_DELAY + refreshInterval)
+            }, DEBOUNCE_DELAY + REFRESH_INTERVAL)
+            setTimeoutId2(newTimeoutId2)
         },
         [timeoutId]
     );
@@ -134,6 +172,7 @@ function ThermocontrolDetails() {
         <Box width={"fit-content"} border={"2px"} borderColor={loading ? "orange" : error ? "red" : "green"} p={2}>
             <VStack align={"start"}>
                 <Text className="shacktopus-heading">ThermoControl</Text>
+                {permissionError ? <Text color={"red"} maxWidth={"250px"}>{permissionError}</Text> : null}
                 <Text>Target temperature</Text>
                 <TemperatureInput
                     dataFromUI={dataFromUI}
