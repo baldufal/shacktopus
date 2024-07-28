@@ -1,13 +1,16 @@
-import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider } from "@chakra-ui/react";
+import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider, DrawerFooter, Text } from "@chakra-ui/react";
 import "./menubar.scss";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Router/AuthContext";
 
 function Menubar() {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const navigate = useNavigate();
+
+    const auth = useAuth();
 
     const handleLinkClick = (path: string) => {
         navigate(path);
@@ -40,18 +43,14 @@ function Menubar() {
 
                     <DrawerBody >
                         <VStack align={"start"} >
-
-                            <Button variant="link" onClick={() => handleLinkClick('/')}>
-                                Dashboard
+                            <Button variant="link" onClick={() => handleLinkClick('/kaleidoscope')}>
+                                Kaleidoscope
                             </Button>
                             <Button variant="link" onClick={() => handleLinkClick('/heating')}>
                                 Heating
                             </Button>
                             <Button variant="link" onClick={() => handleLinkClick('/settings')}>
                                 Settings
-                            </Button>
-                            <Button variant="link" onClick={() => handleLinkClick('/nothing-here')}>
-                                Nothing here
                             </Button>
                             <Divider m="1em"></Divider>
                             <Switch
@@ -64,6 +63,12 @@ function Menubar() {
 
                         </VStack>
                     </DrawerBody>
+                    <DrawerFooter>
+                        <VStack>
+                        <Text>{ auth.user}</Text>
+                        <Button onClick={auth.logout}>Logout</Button>
+                        </VStack>
+                    </DrawerFooter>
                 </DrawerContent>
             </Drawer>
         </Box>

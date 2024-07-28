@@ -1,20 +1,18 @@
 import { VStack, Text, Box, Input, Button, Link } from "@chakra-ui/react";
 import "./settingsPage.scss";
 import { useState } from "react";
-import useLocalStorage from "use-local-storage";
 
 function LoginSettings() {
 
     const [password, setPassword] = useState("");
     const [user, setUser] = useState("guest");
     const [status, setStatus] = useState<undefined | string>(undefined);
-    const [token, setToken] = useLocalStorage('jwt', "");
-    const [apiUrl] = useLocalStorage('api-url', "http://192.168.88.30:4048");
+    const [token, setToken] = useState("");
 
     async function login(username: string, password: string): Promise<string> {
         setStatus("logging in")
         try {
-            const response = await fetch(apiUrl + "/login", {
+            const response = await fetch(`https://${window.location.host}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
@@ -59,7 +57,7 @@ function LoginSettings() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)} />
                 <Button onClick={onClickLogin}>Login</Button>
-                <Link href={apiUrl + "/login"}>Click here and trust certificate to resolve login issues</Link>
+                <Link href={`https://${window.location.host}/api/login`}>Click here and trust certificate to resolve login issues</Link>
                 {status ? <Text>{status}</Text> : null}
                 {token ? <Text>{"Token: " + token}</Text> : null}
             </VStack>

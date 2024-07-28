@@ -1,6 +1,5 @@
 import { Box, Divider, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch, Text, useColorMode, useTheme, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import useLocalStorage from "use-local-storage";
 import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
 
@@ -64,7 +63,7 @@ function ThermocontrolDetails() {
 
     const updateSocketRef = useRef<WebSocket | undefined>(undefined);
     const setSocketRef = useRef<WebSocket | undefined>(undefined);
-    const [token] = useLocalStorage('jwt', "");
+    const token = localStorage.getItem('jwt')
 
     useEffect(() => {
         isTypingRef.current = isTyping;
@@ -85,7 +84,7 @@ function ThermocontrolDetails() {
                     setDataFromAPI(data);
                     updateDataFromUI(data);
                     setError(undefined);
-                }else{
+                } else {
                     setError(true);
                     console.log("TC update health != good")
                 }
@@ -102,10 +101,10 @@ function ThermocontrolDetails() {
             setPermissionError("Not logged in!");
             return;
         }
-        const updateSocket = new WebSocket(`wss://192.168.0.249:8443/thermocontrol/updates?token=${token}`);
+        const updateSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/updates?token=${token}`);
         updateSocketRef.current = updateSocket;
 
-        const setSocket = new WebSocket(`wss://192.168.0.249:8443/thermocontrol/set?token=${token}`);
+        const setSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/set?token=${token}`);
         setSocketRef.current = setSocket;
 
         updateSocket.onopen = () => {
@@ -131,12 +130,10 @@ function ThermocontrolDetails() {
 
 
         return () => {
-            if (updateSocketRef.current) {
+            if (updateSocketRef.current)
                 updateSocketRef.current.close();
-            }
-            if (setSocketRef.current) {
+            if (setSocketRef.current)
                 setSocketRef.current.close();
-            }
         };
     }, [token]);
 
