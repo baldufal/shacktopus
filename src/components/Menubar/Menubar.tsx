@@ -43,6 +43,9 @@ function Menubar() {
 
                     <DrawerBody >
                         <VStack align={"start"} >
+                            <Button variant="link" onClick={() => handleLinkClick('/')}>
+                                Dashboard
+                            </Button>
                             <Button variant="link" onClick={() => handleLinkClick('/kaleidoscope')}>
                                 Kaleidoscope
                             </Button>
@@ -65,8 +68,8 @@ function Menubar() {
                     </DrawerBody>
                     <DrawerFooter>
                         <VStack>
-                        <Text>{ auth.user}</Text>
-                        <Button onClick={auth.logout}>Logout</Button>
+                            <Text>{auth.user}</Text>
+                            <Button onClick={auth.logout}>Logout</Button>
                         </VStack>
                     </DrawerFooter>
                 </DrawerContent>

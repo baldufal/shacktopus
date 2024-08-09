@@ -14,7 +14,7 @@ function Router() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={
-          <ProtectedRoute element={<KaleidoscopePage />} />
+          <ProtectedRoute element={<DashboardPage />} />
         } />
         <Route path="kaleidoscope" element={
           <ProtectedRoute element={<KaleidoscopePage />} />
