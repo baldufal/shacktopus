@@ -1,12 +1,15 @@
-import { Box, Button, Divider, Flex, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useColorMode, useDisclosure, useTheme, VStack, Wrap } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useColorMode, useDisclosure, useTheme, VStack, Wrap } from "@chakra-ui/react";
 import { Fixture } from "./kaleidoscopeTypes";
 import ParameterBox from "./ParameterBox";
-import { FixtureName } from "./KaleidoscopeContext";
+import { FixtureName } from "./KaleidoscopeUpdatesContext";
+import { useKaleidoscopeSet } from "./KaleidoscopeSetContext";
 
 
 
 
 function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
+
+    const { setProgram, error } = useKaleidoscopeSet();
 
     const programNames = Object.keys(props.data.programs).sort().filter((value) => value !== "EXTERNAL");
     const selectedProgram = props.data.programs[props.data.selected_program];
@@ -44,16 +47,19 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                                 margin="2px"
                                 padding={"10px"}
                                 bg={props.data.selected_program === programName ? contrastColor : bgColor}
+                                onClick={() => console.log(setProgram(props.fixtureName.original, programName))}
                             >
                                 {programName}</Button>)}
                     </Wrap>
-                    <HStack>
-                        {parameterNames.map((parameterName) => 
-                        <ParameterBox 
-                        key={parameterName}
-                        parameterName={parameterName} 
-                        data={selectedProgram.parameters[parameterName]}/>)}
-                    </HStack>
+                    <VStack align={"start"}>
+                        {parameterNames.map((parameterName) =>
+                            <ParameterBox
+                                key={parameterName}
+                                fixture={props.fixtureName.original}
+                                program={props.data.selected_program}
+                                parameterName={parameterName}
+                                data={selectedProgram.parameters[parameterName]} />)}
+                    </VStack>
 
 
                 </VStack>
@@ -65,8 +71,8 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                     <ModalCloseButton />
                     <ModalBody>
                         <VStack align={"start"}>
-                        <Text>{"API name: " + props.fixtureName.original}</Text>
-                        <Text maxWidth={"300px"}>{"Output aliases: " + props.data.output_aliases.sort()}</Text>
+                            <Text>{"API name: " + props.fixtureName.original}</Text>
+                            <Text maxWidth={"300px"}>{"Output aliases: " + props.data.output_aliases.sort()}</Text>
                         </VStack>
                     </ModalBody>
                 </ModalContent>

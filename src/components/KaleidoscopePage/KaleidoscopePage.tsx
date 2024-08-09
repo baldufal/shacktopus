@@ -1,10 +1,10 @@
 import { Box, Text, Wrap } from "@chakra-ui/react";
 import FixtureBox from "./FixtureBox";
-import { useKaleidoscope } from "./KaleidoscopeContext";
+import { useKaleidoscopeUpdates } from "./KaleidoscopeUpdatesContext";
 
 function KaleidoscopePage() {
 
-    const { fixturesData, fixtureNames, error } = useKaleidoscope();
+    const { fixturesData, fixtureNames, error } = useKaleidoscopeUpdates();
 
     return (
         <Box as="main" flex="1" p={4} width="100%">

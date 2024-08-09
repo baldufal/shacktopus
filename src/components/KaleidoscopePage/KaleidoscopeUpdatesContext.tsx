@@ -8,15 +8,15 @@ export interface FixtureName{
   display: string
 }
 
-interface KaleidoscopeContextType {
+interface KaleidoscopeUpdatesContextType {
   fixturesData: FixturesData | null;
   fixtureNames: FixtureName[] | null;
   error: string | undefined;
 }
 
-const KaleidoscopeContext = createContext<KaleidoscopeContextType | undefined>(undefined);
+const KaleidoscopeUpdatesContext = createContext<KaleidoscopeUpdatesContextType | undefined>(undefined);
 
-export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
+export const KaleidoscopeUpdatesProvider = ({ children }: { children: ReactNode }) => {
   const [fixturesData, setFixturesData] = useState<FixturesData | null>(null);
   const [fixtureNames, setFixtureNames] = useState<FixtureName[] | null>(null);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -67,18 +67,18 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
       if (updateSocketRef.current)
         updateSocketRef.current.close();
     };
-  }, [auth, fixtureNames]);
+  }, [auth.token, fixtureNames]);
 
   return (
-    <KaleidoscopeContext.Provider value={{ fixturesData, fixtureNames, error }}>
+    <KaleidoscopeUpdatesContext.Provider value={{ fixturesData, fixtureNames, error }}>
       {children}
-    </KaleidoscopeContext.Provider>
+    </KaleidoscopeUpdatesContext.Provider>
   );
 };
 
 // Create a custom hook to use the Kaleidoscope context
-export const useKaleidoscope = () => {
-  const context = useContext(KaleidoscopeContext);
+export const useKaleidoscopeUpdates = () => {
+  const context = useContext(KaleidoscopeUpdatesContext);
   if (context === undefined) {
     throw new Error('useKaleidoscope must be used within a KaleidoscopeProvider');
   }
