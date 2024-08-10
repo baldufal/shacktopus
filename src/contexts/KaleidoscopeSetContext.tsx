@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
-import { useAuth } from '../Router/AuthContext';
+import { useAuth } from '../components/Router/AuthContext';
 
 interface KaleidoscopeSetContextType {
   setProgram: (fixture: string, program: string) => string | undefined;

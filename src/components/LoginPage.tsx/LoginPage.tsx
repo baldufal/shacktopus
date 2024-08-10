@@ -27,20 +27,32 @@ const LoginPage: React.FC = () => {
         }
     };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleSubmit();
+        }
+    };
+
     return (
 
         <VStack >
-            <Image 
-            src={shacktopus}
-             boxSize={"max(30vw, 200px)"}
-             marginTop={"5vh"} 
-             alt='Shacktopus Logo'/>
+            <Image
+                src={shacktopus}
+                boxSize={"max(30vw, 200px)"}
+                marginTop={"5vh"}
+                alt='Shacktopus Logo' />
             <Box minWidth={"200px"} width={"20vw"}>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <Text>User</Text>
-                <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+                <Input
+                    type="text"
+                    value={username} onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={handleKeyDown} />
                 <Text>Password</Text>
-                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input
+                    type="password"
+                    value={password} onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyDown} />
             </Box>
             <Button onClick={handleSubmit}>Login</Button>
         </VStack>

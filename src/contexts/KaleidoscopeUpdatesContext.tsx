@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
-import { FixturesData } from './kaleidoscopeTypes';
-import { useAuth } from '../Router/AuthContext';
-import { ALIASES } from './aliases';
+import { ALIASES } from '../components/KaleidoscopePage/aliases';
+import { FixturesData } from '../components/KaleidoscopePage/kaleidoscopeTypes';
+import { useAuth } from '../components/Router/AuthContext';
 
 export interface FixtureName{
   original: string,

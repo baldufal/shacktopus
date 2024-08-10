@@ -2,9 +2,9 @@ import { ChakraProvider } from '@chakra-ui/react'
 import Router from './components/Router/Router'
 import theme from './theme'
 import { AuthProvider } from './components/Router/AuthContext'
-import { KaleidoscopeUpdatesProvider } from './components/KaleidoscopePage/KaleidoscopeUpdatesContext'
-import { KaleidoscopeSetProvider } from './components/KaleidoscopePage/KaleidoscopeSetContext'
-import { ThemeProvider } from './ThemeContext'
+import { KaleidoscopeSetProvider } from './contexts/KaleidoscopeSetContext'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { KaleidoscopeUpdatesProvider } from './contexts/KaleidoscopeUpdatesContext'
 
 function App() {
 

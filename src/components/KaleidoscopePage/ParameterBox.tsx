@@ -1,18 +1,18 @@
-import { Box, HStack, Radio, RadioGroup, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from "@chakra-ui/react";
+import { Box, HStack, Radio, RadioGroup, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, useToast } from "@chakra-ui/react";
 import { ContinuousParameter, DiscreteParameter, Parameter } from "./kaleidoscopeTypes";
-import { useThemeColors } from "../../ThemeContext";
-import { useKaleidoscopeSet } from "./KaleidoscopeSetContext";
+import { useThemeColors } from "../../contexts/ThemeContext";
+import { useKaleidoscopeSet } from "../../contexts/KaleidoscopeSetContext";
 import { useCallback, useEffect, useState } from "react";
 
 function DiscreteParameterBox(props: { fixture: string, program: string, parameterName: string, data: DiscreteParameter }) {
 
+    const toast = useToast()
     const { indicator } = useThemeColors();
     const valueNames = Object.keys(props.data.levels).sort()
-    const { setDiscrete } = useKaleidoscopeSet();
+    const { setDiscrete, error: kaleidoscopeSetError } = useKaleidoscopeSet();
     const [loading, setLoading] = useState<boolean>(true);
     useEffect(() => {
         setLoading(false);
-
     }, [props.data.current_level]);
 
     return (
@@ -22,14 +22,25 @@ function DiscreteParameterBox(props: { fixture: string, program: string, paramet
             p={2}
             paddingTop={"2px"}
             paddingBottom={"2px"}
-            borderColor={loading ? indicator.dirty : indicator.ok}>
+            borderColor={kaleidoscopeSetError ?
+                indicator.read_only : loading ?
+                    indicator.dirty : indicator.ok}>
 
             <Text>{props.parameterName}</Text>
             <RadioGroup
+                isDisabled={kaleidoscopeSetError ? true : false}
                 value={props.data.current_level}
                 onChange={(nextValue) => {
                     setLoading(true)
-                    setDiscrete(props.fixture, props.program, props.parameterName, nextValue)
+                    const error = setDiscrete(props.fixture, props.program, props.parameterName, nextValue)
+                    if (error)
+                        toast({
+                            title: "Error",
+                            description: error,
+                            status: "error",
+                            duration: 2000,
+                            isClosable: true
+                        })
                 }}>
                 <HStack>
                     {valueNames.map((valueName) =>
@@ -50,7 +61,7 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
     const REFRESH_INTERVAL = 300;
     const DEBOUNCE_DELAY = 200;
     const { primary, bwForeground, indicator } = useThemeColors();
-    const { setContinuous } = useKaleidoscopeSet();
+    const { setContinuous, error: kaleidoscopeSetError } = useKaleidoscopeSet();
 
     const [uiValue, setUiValue] = useState<number>(props.data.current);
 
@@ -61,6 +72,8 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
     // Used for debouncing
     const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
     const [timeoutId2, setTimeoutId2] = useState<number | undefined>(undefined);
+
+    const toast = useToast()
 
     useEffect(() => {
         if (!isTyping) {
@@ -82,7 +95,15 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
             setLoading(true);
 
             const newTimeoutId = window.setTimeout(() => {
-                setContinuous(props.fixture, props.program, props.parameterName, newValue)
+                const error = setContinuous(props.fixture, props.program, props.parameterName, newValue)
+                if (error)
+                    toast({
+                        title: "Error",
+                        description: error,
+                        status: "error",
+                        duration: 2000,
+                        isClosable: true
+                    })
             }, DEBOUNCE_DELAY);
             setTimeoutId(newTimeoutId);
 
@@ -102,9 +123,12 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
             p={2}
             paddingTop={"2px"}
             paddingBottom={"2px"}
-            borderColor={loading ? indicator.dirty : indicator.ok}>
+            borderColor={kaleidoscopeSetError ?
+                indicator.read_only : loading ?
+                    indicator.dirty : indicator.ok}>
             <Text>{props.parameterName}</Text>
             <Slider
+                isDisabled={kaleidoscopeSetError ? true : false}
                 minWidth={"250px"}
                 defaultValue={0}
                 min={props.data.lower_limit_incl}
@@ -134,7 +158,6 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
 }
 
 function ParameterBox(props: { fixture: string, program: string, parameterName: string, data: Parameter }) {
-
     return (<>
         {props.data.type === "discrete" ?
             <DiscreteParameterBox

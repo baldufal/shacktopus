@@ -2,7 +2,7 @@ import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerClos
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Router/AuthContext";
-import { useThemeColors } from "../../ThemeContext";
+import { useThemeColors } from "../../contexts/ThemeContext";
 
 function Menubar() {
 

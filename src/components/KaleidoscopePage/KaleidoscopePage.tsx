@@ -1,6 +1,6 @@
 import { Box, Text, Wrap } from "@chakra-ui/react";
 import FixtureBox from "./FixtureBox";
-import { useKaleidoscopeUpdates } from "./KaleidoscopeUpdatesContext";
+import { useKaleidoscopeUpdates } from "../../contexts/KaleidoscopeUpdatesContext";
 
 function KaleidoscopePage() {
 
