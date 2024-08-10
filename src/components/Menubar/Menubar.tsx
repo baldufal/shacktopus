@@ -1,12 +1,11 @@
-import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider, DrawerFooter, Text, useTheme, Heading, Spacer } from "@chakra-ui/react";
-import "./menubar.scss";
+import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider, DrawerFooter, Text, Heading, Spacer } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../ThemeContext";
 
 function Menubar() {
-    
+
     const { colorMode, toggleColorMode } = useColorMode()
     const { primary, secondary } = useThemeColors();
 
@@ -53,7 +52,9 @@ function Menubar() {
                 aria-label={"open menu"}
                 icon={<HamburgerIcon />} />
 
-            <Heading marginStart={"10px"} color={'primary.700'}>{locationString}</Heading>
+            <Heading
+                marginStart={"10px"}
+            >{locationString}</Heading>
 
             <Spacer></Spacer>
 
@@ -65,7 +66,7 @@ function Menubar() {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader color={'primary.700'}>Shacktopus</DrawerHeader>
+                    <DrawerHeader >Shacktopus</DrawerHeader>
 
                     <DrawerBody >
                         <VStack align={"start"} >

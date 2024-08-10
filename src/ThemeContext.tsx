@@ -1,6 +1,13 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useColorMode, useTheme } from '@chakra-ui/react';
 
+interface IndicatorColors {
+    ok: string;
+    read_only: string;
+    dirty: string;
+    error: string;
+}
+
 interface ThemeColors {
     // Brand color
     brand: string;
@@ -12,6 +19,8 @@ interface ThemeColors {
     bwForeground: string;
     // Opposite of bwForeground
     bwBackground: string;
+    // Colors for indicating connection status
+    indicator: IndicatorColors
 }
 
 const ThemeContext = createContext<ThemeColors | undefined>(undefined);
@@ -26,7 +35,19 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const bwBackground = colorMode === 'dark' ? "white" : "black";
 
     return (
-        <ThemeContext.Provider value={{brand:  theme.colors.primary[700], primary, secondary, bwForeground, bwBackground }}>
+        <ThemeContext.Provider value={{
+            brand: theme.colors.primary[700],
+            primary,
+            secondary,
+            bwForeground,
+            bwBackground,
+            indicator: {
+                ok: "green",
+                read_only: "lightblue",
+                dirty: "orange",
+                error: "red"
+            }
+        }}>
             {children}
         </ThemeContext.Provider>
     );

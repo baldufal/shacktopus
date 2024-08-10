@@ -3,6 +3,8 @@ import { useAuth } from '../Router/AuthContext';
 
 interface KaleidoscopeSetContextType {
   setProgram: (fixture: string, program: string) => string | undefined;
+  setDiscrete: (fixture: string, program: string, parameterName: string, value: string) => string | undefined;
+  setContinuous: (fixture: string, program: string, parameterName: string, value: number) => string | undefined;
   error: string | undefined;
 }
 
@@ -23,6 +25,42 @@ export const KaleidoscopeSetProvider = ({ children }: { children: ReactNode }) =
       action: "program",
       fixture: fixture,
       data: { programName: program }
+    });
+    socket.send(payload);
+  }
+
+  function setDiscrete(fixture: string, program: string, parameterName: string, value: string) {
+    console.log(`Setting ${parameterName} to ${value}`);
+    const socket = setSocketRef.current;
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      return "No connection or no access right";
+    }
+    const payload = JSON.stringify({
+      action: "discrete",
+      fixture: fixture,
+      data: {
+        programName: program,
+        parameterName: parameterName,
+        value: value
+      }
+    });
+    socket.send(payload);
+  }
+
+  function setContinuous(fixture: string, program: string, parameterName: string, value: number) {
+    console.log(`Setting ${parameterName} to ${value}`);
+    const socket = setSocketRef.current;
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      return "No connection or no access right";
+    }
+    const payload = JSON.stringify({
+      action: "continuous",
+      fixture: fixture,
+      data: {
+        programName: program,
+        parameterName: parameterName,
+        value: value
+      }
     });
     socket.send(payload);
   }
@@ -64,7 +102,7 @@ export const KaleidoscopeSetProvider = ({ children }: { children: ReactNode }) =
   }, [auth.token]);
 
   return (
-    <KaleidoscopeSetContext.Provider value={{ setProgram, error }}>
+    <KaleidoscopeSetContext.Provider value={{ setProgram, setDiscrete, setContinuous, error }}>
       {children}
     </KaleidoscopeSetContext.Provider>
   );
