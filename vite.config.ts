@@ -7,13 +7,14 @@ import https from 'https'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  assetsInclude: ['**/*.png'], // Include PNG files as assets
   server: {
     https: {
       key: fs.readFileSync(path.resolve(__dirname, './cert/localhost+3-key.pem')),
       cert: fs.readFileSync(path.resolve(__dirname, './cert/localhost+3.pem'))
     },
     host: true, // This makes the server listen on all addresses, including LAN and VPN
-    port: 5173,
+    port: 8000,
     proxy: {
       '/api/': {
         target: 'https://localhost:8443/',

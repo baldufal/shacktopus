@@ -27,42 +27,45 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
     return (
         <>
             <Box width={"fit-content"} border={"2px"} p={2}>
-                <VStack align={"start"}>
-                    <Flex>
-                        <Text>{props.fixtureName.display}</Text>
-                        <Button
-                            marginStart={"10px"}
-                            size={"20px"}
-                            borderRadius={"20px"}
-                            height={"20px"}
-                            width={"20px"}
-                            onClick={onOpen}>i</Button>
-                    </Flex>
-
-                    <Divider></Divider>
-                    <Wrap maxWidth={"300"}>
-                        {programNames.map((programName) =>
-                            <Button
-                                key={programName}
-                                margin="2px"
-                                padding={"10px"}
-                                bg={props.data.selected_program === programName ? contrastColor : bgColor}
-                                onClick={() => console.log(setProgram(props.fixtureName.original, programName))}
-                            >
-                                {programName}</Button>)}
-                    </Wrap>
+                {error ?
+                    <Text>{error}</Text>
+                    :
                     <VStack align={"start"}>
-                        {parameterNames.map((parameterName) =>
-                            <ParameterBox
-                                key={parameterName}
-                                fixture={props.fixtureName.original}
-                                program={props.data.selected_program}
-                                parameterName={parameterName}
-                                data={selectedProgram.parameters[parameterName]} />)}
+                        <Flex>
+                            <Text>{props.fixtureName.display}</Text>
+                            <Button
+                                marginStart={"10px"}
+                                size={"20px"}
+                                borderRadius={"20px"}
+                                height={"20px"}
+                                width={"20px"}
+                                onClick={onOpen}>i</Button>
+                        </Flex>
+
+                        <Divider></Divider>
+                        <Wrap maxWidth={"300"}>
+                            {programNames.map((programName) =>
+                                <Button
+                                    key={programName}
+                                    margin="2px"
+                                    padding={"10px"}
+                                    bg={props.data.selected_program === programName ? contrastColor : bgColor}
+                                    onClick={() => console.log(setProgram(props.fixtureName.original, programName))}
+                                >
+                                    {programName}</Button>)}
+                        </Wrap>
+                        <VStack align={"start"}>
+                            {parameterNames.map((parameterName) =>
+                                <ParameterBox
+                                    key={parameterName}
+                                    fixture={props.fixtureName.original}
+                                    program={props.data.selected_program}
+                                    parameterName={parameterName}
+                                    data={selectedProgram.parameters[parameterName]} />)}
+                        </VStack>
                     </VStack>
+                }
 
-
-                </VStack>
             </Box>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
