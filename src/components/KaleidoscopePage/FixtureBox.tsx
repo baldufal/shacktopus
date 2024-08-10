@@ -1,8 +1,9 @@
-import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useColorMode, useDisclosure, useTheme, VStack, Wrap } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure, VStack, Wrap } from "@chakra-ui/react";
 import { Fixture } from "./kaleidoscopeTypes";
 import ParameterBox from "./ParameterBox";
 import { FixtureName } from "./KaleidoscopeUpdatesContext";
 import { useKaleidoscopeSet } from "./KaleidoscopeSetContext";
+import { useThemeColors } from "../../ThemeContext";
 
 
 
@@ -15,11 +16,8 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
     const selectedProgram = props.data.programs[props.data.selected_program];
     const parameterNames = Object.keys(selectedProgram.parameters).sort();
 
-    const { colorMode } = useColorMode();
-    const theme = useTheme();
-    const bgColor = colorMode === 'dark' ? theme.colors.primary[200] : theme.colors.primary[500];
-    const contrastColor = colorMode === 'dark' ? theme.colors.secondary[400] : theme.colors.secondary[700];
-    const fgColor = colorMode === 'dark' ? "black" : "white";
+    const { primary, secondary } = useThemeColors();
+
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -49,7 +47,7 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                                     key={programName}
                                     margin="2px"
                                     padding={"10px"}
-                                    bg={props.data.selected_program === programName ? contrastColor : bgColor}
+                                    bg={props.data.selected_program === programName ? secondary : primary}
                                     onClick={() => console.log(setProgram(props.fixtureName.original, programName))}
                                 >
                                     {programName}</Button>)}

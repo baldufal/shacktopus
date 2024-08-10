@@ -1,7 +1,8 @@
-import { Box, Divider, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch, Text, useColorMode, useTheme, VStack } from "@chakra-ui/react";
+import { Box, Divider, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch, Text, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
+import { useThemeColors } from "../../../ThemeContext";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -20,10 +21,8 @@ interface ThermocontrolDataType extends ThermocontrolSettableDataType {
 
 function ThermocontrolDetails() {
 
-    const { colorMode } = useColorMode();
-    const theme = useTheme();
-    const bgColor = colorMode === 'dark' ? theme.colors.primary[200] : theme.colors.primary[500];
-    const fgColor = colorMode === 'dark' ? "black" : "white";
+    const { primary, bwForeground } = useThemeColors();
+
 
     const REFRESH_INTERVAL = 300;
     const DEBOUNCE_DELAY = 200;
@@ -208,9 +207,9 @@ function ThermocontrolDetails() {
                         </SliderTrack>
                         <SliderThumb
                             boxSize={6}
-                            bg={bgColor}>
+                            bg={primary}>
                             <Text
-                                color={fgColor}
+                                color={bwForeground}
                                 fontSize={"14px"}
                                 fontWeight={"700"}>
                                 {dataFromUI?.extra_ventilation}
@@ -237,9 +236,9 @@ function ThermocontrolDetails() {
                         </SliderTrack>
                         <SliderThumb
                             boxSize={6}
-                            bg={bgColor}>
+                            bg={primary}>
                             <Text
-                                color={fgColor}
+                                color={bwForeground}
                                 fontSize={"14px"}
                                 fontWeight={"700"}>
                                 {dataFromUI?.max_heating_power}

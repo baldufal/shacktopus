@@ -1,5 +1,6 @@
-import { Box, HStack, Radio, RadioGroup, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, useColorMode, useTheme } from "@chakra-ui/react";
+import { Box, HStack, Radio, RadioGroup, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from "@chakra-ui/react";
 import { ContinuousParameter, DiscreteParameter, Parameter } from "./kaleidoscopeTypes";
+import { useThemeColors } from "../../ThemeContext";
 
 function DiscreteParameterBox(props: { fixture: string, program: string, parameterName: string, data: DiscreteParameter }) {
 
@@ -22,11 +23,7 @@ function DiscreteParameterBox(props: { fixture: string, program: string, paramet
 
 function ContinuousParameterBox(props: { fixture: string, program: string, parameterName: string, data: ContinuousParameter }) {
 
-    const { colorMode } = useColorMode();
-    const theme = useTheme();
-    const bgColor = colorMode === 'dark' ? theme.colors.primary[200] : theme.colors.primary[500];
-    //const contrastColor = colorMode === 'dark' ? theme.colors.secondary[400] : theme.colors.secondary[700];
-    const fgColor = colorMode === 'dark' ? "black" : "white";
+    const { primary, bwForeground } = useThemeColors();
 
     return (
         <Slider
@@ -42,9 +39,9 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
             </SliderTrack>
             <SliderThumb
                 boxSize={6}
-                bg={bgColor}>
+                bg={primary}>
                 <Text
-                    color={fgColor}
+                    color={bwForeground}
                     fontSize={"14px"}
                     fontWeight={"700"}>
                     {props.data.current}

@@ -3,13 +3,12 @@ import "./menubar.scss";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Router/AuthContext";
+import { useThemeColors } from "../../ThemeContext";
 
 function Menubar() {
-
+    
     const { colorMode, toggleColorMode } = useColorMode()
-    const theme = useTheme();
-    const foregroundColor = colorMode === 'dark' ? theme.colors.primary[200] : theme.colors.primary[500];
-    const contrastColor = colorMode === 'dark' ? theme.colors.secondary[400] : theme.colors.secondary[700];
+    const { primary, secondary } = useThemeColors();
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -73,28 +72,28 @@ function Menubar() {
                             <Button
                                 variant="link"
                                 onClick={() => handleLinkClick('/')}
-                                color={isActive('/') ? contrastColor : foregroundColor}
+                                color={isActive('/') ? secondary : primary}
                             >
                                 Dashboard
                             </Button>
                             <Button
                                 variant="link"
                                 onClick={() => handleLinkClick('/kaleidoscope')}
-                                color={isActive('/kaleidoscope') ? contrastColor : foregroundColor}
+                                color={isActive('/kaleidoscope') ? secondary : primary}
                             >
                                 Kaleidoscope
                             </Button>
                             <Button
                                 variant="link"
                                 onClick={() => handleLinkClick('/heating')}
-                                color={isActive('/heating') ? contrastColor : foregroundColor}
+                                color={isActive('/heating') ? secondary : primary}
                             >
                                 Heating
                             </Button>
                             <Button
                                 variant="link"
                                 onClick={() => handleLinkClick('/settings')}
-                                color={isActive('/settings') ? contrastColor : foregroundColor}
+                                color={isActive('/settings') ? secondary : primary}
                             >
                                 Settings
                             </Button>
