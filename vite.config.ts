@@ -14,7 +14,7 @@ export default defineConfig({
       cert: fs.readFileSync(path.resolve(__dirname, './cert/localhost+3.pem'))
     },
     host: true, // This makes the server listen on all addresses, including LAN and VPN
-    port: 8000,
+    port: 5173,
     proxy: {
       '/api/': {
         target: 'https://localhost:8443/',

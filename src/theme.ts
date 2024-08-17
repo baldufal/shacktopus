@@ -34,7 +34,7 @@ const colors = {
   },
 };
 
-
+/*
 const styles = {
   global: (props: { colorMode: string; }) => ({
     body: {
@@ -43,7 +43,7 @@ const styles = {
     },
   }),
 };
-
+*/
 // Extend the base theme
 const theme = extendTheme(
   { config },

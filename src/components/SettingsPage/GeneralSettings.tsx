@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Input, Text, useNumberInput, VStack } from "@chakra-ui/react";
+import { Box, Button, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import useLocalStorage from "use-local-storage";
 import "./settingsPage.scss";
 

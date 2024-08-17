@@ -33,7 +33,7 @@ function TestSettings() {
                 throw new Error(`Login failed: ${errorText}`);
             }
         } catch (error) {
-            setError(`Network error: ${error.message}`);
+            //setError(`Network error: ${error.message}`);
             throw error;
         }
     }

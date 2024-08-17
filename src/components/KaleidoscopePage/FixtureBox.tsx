@@ -17,7 +17,7 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
     const selectedProgram = props.data.programs[props.data.selected_program];
     const parameterNames = Object.keys(selectedProgram.parameters).sort();
 
-    const { primary, secondary, indicator } = useThemeColors();
+    const { indicator } = useThemeColors();
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -71,7 +71,7 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                                 key={programName}
                                 margin="2px"
                                 padding={"10px"}
-                                bg={props.data.selected_program === programName ? secondary : primary}
+                                colorScheme={props.data.selected_program === programName ? "secondary" : "primary"}
                                 onClick={() => changeProgram(programName)}
                             >
                                 {programName}</Button>)}
