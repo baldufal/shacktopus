@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  frontend:
+    build: ./  # Path to your frontend Dockerfile
+    ports:
+      - "80:80"   # HTTP
+      - "443:443" # HTTPS
+    networks:
+      - shacktopus-network
+
+  backend:
+    build: ../reef/  # Path to your backend Dockerfile
+    # No need to expose ports here
+    networks:
+      - shacktopus-network
+    environment:
+      - NODE_ENV=production
+
+networks:
+  shacktopus-network:
+    driver: bridge

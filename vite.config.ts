@@ -1,8 +1,7 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 import fs from 'fs';
 import path from 'path';
-import react from '@vitejs/plugin-react'
-import https from 'https'
+import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,15 +16,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api/': {
-        target: 'https://localhost:8443/',
+        target: 'http://localhost:8443/',
         changeOrigin: true,
-        secure: false,  // Set to true if your target uses HTTPS
         rewrite: (path) => path.replace(/^\/api/, ''),
         ws: true,
-        agent: new https.Agent({ 
-          rejectUnauthorized: false // Ignore self-signed certificate verification
-        }),
       },
     },
   }
-})
+});
