@@ -25,11 +25,7 @@ export const KaleidoscopeUpdatesProvider = ({ children }: { children: ReactNode 
   const auth = useAuth();
 
   useEffect(() => {
-    if (!auth.token) {
-      setError("Not logged in!");
-      return;
-    }
-    const updateSocket = new WebSocket(`wss://${window.location.host}/api/kaleidoscope/updates?token=${auth.token}`);
+    const updateSocket = new WebSocket(`wss://${window.location.host}/api/kaleidoscope/updates`);
     updateSocketRef.current = updateSocket;
 
     updateSocket.onopen = () => {
@@ -67,7 +63,7 @@ export const KaleidoscopeUpdatesProvider = ({ children }: { children: ReactNode 
       if (updateSocketRef.current)
         updateSocketRef.current.close();
     };
-  }, [auth.token, fixtureNames]);
+  }, [auth.user, fixtureNames]);
 
   return (
     <KaleidoscopeUpdatesContext.Provider value={{ fixturesData, fixtureNames, error }}>

@@ -6,14 +6,23 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import { ColorModeScript } from '@chakra-ui/react'
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+const RootComponent = isDevelopment ? (
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+) : (
+  <App />
+);
+
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <>
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-    <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </React.StrictMode>
+    <BrowserRouter>
+      {RootComponent}
+    </BrowserRouter>
   </>
   ,
 )

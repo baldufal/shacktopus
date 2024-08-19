@@ -27,7 +27,7 @@ function Router() {
         } />
         <Route path="*" element={<NoMatch />} />
       </Route>
-      <Route path="/login" element={<LoginPage />} /> {/* Add Login Route */}
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   )
 }

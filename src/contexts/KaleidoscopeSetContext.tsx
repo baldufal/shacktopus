@@ -66,12 +66,7 @@ export const KaleidoscopeSetProvider = ({ children }: { children: ReactNode }) =
   }
 
   useEffect(() => {
-    if (!auth.token) {
-      setError("Not logged in!");
-      return;
-    }
-
-    const setSocket = new WebSocket(`wss://${window.location.host}/api/kaleidoscope/set?token=${auth.token}`);
+    const setSocket = new WebSocket(`wss://${window.location.host}/api/kaleidoscope/set`);
     setSocketRef.current = setSocket;
 
     setSocket.onopen = () => {
@@ -99,7 +94,7 @@ export const KaleidoscopeSetProvider = ({ children }: { children: ReactNode }) =
         setSocketRef.current.close();
       }
     };
-  }, [auth.token]);
+  }, [auth.user]);
 
   return (
     <KaleidoscopeSetContext.Provider value={{ setProgram, setDiscrete, setContinuous, error }}>

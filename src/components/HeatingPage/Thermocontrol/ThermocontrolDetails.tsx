@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
 import { useThemeColors } from "../../../contexts/ThemeContext";
+import { useAuth } from "../../Router/AuthContext";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -20,6 +21,8 @@ interface ThermocontrolDataType extends ThermocontrolSettableDataType {
 }
 
 function ThermocontrolDetails() {
+
+    const auth = useAuth();
 
     const { primary, bwForeground, indicator } = useThemeColors();
 
@@ -61,7 +64,6 @@ function ThermocontrolDetails() {
 
     const updateSocketRef = useRef<WebSocket | undefined>(undefined);
     const setSocketRef = useRef<WebSocket | undefined>(undefined);
-    const token = localStorage.getItem('jwt')
 
     useEffect(() => {
         isTypingRef.current = isTyping;
@@ -94,15 +96,10 @@ function ThermocontrolDetails() {
     );
 
     useEffect(() => {
-        if (!token) {
-            setError("Not logged in");
-            setWritePermisson(false);
-            return;
-        }
-        const updateSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/updates?token=${token}`);
+        const updateSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/updates`);
         updateSocketRef.current = updateSocket;
 
-        const setSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/set?token=${token}`);
+        const setSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/set`);
         setSocketRef.current = setSocket;
 
         updateSocket.onopen = () => {
@@ -131,7 +128,7 @@ function ThermocontrolDetails() {
             if (setSocketRef.current)
                 setSocketRef.current.close();
         };
-    }, [token]);
+    }, [auth.user]);
 
     // Debounced function to handle UI data changes
     const debouncedSendData = useCallback(
