@@ -1,15 +1,17 @@
 services:
   frontend:
-    build: ./  # Path to your frontend Dockerfile
+    build: ./
     ports:
       - "80:80"   # HTTP
       - "443:443" # HTTPS
     networks:
       - shacktopus-network
+    depends_on:
+      - backend  # Ensure the backend is started before the frontend
 
   backend:
-    build: ../reef/  # Path to your backend Dockerfile
-    # No need to expose ports here
+    build: ../reef/
+    # No need to expose ports here as communication works via docker network
     networks:
       - shacktopus-network
     environment:
