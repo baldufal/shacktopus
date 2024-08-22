@@ -31,8 +31,8 @@ case $1 in
     deploy_backend
     ;;
   all)
-    deploy_frontend
     deploy_backend
+    deploy_frontend
     ;;
   *)
     echo "Invalid argument. Usage: $0 [frontend|backend|all]"
