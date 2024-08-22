@@ -6,6 +6,7 @@ services:
       - "443:443" # HTTPS
     networks:
       - shacktopus-network
+    restart: unless-stopped
 
   backend:
     build: ../reef/  # Path to your backend Dockerfile
@@ -14,6 +15,7 @@ services:
       - shacktopus-network
     environment:
       - NODE_ENV=production
+    restart: unless-stopped
 
 networks:
   shacktopus-network:

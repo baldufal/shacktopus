@@ -18,7 +18,12 @@ export const KaleidoscopeSetProvider = ({ children }: { children: ReactNode }) =
   function setProgram(fixture: string, program: string) {
     console.log(`Setting program of fixture ${fixture} to ${program}`);
     const socket = setSocketRef.current;
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
+    if (!socket) {
+      console.log("socket undefined")
+      return "No connection or no access right";
+    }
+    if(socket.readyState !== WebSocket.OPEN){
+      console.log("socket.readyState: " + socket.readyState)
       return "No connection or no access right";
     }
     const payload = JSON.stringify({
