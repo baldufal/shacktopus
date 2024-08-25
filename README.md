@@ -1,30 +1,15 @@
-# React + TypeScript + Vite
+# Shacktopus
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Shacktopus is a React-based web ui for controlling custom smart home stuff in the Shack, mainly [Kaleidoscope](https://github.com/mrd0ll4r/kaleidoscope).
 
-Currently, two official plugins are available:
+It depends on it's backend server, [Reef](https://github.com/baldufal/reef).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setting it up for development
 
-## Expanding the ESLint configuration
+As a prerequesite you need to have [Node JS](https://nodejs.org/) installed.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+1. Pull the repo using `git pull git@github.com:baldufal/shacktopus.git` or `git pull https://github.com/baldufal/shacktopus.git`.
+2. Create self-signed certificates. This step is necessary because the app is based on https. You can create them by using [mkcert](https://github.com/FiloSottile/mkcert). After installing this tool you can install a local CA (optional, this step will prevent "security risk" warnings in the browser) by typing `mkcert -install` and create the certificates (required) by typing `mkcert localhost`. Then you need to copy the two certificate files in the *shacktopus/cert* directory and make sure the names in *vite.config.ts* match their filenames.
+3. Install the dependencies by executing `npm install` in the shacktopus directory.
+4. Run the vite development server using `npm run dev`.
+5. You can now visit the web ui on https://localhost:5173/. If login is not possible, there probably is a problem with the connection to Reef. Make sure it is running and configured on the same port as specified in the *vite.config.ts* file.
