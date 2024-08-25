@@ -95,38 +95,88 @@ function ThermocontrolDetails() {
         [isTyping]
     );
 
+    const establishWebSocketConnection = () => {
+        // Check if the update WebSocket is already connected or connecting
+        if (updateSocketRef.current && (updateSocketRef.current.readyState === WebSocket.OPEN || updateSocketRef.current.readyState === WebSocket.CONNECTING)) {
+            console.log('WebSocket for TC updates is already open or connecting.');
+        } else {
+            // Establish the update WebSocket connection
+            const updateSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/updates`);
+            updateSocketRef.current = updateSocket;
+
+            updateSocket.onopen = () => {
+                console.log('WebSocket for TC updates opened');
+                setError(undefined);
+            };
+
+            updateSocket.onmessage = handleMessage;
+
+            updateSocket.onclose = () => {
+                console.log('WebSocket for TC updates closed');
+                setError("WebSocket for TC updates closed");
+                attemptReconnect();  // Try to reconnect on close
+            };
+
+            updateSocket.onerror = () => {
+                console.log('WebSocket for TC updates error');
+                setError("WebSocket for TC updates encountered an error");
+                attemptReconnect();  // Try to reconnect on error
+            };
+        }
+
+        // Check if the set WebSocket is already connected or connecting
+        if (setSocketRef.current && (setSocketRef.current.readyState === WebSocket.OPEN || setSocketRef.current.readyState === WebSocket.CONNECTING)) {
+            console.log('WebSocket for TC set is already open or connecting.');
+        } else {
+            // Establish the set WebSocket connection
+            const setSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/set`);
+            setSocketRef.current = setSocket;
+
+            setSocket.onopen = () => {
+                console.log('WebSocket for TC set opened');
+                setWritePermisson(true);
+            };
+
+            setSocket.onclose = () => {
+                console.log('WebSocket for TC set closed');
+                setWritePermisson(false);
+                attemptReconnect();  // Try to reconnect on close
+            };
+
+            setSocket.onerror = () => {
+                console.log('WebSocket for TC set error');
+                setWritePermisson(false);
+                attemptReconnect();  // Try to reconnect on error
+            };
+        }
+    };
+
+    const attemptReconnect = () => {
+            setTimeout(() => {
+                console.log(`Attempting to reconnect...`);
+                establishWebSocketConnection();
+            }, 3000);
+    };
+
+    const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+            // Try to reconnect when the page becomes visible
+            establishWebSocketConnection();
+        }
+    };
+
     useEffect(() => {
-        const updateSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/updates`);
-        updateSocketRef.current = updateSocket;
+        establishWebSocketConnection();
 
-        const setSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/set`);
-        setSocketRef.current = setSocket;
-
-        updateSocket.onopen = () => {
-            console.log('WebSocket for TC updates opened');
-        };
-        setSocket.onopen = () => {
-            console.log('WebSocket for TC set opened');
-            setWritePermisson(true);
-        };
-
-        updateSocket.onmessage = handleMessage;
-
-        updateSocket.onclose = () => {
-            console.log('WebSocket for TC updates closed');
-            setError("WebSocket for TC updates closed");
-        };
-        setSocket.onclose = () => {
-            console.log('WebSocket for TC set closed');
-            setWritePermisson(false);
-        };
-
+        // Listen for visibility change events
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         return () => {
-            if (updateSocketRef.current)
-                updateSocketRef.current.close();
-            if (setSocketRef.current)
-                setSocketRef.current.close();
+            // Cleanup on component unmount
+            if (updateSocketRef.current) updateSocketRef.current.close();
+            if (setSocketRef.current) setSocketRef.current.close();
+
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, [auth.user]);
 

@@ -18,10 +18,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [tokenExpiration, setTokenExpiration] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     
+    const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && tokenExpiration) {
+            const timeLeft = tokenExpiration * 1000 - Date.now();
+            if(timeLeft <= 0){
+                console.log("Logging out because token expired.");
+                logout();
+            }
+        }
+      };
+
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         const storedPrivileged = localStorage.getItem('privileged');
         const storedTokenExpiration = localStorage.getItem('tokenExpiration');
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         if (storedUser && storedTokenExpiration) {
             setUser(storedUser);
@@ -30,6 +42,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
         
         setIsLoading(false);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        }
     }, []);
 
     useEffect(() => {
@@ -92,13 +108,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             });
 
             if (response.ok) {
-                clearAuthState();
+                console.error('Logged out successfully');
             } else {
                 console.error('Failed to log out');
             }
         } catch (error) {
             console.error('An error occurred during logout:', error);
         }
+        clearAuthState(); // This is not 100% safe at this point because the cookie is still set
     };
 
     const clearAuthState = () => {

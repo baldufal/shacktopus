@@ -22,7 +22,7 @@ export const KaleidoscopeSetProvider = ({ children }: { children: ReactNode }) =
       console.log("socket undefined")
       return "No connection or no access right";
     }
-    if(socket.readyState !== WebSocket.OPEN){
+    if (socket.readyState !== WebSocket.OPEN) {
       console.log("socket.readyState: " + socket.readyState)
       return "No connection or no access right";
     }
@@ -70,36 +70,64 @@ export const KaleidoscopeSetProvider = ({ children }: { children: ReactNode }) =
     socket.send(payload);
   }
 
+  const attemptReconnect = () => {
+    setTimeout(() => {
+      console.log(`Attempting to reconnect...`);
+      establishWebSocketConnection();
+    }, 1000);
+  };
+
+  const establishWebSocketConnection = () => {
+    // Check if the WebSocket is already connected or connecting
+    if (setSocketRef.current &&
+      (setSocketRef.current.readyState === WebSocket.OPEN
+        || setSocketRef.current.readyState === WebSocket.CONNECTING)) {
+      console.log('WebSocket for Kaleidoscope set is already open or connecting.');
+    } else {
+      const socket = new WebSocket(`wss://${window.location.host}/api/kaleidoscope/set`);
+      setSocketRef.current = socket;
+
+      socket.onopen = () => {
+        console.log('WebSocket for Kaleidoscope set opened');
+        setError(undefined);
+      };
+
+      socket.onclose = () => {
+        console.log('WebSocket for Kaleidoscope set closed');
+        setError("No permission to write data. Check login.");
+        attemptReconnect();
+      };
+
+      socket.onerror = () => {
+        console.error('WebSocket error observed:', error);
+        setError("WebSocket error occurred");
+        attemptReconnect();
+      };
+    }
+  }
+
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      console.log("Website became visible again")
+      establishWebSocketConnection();
+    }
+  };
+
   useEffect(() => {
-    const setSocket = new WebSocket(`wss://${window.location.host}/api/kaleidoscope/set`);
-    setSocketRef.current = setSocket;
+    establishWebSocketConnection();
 
-    setSocket.onopen = () => {
-      console.log('WebSocket for Kaleidoscope set opened');
-      setError(undefined);
-    };
-
-    setSocket.onmessage = (message: MessageEvent) => {
-      console.log("Received kaleidoscope set message: " + message.data);
-    };
-
-    setSocket.onerror = (error) => {
-      console.error('WebSocket error observed:', error);
-      setError("WebSocket error occurred");
-    };
-
-    setSocket.onclose = () => {
-      console.log('WebSocket for Kaleidoscope set closed');
-      setError("No permission to write data. Check login.");
-      setSocketRef.current = undefined;
-    };
+    // Listen for visibility change events
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      if (setSocketRef.current) {
+      console.log("Cleaning up kaleidoscope set context");
+      if (setSocketRef.current)
         setSocketRef.current.close();
-      }
+
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [auth.user]);
+
 
   return (
     <KaleidoscopeSetContext.Provider value={{ setProgram, setDiscrete, setContinuous, error }}>

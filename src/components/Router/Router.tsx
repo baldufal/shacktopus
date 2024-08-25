@@ -25,7 +25,9 @@ function Router() {
         <Route path="settings" element={
           <ProtectedRoute element={<SettingsPage />} />
         } />
-        <Route path="*" element={<NoMatch />} />
+        <Route path="*" element={
+          <ProtectedRoute element={<NoMatch />} />
+        } />
       </Route>
       <Route path="/login" element={<LoginPage />} />
     </Routes>
