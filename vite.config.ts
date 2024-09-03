@@ -8,10 +8,6 @@ export default defineConfig({
   plugins: [react()],
   assetsInclude: ['**/*.png'],
   server: {
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, './cert/localhost+2-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, './cert/localhost+2.pem'))
-    },
     host: true, // This makes the server listen on all addresses, including LAN and VPN
     port: 5173,
     proxy: {

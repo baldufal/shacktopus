@@ -12,6 +12,7 @@ function SettingsPage() {
     return (
         <VStack className="settings-stack" align={"start"} spacing={"2em"}>
             <Text>{"MODE: " + process.env.NODE_ENV}</Text>
+            <Text>{"Token : " + auth.token}</Text>
             <Text>{"Token expiration at: " + formattedExpiration}</Text>
         </VStack>
     );

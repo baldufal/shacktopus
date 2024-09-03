@@ -1,9 +1,10 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 interface AuthContextType {
+    token: string | null;
     user: string | null;
     privileged: boolean;
-    login: (user: string, privileged: boolean, tokenExpiration: number) => void;
+    login: (token: string, user: string, privileged: boolean, tokenExpiration: number) => void;
     logout: () => void;
     isAuthenticated: boolean;
     tokenExpiration: number | null;
@@ -13,34 +14,37 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<string | null>(null);
     const [privileged, setPrivileged] = useState<boolean>(false);
     const [tokenExpiration, setTokenExpiration] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    
+
     const handleVisibilityChange = () => {
         if (document.visibilityState === 'visible' && tokenExpiration) {
             const timeLeft = tokenExpiration * 1000 - Date.now();
-            if(timeLeft <= 0){
+            if (timeLeft <= 0) {
                 console.log("Logging out because token expired.");
                 logout();
             }
         }
-      };
+    };
 
     useEffect(() => {
+        const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
         const storedPrivileged = localStorage.getItem('privileged');
         const storedTokenExpiration = localStorage.getItem('tokenExpiration');
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
-        if (storedUser && storedTokenExpiration) {
+        if (storedToken && storedUser && storedTokenExpiration) {
+            setToken(storedToken);
             setUser(storedUser);
             setPrivileged(storedPrivileged === "true");
             setTokenExpiration(parseInt(storedTokenExpiration, 10));
         }
-        
+
         setIsLoading(false);
 
         return () => {
@@ -54,11 +58,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const currentTime = Date.now();
             const timeLeft = tokenExpiration * 1000 - currentTime;
             const bufferTime = 60000; // 1 Minute Pufferzeit (in Millisekunden)
-            
+
             if (timeLeft > bufferTime) {
                 const timer = setTimeout(() => {
                     handleTokenExpiration();
-                }, timeLeft- bufferTime);
+                }, timeLeft - bufferTime);
 
                 return () => clearTimeout(timer); // Bereinige den Timer bei Änderungen
             } else {
@@ -70,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const handleTokenExpiration = async () => {
         try {
-            const response = await fetch(`https://${window.location.host}/api/refresh-token`, {
+            const response = await fetch(`http://${window.location.host}/api/refresh-token`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -78,6 +82,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (response.ok) {
                 const data = await response.json();
                 // Aktualisiere das Token und die Ablaufzeit
+                setToken(data.token);
+                localStorage.setItem('token', data.token);
                 setTokenExpiration(data.tokenExpiration);
                 localStorage.setItem('tokenExpiration', data.tokenExpiration.toString());
             } else {
@@ -90,48 +96,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const login = (user: string, privileged: boolean, tokenExpiration: number) => {
+    const login = (token: string, user: string, privileged: boolean, tokenExpiration: number) => {
+        setToken(token);
         setUser(user);
         setPrivileged(privileged);
         setTokenExpiration(tokenExpiration);
 
+        localStorage.setItem('token', token);
         localStorage.setItem('user', user);
         localStorage.setItem('privileged', privileged.toString());
         localStorage.setItem('tokenExpiration', tokenExpiration.toString());
     };
 
     const logout = async () => {
-        try {
-            const response = await fetch(`https://${window.location.host}/api/logout`, {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            if (response.ok) {
-                console.error('Logged out successfully');
-            } else {
-                console.error('Failed to log out');
-            }
-        } catch (error) {
-            console.error('An error occurred during logout:', error);
-        }
-        clearAuthState(); // This is not 100% safe at this point because the cookie is still set
-    };
-
-    const clearAuthState = () => {
+        setToken(null);
         setUser(null);
         setPrivileged(false);
         setTokenExpiration(null);
 
+        localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('privileged');
         localStorage.removeItem('tokenExpiration');
     };
 
-    const isAuthenticated = !!user;
+    const isAuthenticated = !!user && !!token;
 
     return (
-        <AuthContext.Provider value={{ user, privileged, login, logout, isAuthenticated, tokenExpiration, isLoading }}>
+        <AuthContext.Provider value={{ token, user, privileged, login, logout, isAuthenticated, tokenExpiration, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

@@ -15,14 +15,15 @@ const LoginPage: React.FC = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post(`https://${window.location.host}/api/login`, {
+            const response = await axios.post(`http://${window.location.host}/api/login`, {
                 username,
                 password
             });
-            auth.login(response.data.username, response.data.privileged, response.data.tokenExpiration);
+            auth.login(response.data.token, response.data.username, response.data.privileged, response.data.tokenExpiration);
             const from = (location.state as { from?: Location })?.from?.pathname || "/";
             navigate(from, { replace: true });
         } catch (err) {
+            console.log(err);
             setError('Login failed. Please check your credentials and try again.');
         }
     };

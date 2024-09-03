@@ -1,17 +1,16 @@
 import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure, useToast, VStack, Wrap } from "@chakra-ui/react";
 import { Fixture } from "./kaleidoscopeTypes";
 import ParameterBox from "./ParameterBox";
-import { useKaleidoscopeSet } from "../../contexts/KaleidoscopeSetContext";
+import { FixtureName, useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
 import { useEffect, useState } from "react";
-import { FixtureName } from "../../contexts/KaleidoscopeUpdatesContext";
 
 
 
 
 function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
 
-    const { setProgram, error: kaleidoscopeSetError } = useKaleidoscopeSet();
+    const { setProgram, error: kaleidoscopeSetError } = useKaleidoscope();
 
     const programNames = Object.keys(props.data.programs).sort().filter((value) => value !== "EXTERNAL");
     const selectedProgram = props.data.programs[props.data.selected_program];

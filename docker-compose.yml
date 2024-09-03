@@ -3,7 +3,6 @@ services:
     build: ./
     ports:
       - "80:80"   # HTTP
-      - "443:443" # HTTPS
     networks:
       - shacktopus-network
     restart: unless-stopped

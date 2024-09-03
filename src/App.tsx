@@ -2,9 +2,8 @@ import { ChakraProvider } from '@chakra-ui/react'
 import Router from './components/Router/Router'
 import theme from './theme'
 import { AuthProvider } from './components/Router/AuthContext'
-import { KaleidoscopeSetProvider } from './contexts/KaleidoscopeSetContext'
+import { KaleidoscopeProvider } from './contexts/KaleidoscopeContext'
 import { ThemeProvider } from './contexts/ThemeContext'
-import { KaleidoscopeUpdatesProvider } from './contexts/KaleidoscopeUpdatesContext'
 
 function App() {
 
@@ -12,11 +11,9 @@ function App() {
     <ChakraProvider theme={theme}>
       <ThemeProvider>
         <AuthProvider>
-          <KaleidoscopeUpdatesProvider>
-            <KaleidoscopeSetProvider>
+            <KaleidoscopeProvider>
               <Router />
-            </KaleidoscopeSetProvider>
-          </KaleidoscopeUpdatesProvider>
+            </KaleidoscopeProvider>
         </AuthProvider>
       </ThemeProvider>
     </ChakraProvider>

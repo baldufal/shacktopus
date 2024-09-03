@@ -1,7 +1,7 @@
 import { Box, HStack, Radio, RadioGroup, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, useToast } from "@chakra-ui/react";
 import { ContinuousParameter, DiscreteParameter, Parameter } from "./kaleidoscopeTypes";
 import { useThemeColors } from "../../contexts/ThemeContext";
-import { useKaleidoscopeSet } from "../../contexts/KaleidoscopeSetContext";
+import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import { useCallback, useEffect, useState } from "react";
 
 function DiscreteParameterBox(props: { fixture: string, program: string, parameterName: string, data: DiscreteParameter }) {
@@ -9,7 +9,7 @@ function DiscreteParameterBox(props: { fixture: string, program: string, paramet
     const toast = useToast()
     const { indicator } = useThemeColors();
     const valueNames = Object.keys(props.data.levels).sort()
-    const { setDiscrete, error: kaleidoscopeSetError } = useKaleidoscopeSet();
+    const { setDiscrete, error: kaleidoscopeSetError } = useKaleidoscope();
     const [loading, setLoading] = useState<boolean>(true);
     useEffect(() => {
         setLoading(false);
@@ -61,7 +61,7 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
     const REFRESH_INTERVAL = 300;
     const DEBOUNCE_DELAY = 200;
     const { primary, bwForeground, indicator } = useThemeColors();
-    const { setContinuous, error: kaleidoscopeSetError } = useKaleidoscopeSet();
+    const { setContinuous, error: kaleidoscopeSetError } = useKaleidoscope();
 
     const [uiValue, setUiValue] = useState<number>(props.data.current);
 
