@@ -4,6 +4,7 @@ import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
 import { useThemeColors } from "../../../contexts/ThemeContext";
 import { useAuth } from "../../Router/AuthContext";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -60,10 +61,10 @@ function ThermocontrolDetails() {
     // Used for debouncing
     const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
     const [timeoutId2, setTimeoutId2] = useState<number | undefined>(undefined);
-    const [writePermission, setWritePermisson] = useState<boolean>(false);
+    const writePermission = auth.privileged;
 
-    const updateSocketRef = useRef<WebSocket | undefined>(undefined);
-    const setSocketRef = useRef<WebSocket | undefined>(undefined);
+    const { sendMessage, lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`);
+
 
     useEffect(() => {
         isTypingRef.current = isTyping;
@@ -95,90 +96,21 @@ function ThermocontrolDetails() {
         [isTyping]
     );
 
-    const establishWebSocketConnection = () => {
-        // Check if the update WebSocket is already connected or connecting
-        if (updateSocketRef.current && (updateSocketRef.current.readyState === WebSocket.OPEN || updateSocketRef.current.readyState === WebSocket.CONNECTING)) {
-            console.log('WebSocket for TC updates is already open or connecting.');
-        } else {
-            // Establish the update WebSocket connection
-            const updateSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/updates`);
-            updateSocketRef.current = updateSocket;
-
-            updateSocket.onopen = () => {
-                console.log('WebSocket for TC updates opened');
-                setError(undefined);
-            };
-
-            updateSocket.onmessage = handleMessage;
-
-            updateSocket.onclose = () => {
-                console.log('WebSocket for TC updates closed');
-                setError("WebSocket for TC updates closed");
-                attemptReconnect();  // Try to reconnect on close
-            };
-
-            updateSocket.onerror = () => {
-                console.log('WebSocket for TC updates error');
-                setError("WebSocket for TC updates encountered an error");
-                attemptReconnect();  // Try to reconnect on error
-            };
+    useEffect(() => {
+        if (lastMessage !== null) {
+            handleMessage(lastMessage);
         }
-
-        // Check if the set WebSocket is already connected or connecting
-        if (setSocketRef.current && (setSocketRef.current.readyState === WebSocket.OPEN || setSocketRef.current.readyState === WebSocket.CONNECTING)) {
-            console.log('WebSocket for TC set is already open or connecting.');
-        } else {
-            // Establish the set WebSocket connection
-            const setSocket = new WebSocket(`wss://${window.location.host}/api/thermocontrol/set`);
-            setSocketRef.current = setSocket;
-
-            setSocket.onopen = () => {
-                console.log('WebSocket for TC set opened');
-                setWritePermisson(true);
-            };
-
-            setSocket.onclose = () => {
-                console.log('WebSocket for TC set closed');
-                setWritePermisson(false);
-                attemptReconnect();  // Try to reconnect on close
-            };
-
-            setSocket.onerror = () => {
-                console.log('WebSocket for TC set error');
-                setWritePermisson(false);
-                attemptReconnect();  // Try to reconnect on error
-            };
-        }
-    };
-
-    const attemptReconnect = () => {
-            setTimeout(() => {
-                console.log(`Attempting to reconnect...`);
-                establishWebSocketConnection();
-            }, 3000);
-    };
-
-    const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-            // Try to reconnect when the page becomes visible
-            establishWebSocketConnection();
-        }
-    };
+    }, [lastMessage]);
 
     useEffect(() => {
-        establishWebSocketConnection();
+        if (readyState === ReadyState.OPEN || readyState === ReadyState.CONNECTING) {
+            setError(undefined);
+        }else{
+            setError("WebSocket for TC updates state != OPEN or CONNECTING");
+        }
+      }, [readyState]);
 
-        // Listen for visibility change events
-        document.addEventListener('visibilitychange', handleVisibilityChange);
 
-        return () => {
-            // Cleanup on component unmount
-            if (updateSocketRef.current) updateSocketRef.current.close();
-            if (setSocketRef.current) setSocketRef.current.close();
-
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-        };
-    }, [auth.user]);
 
     // Debounced function to handle UI data changes
     const debouncedSendData = useCallback(
@@ -194,8 +126,8 @@ function ThermocontrolDetails() {
 
 
             const newTimeoutId = window.setTimeout(() => {
-                if (setSocketRef.current && setSocketRef.current.OPEN)
-                    setSocketRef.current!.send(JSON.stringify(data));
+                if (readyState === ReadyState.OPEN)
+                    sendMessage(JSON.stringify({token: auth.token, data: data}));
             }, DEBOUNCE_DELAY);
             setTimeoutId(newTimeoutId);
 

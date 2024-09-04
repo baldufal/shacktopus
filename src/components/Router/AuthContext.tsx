@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const handleTokenExpiration = async () => {
         try {
-            const response = await fetch(`http://${window.location.host}/api/refresh-token`, {
+            const response = await fetch(`http://${window.location.host}/api/refresh-token?token=${token}`, {
                 method: 'POST',
                 credentials: 'include',
             });
