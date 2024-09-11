@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
                 username,
                 password
             });
-            auth.login(response.data.token, response.data.username, response.data.privileged, response.data.tokenExpiration);
+            auth.login(response.data.token, response.data.username, response.data.permissions, response.data.tokenExpiration);
             const from = (location.state as { from?: Location })?.from?.pathname || "/";
             navigate(from, { replace: true });
         } catch (err) {

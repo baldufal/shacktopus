@@ -1,10 +1,15 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
+export enum Permission {
+    LIGHT='LIGHT',
+    HEATING='HEATING',
+  }
+
 interface AuthContextType {
     token: string | null;
     user: string | null;
-    privileged: boolean;
-    login: (token: string, user: string, privileged: boolean, tokenExpiration: number) => void;
+    permissions: Permission[];
+    login: (token: string, user: string, permissions: Permission[], tokenExpiration: number) => void;
     logout: () => void;
     isAuthenticated: boolean;
     tokenExpiration: number | null;
@@ -16,7 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<string | null>(null);
-    const [privileged, setPrivileged] = useState<boolean>(false);
+    const [permissions, setPermissions] = useState<Permission[]>([]);
     const [tokenExpiration, setTokenExpiration] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -33,7 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
-        const storedPrivileged = localStorage.getItem('privileged');
+        const storedPermissions = localStorage.getItem('permissions');
         const storedTokenExpiration = localStorage.getItem('tokenExpiration');
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -41,7 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (storedToken && storedUser && storedTokenExpiration) {
             setToken(storedToken);
             setUser(storedUser);
-            setPrivileged(storedPrivileged === "true");
+            setPermissions(storedPermissions? JSON.parse(storedPermissions) as Permission[] : []);
             setTokenExpiration(parseInt(storedTokenExpiration, 10));
         }
 
@@ -84,6 +89,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 // Aktualisiere das Token und die Ablaufzeit
                 setToken(data.token);
                 localStorage.setItem('token', data.token);
+                setPermissions(data.permissions as Permission[]);
+                localStorage.setItem('permissions', JSON.stringify(data.permissions));
                 setTokenExpiration(data.tokenExpiration);
                 localStorage.setItem('tokenExpiration', data.tokenExpiration.toString());
             } else {
@@ -96,34 +103,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const login = (token: string, user: string, privileged: boolean, tokenExpiration: number) => {
+    const login = (token: string, user: string, permissions: Permission[], tokenExpiration: number) => {
         setToken(token);
         setUser(user);
-        setPrivileged(privileged);
+        setPermissions(permissions);
         setTokenExpiration(tokenExpiration);
 
         localStorage.setItem('token', token);
         localStorage.setItem('user', user);
-        localStorage.setItem('privileged', privileged.toString());
+        localStorage.setItem('permissions', JSON.stringify(permissions));
         localStorage.setItem('tokenExpiration', tokenExpiration.toString());
     };
 
     const logout = async () => {
         setToken(null);
         setUser(null);
-        setPrivileged(false);
+        setPermissions([]);
         setTokenExpiration(null);
 
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        localStorage.removeItem('privileged');
+        localStorage.removeItem('permissions');
         localStorage.removeItem('tokenExpiration');
     };
 
-    const isAuthenticated = !!user && !!token;
+    const timeUntilExpiration = tokenExpiration ? tokenExpiration * 1000 - Date.now() : -1;
+    const isAuthenticated = !!user && !!token && timeUntilExpiration > 0;
 
     return (
-        <AuthContext.Provider value={{ token, user, privileged, login, logout, isAuthenticated, tokenExpiration, isLoading }}>
+        <AuthContext.Provider value={{ token, user, permissions, login, logout, isAuthenticated, tokenExpiration, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

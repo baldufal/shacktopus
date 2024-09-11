@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
 import { useThemeColors } from "../../../contexts/ThemeContext";
-import { useAuth } from "../../Router/AuthContext";
+import { Permission, useAuth } from "../../Router/AuthContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
 export interface ThermocontrolSettableDataType {
@@ -61,7 +61,10 @@ function ThermocontrolDetails() {
     // Used for debouncing
     const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
     const [timeoutId2, setTimeoutId2] = useState<number | undefined>(undefined);
-    const writePermission = auth.privileged;
+
+    const writePermission = auth.permissions.find((val) => val === Permission.HEATING) != undefined
+
+
 
     const { sendMessage, lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`);
 
@@ -105,10 +108,10 @@ function ThermocontrolDetails() {
     useEffect(() => {
         if (readyState === ReadyState.OPEN || readyState === ReadyState.CONNECTING) {
             setError(undefined);
-        }else{
+        } else {
             setError("WebSocket for TC updates state != OPEN or CONNECTING");
         }
-      }, [readyState]);
+    }, [readyState]);
 
 
 
@@ -127,7 +130,7 @@ function ThermocontrolDetails() {
 
             const newTimeoutId = window.setTimeout(() => {
                 if (readyState === ReadyState.OPEN)
-                    sendMessage(JSON.stringify({token: auth.token, data: data}));
+                    sendMessage(JSON.stringify({ token: auth.token, data: data }));
             }, DEBOUNCE_DELAY);
             setTimeoutId(newTimeoutId);
 
@@ -137,7 +140,7 @@ function ThermocontrolDetails() {
             }, DEBOUNCE_DELAY + REFRESH_INTERVAL)
             setTimeoutId2(newTimeoutId2)
         },
-        [timeoutId]
+        [timeoutId, timeoutId2, auth.token]
     );
 
     return (
