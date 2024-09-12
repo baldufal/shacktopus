@@ -3,6 +3,7 @@ import { ContinuousParameter, DiscreteParameter, Parameter } from "./kaleidoscop
 import { useThemeColors } from "../../contexts/ThemeContext";
 import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import { useCallback, useEffect, useState } from "react";
+import "./../fixturebox.scss";
 
 function DiscreteParameterBox(props: { fixture: string, program: string, parameterName: string, data: DiscreteParameter }) {
 
@@ -18,7 +19,7 @@ function DiscreteParameterBox(props: { fixture: string, program: string, paramet
     return (
         <Box
             width={"fit-content"}
-            border={"2px"}
+            className="fixturebox_subbox"
             p={2}
             paddingTop={"2px"}
             paddingBottom={"2px"}

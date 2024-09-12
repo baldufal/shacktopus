@@ -5,6 +5,7 @@ import HumidityInput from "./components/HumidityInput";
 import { useThemeColors } from "../../../contexts/ThemeContext";
 import { Permission, useAuth } from "../../Router/AuthContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import "./../../fixturebox.scss"
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -109,7 +110,7 @@ function ThermocontrolDetails() {
         if (readyState === ReadyState.OPEN || readyState === ReadyState.CONNECTING) {
             setError(undefined);
         } else {
-            setError("WebSocket for TC updates state != OPEN or CONNECTING");
+            setError("WebSocket for TC: state != OPEN or CONNECTING");
         }
     }, [readyState]);
 
@@ -145,8 +146,8 @@ function ThermocontrolDetails() {
 
     return (
         <Box
+            className="fixturebox"
             width={"fit-content"}
-            border={"2px"}
             borderColor={
                 error ? indicator.error :
                     writePermission ?
@@ -154,7 +155,8 @@ function ThermocontrolDetails() {
                         : indicator.read_only} p={2}>
             {error ? <Text color={indicator.error}>{error}</Text> :
                 <VStack align={"start"}>
-                    <Text className="shacktopus-heading">ThermoControl</Text>
+                    <Text className="fixturebox_heading">ThermoControl</Text>
+                    <Divider></Divider>
                     <Text>Target temperature</Text>
                     <TemperatureInput
                         isDisabled={!writePermission}

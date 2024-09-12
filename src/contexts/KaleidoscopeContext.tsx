@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '../components/Router/AuthContext';
 import { FixturesData } from '../components/KaleidoscopePage/kaleidoscopeTypes';
 import { ALIASES } from '../components/KaleidoscopePage/aliases';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 
 export interface FixtureName {
@@ -27,18 +28,21 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
   const [fixtureNames, setFixtureNames] = useState<FixtureName[] | null>(null);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  const socketRef = useRef<WebSocket | undefined>(undefined);
   const auth = useAuth();
+  const { sendMessage, lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/kaleidoscope`);
+
+  useEffect(() => {
+    if (readyState === ReadyState.OPEN || readyState === ReadyState.CONNECTING) {
+        setError(undefined);
+    } else {
+        setError("WebSocket for Kaleidoscope: state != OPEN or CONNECTING");
+    }
+}, [readyState]);
 
   function setProgram(fixture: string, program: string) {
     console.log(`Setting program of fixture ${fixture} to ${program}`);
-    const socket = socketRef.current;
-    if (!socket) {
-      console.log("socket undefined")
-      return "No connection or no access right";
-    }
-    if (socket.readyState !== WebSocket.OPEN) {
-      console.log("socket.readyState: " + socket.readyState)
+    if (readyState !== WebSocket.OPEN) {
+      console.log("socket.readyState: " + readyState)
       return "No connection or no access right";
     }
     const payload = JSON.stringify({
@@ -47,13 +51,12 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
       fixture: fixture,
       data: { programName: program }
     });
-    socket.send(payload);
+    sendMessage(payload)
   }
 
   function setDiscrete(fixture: string, program: string, parameterName: string, value: string) {
     console.log(`Setting ${parameterName} to ${value}`);
-    const socket = socketRef.current;
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
+    if (readyState !== WebSocket.OPEN) {
       return "No connection or no access right";
     }
     const payload = JSON.stringify({
@@ -66,13 +69,12 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
         value: value
       }
     });
-    socket.send(payload);
+    sendMessage(payload)
   }
 
   function setContinuous(fixture: string, program: string, parameterName: string, value: number) {
     console.log(`Setting ${parameterName} to ${value}`);
-    const socket = socketRef.current;
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
+    if (readyState !== WebSocket.OPEN) {
       return "No connection or no access right";
     }
     const payload = JSON.stringify({
@@ -85,86 +87,33 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
         value: value
       }
     });
-    socket.send(payload);
+    sendMessage(payload)
   }
-
-  const attemptReconnect = () => {
-    setTimeout(() => {
-      establishWebSocketConnection();
-    }, 1000);
-  };
-
-  const establishWebSocketConnection = () => {
-    // Check if the WebSocket is already connected or connecting
-    if (socketRef.current &&
-      (socketRef.current.readyState === WebSocket.OPEN
-        || socketRef.current.readyState === WebSocket.CONNECTING)) {
-      console.log('WebSocket for Kaleidoscope is already open or connecting.');
-    } else {
-      const socket = new WebSocket(`ws://${window.location.host}/api/kaleidoscope`);
-      socketRef.current = socket;
-
-      socket.onopen = () => {
-        console.log('WebSocket for Kaleidoscope opened');
-        setError(undefined);
-      };
-
-      socket.onmessage = (message: MessageEvent) => {
-        const parsedMessage = JSON.parse(message.data);
-        if (parsedMessage.messageType === "update")
-          if (parsedMessage.health === "good") {
-            setError(undefined);
-            setFixturesData(parsedMessage.data as FixturesData);
-            if (!fixtureNames) {
-              const extractedNames = Object.keys(parsedMessage.data.fixtures).sort();
-              setFixtureNames(
-                extractedNames.map(name => {
-                  return {
-                    original: name,
-                    display: ALIASES[name] || name
-                  };
-                })
-              );
-            }
-          } else {
-            console.log("Received kaleidoscope update with health != good");
-          }
-      };
-
-      socket.onclose = () => {
-        console.log('WebSocket for Kaleidoscope closed');
-        setError("WebSocket closed.");
-        attemptReconnect();
-      };
-
-      socket.onerror = () => {
-        console.error('Kaleidoscope WebSocket error observed:', error);
-        setError("WebSocket error occurred.");
-        attemptReconnect();
-      };
-    }
-  }
-
-  const handleVisibilityChange = () => {
-    if (document.visibilityState === 'visible') {
-      console.log("Website became visible again")
-      establishWebSocketConnection();
-    }
-  };
 
   useEffect(() => {
-    establishWebSocketConnection();
+    if (lastMessage !== null) {
+      const parsedMessage = JSON.parse(lastMessage.data);
+      if (parsedMessage.messageType === "update")
+        if (parsedMessage.health === "good") {
+          setError(undefined);
+          setFixturesData(parsedMessage.data as FixturesData);
+          if (!fixtureNames) {
+            const extractedNames = Object.keys(parsedMessage.data.fixtures).sort();
+            setFixtureNames(
+              extractedNames.map(name => {
+                return {
+                  original: name,
+                  display: ALIASES[name] || name
+                };
+              })
+            );
+          }
+        } else {
+          console.log("Received kaleidoscope update with health != good");
+        }
+    }
+}, [lastMessage]);
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      console.log("Cleaning up kaleidoscope context");
-      if (socketRef.current)
-        socketRef.current.close();
-
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [auth.user]);
 
   return (
     <KaleidoscopeContext.Provider value={{ fixtureNames, fixturesData, setProgram, setDiscrete, setContinuous, error }}>
@@ -172,7 +121,6 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
     </KaleidoscopeContext.Provider>
   );
 };
-
 
 export const useKaleidoscope = () => {
   const context = useContext(KaleidoscopeContext);

@@ -2,7 +2,7 @@ services:
   frontend:
     build: ./
     ports:
-      - "80:80"   # HTTP
+      - "80:80"
     networks:
       - shacktopus-network
     restart: unless-stopped

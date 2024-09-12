@@ -4,8 +4,7 @@ import ParameterBox from "./ParameterBox";
 import { FixtureName, useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
 import { useEffect, useState } from "react";
-
-
+import "./../fixturebox.scss"
 
 
 function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
@@ -45,14 +44,15 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
         <>
             <Box
                 width={"fit-content"}
-                border={"2px"} p={2}
+                className="fixturebox"
+                p={2}
                 borderColor=
                 {kaleidoscopeSetError ? indicator.read_only :
                     loading ?
                         indicator.dirty : indicator.ok}>
                 <VStack align={"start"}>
                     <Flex>
-                        <Text>{props.fixtureName.display}</Text>
+                        <Text className="fixturebox_heading">{props.fixtureName.display}</Text>
                         <Button
                             marginStart={"10px"}
                             size={"20px"}

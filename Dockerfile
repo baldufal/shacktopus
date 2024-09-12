@@ -25,7 +25,6 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy custom Nginx configuration files
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/conf.d /etc/nginx/conf.d
-COPY nginx/certs /etc/nginx/certs
 
 # Expose port 80
 EXPOSE 80
