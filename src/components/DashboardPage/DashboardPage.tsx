@@ -1,12 +1,21 @@
-import { Box, Wrap, Text, Button, Flex, Spacer, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, VStack, useDisclosure, Divider, HStack, IconButton } from "@chakra-ui/react";
+import { Box, Wrap, Text, Button, Flex, Spacer } from "@chakra-ui/react";
 import FixtureBox from "../KaleidoscopePage/FixtureBox";
 import ThermocontrolDetails from "../HeatingPage/Thermocontrol/ThermocontrolDetails";
 import { FixtureName, useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import "./../fixturebox.scss"
+import ItemSelector from "./ItemSelector";
 import { useState } from "react";
-import { MdAdd, MdMoveUp, MdRemove } from "react-icons/md";
-import { TiDelete } from "react-icons/ti";
+import { DragDropContext } from "react-beautiful-dnd";
 
+
+  // Helper function to reorder list
+  const reorder = (list: any[], startIndex: number, endIndex: number) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
+  
 
 function DashboardPage() {
     const { fixturesData, fixtureNames, error } = useKaleidoscope();
@@ -18,18 +27,38 @@ function DashboardPage() {
 
     const [selectedTiles, setSelectedTiles] = useState<FixtureName[]>([]);
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [modifyMode, setModifyMode] = useState<boolean>(false);
 
+    const onDragEnd = (result: any) => {
+        if (!result.destination) {
+          return;
+        }
+    
+        const reorderedTiles = reorder(
+          selectedTiles,
+          result.source.index,
+          result.destination.index
+        );
+    
+        setSelectedTiles(reorderedTiles);
+      };
 
     return (<>
+        <DragDropContext onDragEnd={onDragEnd}>
+        <Box as="main" flex="1" p={4} width="100%">
 
         <Flex paddingEnd={4}>
             <Spacer></Spacer>
-            <Button onClick={onOpen}>Edit Dashboard</Button>
+            <Button onClick={() => setModifyMode((oldMode) => !oldMode)}>Edit Dashboard</Button>
 
         </Flex>
-        <Box as="main" flex="1" p={4} width="100%">
-            <Wrap>
+        {modifyMode? 
+        <ItemSelector
+        allTiles={allTiles}
+        selectedTiles={selectedTiles}
+        setSelectedTiles={setSelectedTiles} />
+        : 
+        <Wrap>
 
                 {error ? <Text color={"red"}>{"Error reading Kaleidoscope data: " + error}</Text> :
                     fixtureNames && fixturesData ?
@@ -41,82 +70,13 @@ function DashboardPage() {
                         : <Text>Loading...</Text>}
                 <ThermocontrolDetails></ThermocontrolDetails>
             </Wrap>
+        }
+            
 
 
         </Box>
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>{"Edit Dashboard"}</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                    <VStack align={"start"}>
-                        <Text>Select tiles and configure their order.</Text>
-                        <Divider></Divider>
-                        <Text>Selected</Text>
+        </DragDropContext>
 
-                        <VStack align={"start"}>
-                            {selectedTiles.map((tile, index) => (
-                                <HStack key={tile.original}>
-                                    
-
-                                    {/* Move Up Button */}
-                                    <IconButton
-                                    isRound={true}
-                                    aria-label="move up"
-                                    icon={<MdMoveUp></MdMoveUp>}
-                                        onClick={() => {
-                                            if (index > 0) {
-                                                setSelectedTiles((selected) => {
-                                                    const newSelected = [...selected];
-                                                    [newSelected[index], newSelected[index - 1]] = [newSelected[index - 1], newSelected[index]]; // Swap with previous element
-                                                    return newSelected;
-                                                });
-                                            }
-                                        }}
-                                        isDisabled={index === 0} // Disable if the tile is the first item
-                                    >
-                                        ^
-                                    </IconButton>
-
-                                    <Text>{tile.display}</Text>
-                                    <IconButton 
-                                    isRound={true}
-                                    padding={"0"}
-                                    aria-label="remove"
-                                    icon={<MdRemove/>}
-                                    onClick={() =>
-                                        setSelectedTiles((selected) =>
-                                            selected.filter(value => value.original !== tile.original))}>
-                                        
-                                    </IconButton>
-                                </HStack>
-                            ))}
-
-                        </VStack>
-                        <Text>Available</Text>
-
-                        <VStack align={"start"}>
-                            {allTiles.filter(tile =>
-                                selectedTiles.findIndex(selected =>
-                                    selected.original === tile.original) === -1).map((unselected =>
-                                        <HStack>
-                                            <IconButton 
-                                            aria-label={"add"}
-                                            icon={<MdAdd></MdAdd>}
-                                            isRound={true}
-                                            onClick={() =>
-                                                setSelectedTiles((selected) =>
-                                                    [...selected, unselected])}>
-                                                +</IconButton>
-                                            <Text>{unselected.display}</Text>
-                                        </HStack>
-                                    ))}
-                        </VStack>
-                    </VStack>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
     </>
     );
 }
