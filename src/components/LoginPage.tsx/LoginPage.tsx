@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './../Router/AuthContext';
-import axios from 'axios';
 import { Box, Button, Image, Input, Text, VStack } from '@chakra-ui/react';
 import shacktopus from './../../assets/shacktopus.png';
 
@@ -14,28 +13,22 @@ const LoginPage: React.FC = () => {
     const location = useLocation();
 
     const handleSubmit = async () => {
-        try {
-            const response = await axios.post(`http://${window.location.host}/api/login`, {
-                username,
-                password
-            });
-            auth.login(response.data.token, response.data.username, response.data.permissions, response.data.tokenExpiration);
+        const loginResult = await auth.login(username, password);
+        if (loginResult.error) {
+            console.log(loginResult.error);
+            setError('Login failed. Please check your credentials and try again.');
+        } else {
             const from = (location.state as { from?: Location })?.from?.pathname || "/";
             navigate(from, { replace: true });
-        } catch (err) {
-            console.log(err);
-            setError('Login failed. Please check your credentials and try again.');
         }
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter')
             handleSubmit();
-        }
     };
 
     return (
-
         <VStack >
             <Image
                 src={shacktopus}

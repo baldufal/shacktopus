@@ -63,9 +63,7 @@ function ThermocontrolDetails() {
     const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
     const [timeoutId2, setTimeoutId2] = useState<number | undefined>(undefined);
 
-    const writePermission = auth.permissions.find((val) => val === Permission.HEATING) != undefined
-
-
+    const writePermission = auth.userData && auth.userData.permissions.find((val) => val === Permission.HEATING) != undefined
 
     const { sendMessage, lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`);
 
@@ -114,8 +112,6 @@ function ThermocontrolDetails() {
         }
     }, [readyState]);
 
-
-
     // Debounced function to handle UI data changes
     const debouncedSendData = useCallback(
         (data: ThermocontrolSettableDataType) => {
@@ -131,7 +127,7 @@ function ThermocontrolDetails() {
 
             const newTimeoutId = window.setTimeout(() => {
                 if (readyState === ReadyState.OPEN)
-                    sendMessage(JSON.stringify({ token: auth.token, data: data }));
+                    sendMessage(JSON.stringify({ token: auth.userData!.token, data: data }));
             }, DEBOUNCE_DELAY);
             setTimeoutId(newTimeoutId);
 
@@ -141,7 +137,7 @@ function ThermocontrolDetails() {
             }, DEBOUNCE_DELAY + REFRESH_INTERVAL)
             setTimeoutId2(newTimeoutId2)
         },
-        [timeoutId, timeoutId2, auth.token]
+        [timeoutId, timeoutId2, auth.userData!.token]
     );
 
     return (

@@ -105,13 +105,11 @@ function Menubar() {
                                 Dark Mode
                             </Switch>
 
-
-
                         </VStack>
                     </DrawerBody>
                     <DrawerFooter>
                         <VStack>
-                            <Text>{auth.user}</Text>
+                            <Text>{auth.userData?.username}</Text>
                             <Button onClick={auth.logout}>Logout</Button>
                         </VStack>
                     </DrawerFooter>

@@ -1,33 +1,41 @@
+import axios from 'axios';
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 export enum Permission {
-    LIGHT='LIGHT',
-    HEATING='HEATING',
-  }
+    LIGHT = 'LIGHT',
+    HEATING = 'HEATING',
+}
+
+type UserConfig = {
+    dashboard: string[];
+}
+
+export type UserResponse = {
+    token: string;
+    username: string;
+    tokenExpiration: number;
+    permissions: Permission[];
+    userConfig: UserConfig;
+}
 
 interface AuthContextType {
-    token: string | null;
-    user: string | null;
-    permissions: Permission[];
-    login: (token: string, user: string, permissions: Permission[], tokenExpiration: number) => void;
+    userData: UserResponse | undefined;
+    login: (username: string, password: string) => Promise<{ error: string | undefined }>;
     logout: () => void;
     isAuthenticated: boolean;
-    tokenExpiration: number | null;
     isLoading: boolean;
+    updateUserConfig: (config: UserConfig) => Promise<string | undefined>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<string | null>(null);
-    const [permissions, setPermissions] = useState<Permission[]>([]);
-    const [tokenExpiration, setTokenExpiration] = useState<number | null>(null);
+    const [userData, setUserData] = useState<UserResponse | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(true);
 
     const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible' && tokenExpiration) {
-            const timeLeft = tokenExpiration * 1000 - Date.now();
+        if (document.visibilityState === 'visible' && userData) {
+            const timeLeft = userData.tokenExpiration * 1000 - Date.now();
             if (timeLeft <= 0) {
                 console.log("Logging out because token expired.");
                 logout();
@@ -40,15 +48,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const storedUser = localStorage.getItem('user');
         const storedPermissions = localStorage.getItem('permissions');
         const storedTokenExpiration = localStorage.getItem('tokenExpiration');
+        const storedUserConfig = localStorage.getItem('userConfig');
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
-        if (storedToken && storedUser && storedTokenExpiration) {
-            setToken(storedToken);
-            setUser(storedUser);
-            setPermissions(storedPermissions? JSON.parse(storedPermissions) as Permission[] : []);
-            setTokenExpiration(parseInt(storedTokenExpiration, 10));
-        }
+        if (storedToken && storedUser && storedTokenExpiration && storedPermissions && storedUserConfig)
+            setUserData({
+                token: storedToken,
+                permissions: JSON.parse(storedPermissions) as Permission[],
+                username: storedUser,
+                userConfig: JSON.parse(storedUserConfig) as UserConfig,
+                tokenExpiration: parseInt(storedTokenExpiration, 10)
+            })
 
         setIsLoading(false);
 
@@ -59,42 +70,43 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     useEffect(() => {
         // Wenn ein Token-Ablaufzeit gesetzt ist, stelle sicher, dass ein Timer gesetzt wird
-        if (tokenExpiration) {
+        if (userData) {
             const currentTime = Date.now();
-            const timeLeft = tokenExpiration * 1000 - currentTime;
+            const timeLeft = userData.tokenExpiration * 1000 - currentTime;
             const bufferTime = 60000; // 1 Minute Pufferzeit (in Millisekunden)
 
             if (timeLeft > bufferTime) {
                 const timer = setTimeout(() => {
-                    handleTokenExpiration();
+                    refreshToken();
                 }, timeLeft - bufferTime);
 
                 return () => clearTimeout(timer); // Bereinige den Timer bei Änderungen
             } else {
                 // Falls das Token bereits abgelaufen ist, sofort ausloggen
-                handleTokenExpiration();
+                refreshToken();
             }
         }
-    }, [tokenExpiration]);
+    }, [userData?.tokenExpiration]);
 
-    const handleTokenExpiration = async () => {
+    const setLocalStorage = (newData: UserResponse) => {
+        localStorage.setItem('token', newData.token);
+        localStorage.setItem('user', newData.username);
+        localStorage.setItem('permissions', JSON.stringify(newData.permissions));
+        localStorage.setItem('tokenExpiration', newData.tokenExpiration.toString());
+        localStorage.setItem('userConfig', JSON.stringify(newData.userConfig));
+    }
+
+    const refreshToken = async () => {
         try {
-            const response = await fetch(`http://${window.location.host}/api/refresh-token?token=${token}`, {
+            const response = await fetch(`http://${window.location.host}/api/refresh-token?token=${userData!.token}`, {
                 method: 'POST',
-                credentials: 'include',
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                // Aktualisiere das Token und die Ablaufzeit
-                setToken(data.token);
-                localStorage.setItem('token', data.token);
-                setPermissions(data.permissions as Permission[]);
-                localStorage.setItem('permissions', JSON.stringify(data.permissions));
-                setTokenExpiration(data.tokenExpiration);
-                localStorage.setItem('tokenExpiration', data.tokenExpiration.toString());
+            if (userData && response.ok) {
+                const data = await response.json() as UserResponse;
+                setUserData(data);
+                setLocalStorage(data);
             } else {
-                // Falls die Erneuerung fehlschlägt, ausloggen
                 logout();
             }
         } catch (error) {
@@ -103,35 +115,61 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const login = (token: string, user: string, permissions: Permission[], tokenExpiration: number) => {
-        setToken(token);
-        setUser(user);
-        setPermissions(permissions);
-        setTokenExpiration(tokenExpiration);
+    const login = async (username: string, password: string): Promise<{ error: string | undefined }> => {
+        try {
+            const response = await axios.post(`http://${window.location.host}/api/login`, {
+                username,
+                password
+            });
 
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', user);
-        localStorage.setItem('permissions', JSON.stringify(permissions));
-        localStorage.setItem('tokenExpiration', tokenExpiration.toString());
+            const responseData = response.data as UserResponse;
+
+            setUserData({
+                token: responseData.token,
+                username: responseData.username,
+                permissions: responseData.permissions,
+                tokenExpiration: responseData.tokenExpiration,
+                userConfig: responseData.userConfig
+            })
+
+            setLocalStorage(responseData);
+
+            return { error: undefined }; // Success
+        } catch (error) {
+            console.error('Error during login:', error);
+            return { error: 'Error during login: ' + error }; // Error handling
+        }
     };
 
+
     const logout = async () => {
-        setToken(null);
-        setUser(null);
-        setPermissions([]);
-        setTokenExpiration(null);
+        setUserData(undefined);
 
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('permissions');
         localStorage.removeItem('tokenExpiration');
+        localStorage.removeItem('userConfig');
     };
 
-    const timeUntilExpiration = tokenExpiration ? tokenExpiration * 1000 - Date.now() : -1;
-    const isAuthenticated = !!user && !!token && timeUntilExpiration > 0;
+    const updateUserConfig = async (config: UserConfig): Promise<string | undefined> => {
+        try {
+            await axios.post(`http://${window.location.host}/api/userconfig?token=${userData!.token}`, config);
+            await refreshToken();
+            return undefined;
+        } catch (error) {
+            await refreshToken();
+            console.error('Error updating user config:', error);
+            return 'Error updating user config: ' + error
+        };
+    }
+
+
+    const timeUntilExpiration = userData ? userData.tokenExpiration * 1000 - Date.now() : -1;
+    const isAuthenticated = !!userData && timeUntilExpiration > 0;
 
     return (
-        <AuthContext.Provider value={{ token, user, permissions, login, logout, isAuthenticated, tokenExpiration, isLoading }}>
+        <AuthContext.Provider value={{ userData, login, logout, isAuthenticated, isLoading, updateUserConfig}}>
             {children}
         </AuthContext.Provider>
     );

@@ -46,7 +46,7 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
       return "No connection or no access right";
     }
     const payload = JSON.stringify({
-      token: auth.token,
+      token: auth.userData?.token,
       action: "program",
       fixture: fixture,
       data: { programName: program }
@@ -60,7 +60,7 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
       return "No connection or no access right";
     }
     const payload = JSON.stringify({
-      token: auth.token,
+      token: auth.userData?.token,
       action: "discrete",
       fixture: fixture,
       data: {
@@ -78,7 +78,7 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
       return "No connection or no access right";
     }
     const payload = JSON.stringify({
-      token: auth.token,
+      token: auth.userData?.token,
       action: "continuous",
       fixture: fixture,
       data: {
