@@ -16,6 +16,17 @@ export interface ThermocontrolSettableDataType {
     use_ventilation_for_heating: boolean;
 }
 
+export type ThermocontrolAuxData = {
+    [key: string]: number | boolean | string;
+  };
+
+export type TCUpdates = {
+    type: "tc" | "tc_aux";
+    stale: boolean;
+    data?: ThermocontrolDataType;
+    data_aux?: ThermocontrolAuxData;
+}
+
 interface ThermocontrolDataType extends ThermocontrolSettableDataType {
     emergency_heating_is_active: boolean;
     data_age_humidity: number;
@@ -81,9 +92,11 @@ function ThermocontrolDetails() {
                 return;
             }
             try {
-                const json = JSON.parse(message.data)
-                if (json.health === "good") {
-                    const data = json.data;
+                const json = JSON.parse(message.data) as TCUpdates
+                if(json.type != "tc")
+                    return;
+                if (!json.stale) {
+                    const data = json.data!;
                     setDataFromAPI(data);
                     updateDataFromUI(data);
                     setError(undefined);

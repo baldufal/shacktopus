@@ -9,6 +9,7 @@ import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { MdEdit } from "react-icons/md";
 import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
+import AuxBox, { AUX_BOXES, AuxBoxType } from "../HeatingPage/Thermocontrol_aux/AuxBox";
 
 
 // Helper function to reorder list
@@ -28,6 +29,7 @@ function DashboardPage() {
 
   // These are the tiles that we currently receive from the APIs
   const currentAvailableTiles = [{ display: "Thermocontrol", original: "tc" },
+  ...AUX_BOXES,
   ...(fixtureNames ? fixtureNames : [])]
 
   // These are the favorites that we loaded from the backend server
@@ -145,22 +147,25 @@ function DashboardPage() {
                     <ThermocontrolDetails
                       key={index} />
                     :
-                    (fixturesData && fixtureNames && fixturesData.fixtures[tile.original]) ?
-                      <FixtureBox
-                        key={index}
-                        fixtureName={tile}
-                        data={fixturesData.fixtures[tile.original]} />
+                    AUX_BOXES.findIndex((aux_box) => aux_box.original === tile.original) > -1 ?
+                      <AuxBox type={tile.original as AuxBoxType}></AuxBox>
                       :
-                      <Box
-                        key={index}
-                        borderColor={indicator.error}
-                        p={2}
-                        className="fixturebox">
+                      (fixturesData && fixtureNames && fixturesData.fixtures[tile.original]) ?
+                        <FixtureBox
+                          key={index}
+                          fixtureName={tile}
+                          data={fixturesData.fixtures[tile.original]} />
+                        :
+                        <Box
+                          key={index}
+                          borderColor={indicator.error}
+                          p={2}
+                          className="fixturebox">
                           <VStack>
                             <Text>Currently not available:</Text>
                             <Text>{tile.display}</Text>
                           </VStack>
-                      </Box>
+                        </Box>
                 })}
               </Wrap>
               :

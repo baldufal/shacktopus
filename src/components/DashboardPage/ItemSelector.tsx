@@ -1,4 +1,4 @@
-import { Text, VStack, HStack, IconButton } from "@chakra-ui/react";
+import { Text, VStack, HStack, IconButton, Flex } from "@chakra-ui/react";
 import { FixtureName } from "../../contexts/KaleidoscopeContext";
 import "./../fixturebox.scss"
 import "./itemselector.scss"
@@ -21,8 +21,8 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
 
   return (
     <VStack
-      align={"start"}
-      className="itemselectorstack">
+    width={"100%"}
+      align={"start"}>
       <Text
         className="itemselectorheading"
       >Select tiles and determine their order by dragging.</Text>
@@ -38,107 +38,115 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
           onClick={() => setSelectedTiles([])}
         />
       </HStack>
+      <Flex
+        direction={['column', 'column', 'row']} // Column for mobile, row for larger screens
+        align={"start"}
+        gap={8} // Spacing between the lists
+        className="itemselectorstack">
 
-      <Text>Selected</Text>
-      <Droppable droppableId="selectedTiles">
-        {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className="fixturebox dropbox"
-          >
-            {selectedTiles.map((selected, selectedIndex) => (
-              <Draggable
-                key={selected.original}
-                draggableId={selected.original}
-                index={selectedIndex}
-              >
-                {(provided) => (
-                  <HStack
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    key={selected.original}
-                    bg={secondary}
-                    className="dragitem"
-                  >
-                    <IconButton
-                      isRound={true}
-                      padding={"0"}
-                      aria-label="remove"
-                      icon={<MdRemove />}
-                      onClick={() =>
-                        setSelectedTiles((tiles) =>
-                          tiles.filter(
-                            (value) => value.original !== selected.original
-                          )
-                        )
-                      }
-                    />
-                    <Text
-                      color={bwForeground}>
-                      {selected.display}</Text>
-                  </HStack>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
 
-      <Text>Available</Text>
-
-      <Droppable droppableId="unselectedTiles">
-        {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className="fixturebox dropbox"
-          >
-            {allTiles
-              .filter(
-                (tile) =>
-                  selectedTiles.findIndex(
-                    (selected) => selected.original === tile.original
-                  ) === -1
-              )
-              .map((unselected, unselectedIndex) => (
+        <Text>Selected</Text>
+        <Droppable droppableId="selectedTiles">
+          {(provided) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="fixturebox dropbox"
+            >
+              {selectedTiles.map((selected, selectedIndex) => (
                 <Draggable
-                  key={unselected.original}
-                  draggableId={unselected.original}
-                  index={unselectedIndex}
+                  key={selected.original}
+                  draggableId={selected.original}
+                  index={selectedIndex}
                 >
                   {(provided) => (
                     <HStack
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      key={unselected.original}
+                      key={selected.original}
                       bg={secondary}
                       className="dragitem"
                     >
                       <IconButton
-                        aria-label={"add"}
-                        icon={<MdAdd />}
                         isRound={true}
+                        padding={"0"}
+                        aria-label="remove"
+                        icon={<MdRemove />}
                         onClick={() =>
-                          setSelectedTiles((selected) => [...selected, unselected])
+                          setSelectedTiles((tiles) =>
+                            tiles.filter(
+                              (value) => value.original !== selected.original
+                            )
+                          )
                         }
                       />
                       <Text
                         color={bwForeground}>
-                        {unselected.display}</Text>
+                        {selected.display}</Text>
                     </HStack>
                   )}
                 </Draggable>
               ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+
+        <Text>Available</Text>
+
+        <Droppable droppableId="unselectedTiles">
+          {(provided) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="fixturebox dropbox"
+            >
+              {allTiles
+                .filter(
+                  (tile) =>
+                    selectedTiles.findIndex(
+                      (selected) => selected.original === tile.original
+                    ) === -1
+                )
+                .map((unselected, unselectedIndex) => (
+                  <Draggable
+                    key={unselected.original}
+                    draggableId={unselected.original}
+                    index={unselectedIndex}
+                  >
+                    {(provided) => (
+                      <HStack
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        key={unselected.original}
+                        bg={secondary}
+                        className="dragitem"
+                      >
+                        <IconButton
+                          aria-label={"add"}
+                          icon={<MdAdd />}
+                          isRound={true}
+                          onClick={() =>
+                            setSelectedTiles((selected) => [...selected, unselected])
+                          }
+                        />
+                        <Text
+                          color={bwForeground}>
+                          {unselected.display}</Text>
+                      </HStack>
+                    )}
+                  </Draggable>
+                ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </Flex>
     </VStack>
-  );
+
+  )
 }
 
 export default ItemSelector;
