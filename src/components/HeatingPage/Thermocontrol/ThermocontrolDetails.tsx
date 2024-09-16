@@ -267,9 +267,6 @@ function ThermocontrolDetails() {
                             debouncedSendData(updatedData);
                         }}>
                         Use ventilation for cooling</Switch>
-                    <Divider></Divider>
-                    <Text>{"Data age temperature: " + dataFromAPI?.data_age_temperature}</Text>
-                    <Text>{"Data age humidity: " + dataFromAPI?.data_age_humidity}</Text>
 
                     {dataFromAPI?.emergency_heating_is_active ? <Text color={"red"}>Emergency heating is active!</Text> : null}
                 </VStack>

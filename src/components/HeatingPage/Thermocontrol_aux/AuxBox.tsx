@@ -8,6 +8,15 @@ import ClimateDetails from "./ClimateDetails";
 import HeatingEnergy from "./HeatingEnergy";
 import { FixtureName } from "../../../contexts/KaleidoscopeContext";
 
+export type AuxBoxProps = {
+    title: string,
+    loading: boolean,
+    error: string | undefined,
+    stale: boolean,
+    dataFromAPI: ThermocontrolAuxData | undefined,
+    borderColor: string
+}
+
 export type AuxBoxType = "details" | "climate_details" | "energy";
 
 // THIS MUST BE KEPT UP TO DATE WITH RENDER CODE BELOW
@@ -33,6 +42,7 @@ function AuxBox(props: { type: AuxBoxType }) {
     const [dataFromAPI, setDataFromAPI] = useState<ThermocontrolAuxData | undefined>(undefined);
 
     // Last API request returned an error
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | undefined>(undefined);
     const [stale, setStale] = useState<boolean>(false);
 
@@ -44,14 +54,13 @@ function AuxBox(props: { type: AuxBoxType }) {
                 const json = JSON.parse(message.data) as TCUpdates
                 if (json.type != "tc_aux")
                     return;
-                if (!json.stale) {
-                    const data = json.data_aux!;
-                    setDataFromAPI(data);
-                    setError(undefined);
-                    setStale(false)
-                } else {
-                    setStale(true)
-                }
+                setStale(json.stale);
+
+                const data = json.data_aux!;
+                setDataFromAPI(data);
+
+                setError(undefined);
+                setLoading(false);
             } catch (error) {
                 setError("An error occured during parsing data");
                 console.log(error)
@@ -82,11 +91,11 @@ function AuxBox(props: { type: AuxBoxType }) {
     // THIS MUST BE KEPT UP TO DATE WITH AuxBoxes DEFINITION AT THE TOP
     switch (props.type) {
         case AUX_BOXES.at(0)!.original:
-            return (<AuxDetails title={AUX_BOXES.at(0)!.display} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
+            return (<AuxDetails title={AUX_BOXES.at(0)!.display} loading={loading} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
         case AUX_BOXES.at(1)!.original:
-            return (<ClimateDetails title={AUX_BOXES.at(1)!.display} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
+            return (<ClimateDetails title={AUX_BOXES.at(1)!.display} loading={loading} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
         case AUX_BOXES.at(2)!.original:
-            return (<HeatingEnergy title={AUX_BOXES.at(2)!.display} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
+            return (<HeatingEnergy title={AUX_BOXES.at(2)!.display} loading={loading} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
 
     }
 }

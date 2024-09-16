@@ -1,8 +1,44 @@
-import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider, DrawerFooter, Text, Heading, Spacer } from "@chakra-ui/react";
+import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider, DrawerFooter, Text, Heading, Spacer, MenuItem, HStack, Icon, As } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
+import { MdDashboard, MdLightbulb, MdSettings } from "react-icons/md";
+import { IoIosFlame } from "react-icons/io";
+
+export type MenuItem = {
+    name: string;
+    path: string;
+    icon: JSX.Element;
+    as: As;
+}
+
+export const menuItems: MenuItem[] = [
+    {
+        name: "Dashboard",
+        path: "/",
+        icon: <MdDashboard />,
+        as: MdDashboard
+    },
+    {
+        name: "Kaleidoscope",
+        path: "/kaleidoscope",
+        icon: <MdLightbulb />,
+        as: MdLightbulb
+    },
+    {
+        name: "Heating",
+        path: "/heating",
+        icon: <IoIosFlame />,
+        as: IoIosFlame
+    },
+    {
+        name: "Settings",
+        path: "/settings",
+        icon: <MdSettings />,
+        as: MdSettings
+    }
+]
 
 function Menubar() {
 
@@ -70,34 +106,24 @@ function Menubar() {
 
                     <DrawerBody >
                         <VStack align={"start"} >
-                            <Button
-                                variant="link"
-                                onClick={() => handleLinkClick('/')}
-                                color={isActive('/') ? secondary : primary}
-                            >
-                                Dashboard
-                            </Button>
-                            <Button
-                                variant="link"
-                                onClick={() => handleLinkClick('/kaleidoscope')}
-                                color={isActive('/kaleidoscope') ? secondary : primary}
-                            >
-                                Kaleidoscope
-                            </Button>
-                            <Button
-                                variant="link"
-                                onClick={() => handleLinkClick('/heating')}
-                                color={isActive('/heating') ? secondary : primary}
-                            >
-                                Heating
-                            </Button>
-                            <Button
-                                variant="link"
-                                onClick={() => handleLinkClick('/settings')}
-                                color={isActive('/settings') ? secondary : primary}
-                            >
-                                Settings
-                            </Button>
+                            {menuItems.map((menuitem) =>
+                                <HStack alignItems={"center"}>
+                                    <Icon
+                                        as={menuitem.as}
+                                        color={isActive(menuitem.path) ? secondary : primary}
+                                        onClick={() => handleLinkClick(menuitem.path)}
+                                    />
+                                    <Button
+                                        key={menuitem.name}
+                                        marginBottom={"0.1rem"}
+                                        variant="link"
+                                        onClick={() => handleLinkClick(menuitem.path)}
+                                        color={isActive(menuitem.path) ? secondary : primary}
+                                    >
+                                        {menuitem.name}
+                                    </Button>
+                                </HStack>
+                            )}
                             <Divider m="1em"></Divider>
                             <Switch
                                 isChecked={colorMode === "dark"}

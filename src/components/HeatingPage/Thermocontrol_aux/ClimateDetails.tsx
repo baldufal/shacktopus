@@ -1,11 +1,11 @@
-import { Box, CircularProgress, CircularProgressLabel, Divider, HStack, Icon, Progress, Text, VStack } from "@chakra-ui/react";
+import { Box, CircularProgress, CircularProgressLabel, Divider, HStack, Icon, Progress, Skeleton, Text, VStack } from "@chakra-ui/react";
 import { useThemeColors } from "../../../contexts/ThemeContext";
 import "./../../fixturebox.scss"
-import { ThermocontrolAuxData } from "../Thermocontrol/ThermocontrolDetails";
 import { ColorTriple, interpolateColor } from "./interpolateColor";
 import { GiPoisonGas } from "react-icons/gi";
+import { AuxBoxProps } from "./AuxBox";
 
-function ClimateDetails(props: { title: string, error: string | undefined, stale: boolean, dataFromAPI: ThermocontrolAuxData | undefined, borderColor: string }) {
+function ClimateDetails(props: AuxBoxProps) {
 
     const { indicator } = useThemeColors();
 
@@ -18,7 +18,11 @@ function ClimateDetails(props: { title: string, error: string | undefined, stale
         props.dataFromAPI["humidity_outside"] &&
         props.dataFromAPI["temperature_basement"];
 
-    if (props.error || !dataFromAPI_ok)
+    if (!props.error && props.loading)
+        return <Skeleton className="fixturebox" width={"150px"} height={"400px"}></Skeleton>
+
+
+    if (!dataFromAPI_ok && !props.loading)
         return (<Box
             className="fixturebox"
             width={"fit-content"}

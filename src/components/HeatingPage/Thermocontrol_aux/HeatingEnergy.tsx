@@ -1,9 +1,9 @@
-import { Box, Divider, Progress, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Progress, Skeleton, Text, VStack } from "@chakra-ui/react";
 import { useThemeColors } from "../../../contexts/ThemeContext";
 import "./../../fixturebox.scss"
-import { ThermocontrolAuxData } from "../Thermocontrol/ThermocontrolDetails";
+import { AuxBoxProps } from "./AuxBox";
 
-function Energy(props: {title: string, error: string | undefined, stale: boolean, dataFromAPI: ThermocontrolAuxData | undefined, borderColor: string }) {
+function Energy(props: AuxBoxProps) {
 
     const { indicator } = useThemeColors();
 
@@ -12,7 +12,10 @@ function Energy(props: {title: string, error: string | undefined, stale: boolean
         props.dataFromAPI["energy_consumption_24h"] &&
         props.dataFromAPI["energy_consumption_current"];
 
-    if (props.error || !dataFromAPI_ok)
+        if (!props.error && props.loading)
+            return <Skeleton className="fixturebox" width={"250px"} height={"250px"}></Skeleton>
+
+    if ( !dataFromAPI_ok)
         return (<Box
             className="fixturebox"
             width={"fit-content"}

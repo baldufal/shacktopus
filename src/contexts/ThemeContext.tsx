@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useColorMode, useTheme } from '@chakra-ui/react';
 
-interface IndicatorColors {
+export interface IndicatorColors {
     ok: string;
     read_only: string;
     dirty: string;

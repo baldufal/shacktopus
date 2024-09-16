@@ -7,7 +7,12 @@ function KaleidoscopePage() {
     const { fixturesData, fixtureNames, error } = useKaleidoscope();
 
     return (
-        <Box as="main" flex="1" p={4} width="100%">
+        <Box
+            as="main"
+            flex="1"
+            p={4}
+            paddingTop={0}
+            width="100%">
             <Wrap>
                 {error ? <Text>{error}</Text> :
                     fixtureNames && fixturesData ?

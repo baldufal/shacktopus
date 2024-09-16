@@ -1,5 +1,5 @@
 import { Link, Outlet, Route, Routes } from "react-router-dom";
-import Menubar from "../Menubar/Menubar";
+import Menubar from "../Layout/Menubar";
 import { Box } from "@chakra-ui/react";
 import DashboardPage from "../DashboardPage/DashboardPage";
 import SettingsPage from "../SettingsPage/SettingsPage";
@@ -7,6 +7,7 @@ import HeatingPage from "../HeatingPage/HeatingPage";
 import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../LoginPage.tsx/LoginPage";
 import KaleidoscopePage from "../KaleidoscopePage/KaleidoscopePage";
+import Layout from "../Layout/Layout";
 
 function Router() {
 
@@ -32,21 +33,6 @@ function Router() {
       <Route path="/login" element={<LoginPage />} />
     </Routes>
   )
-}
-
-
-function Layout() {
-  return (
-    <Box display="flex" flexDirection="column" height="100vh">
-      <Menubar />
-
-      {/* An <Outlet> renders whatever child route is currently active,
-            so you can think about this <Outlet> as a placeholder for
-            the child routes we defined above. */}
-      <Outlet />
-    </Box>
-
-  );
 }
 
 function NoMatch() {
