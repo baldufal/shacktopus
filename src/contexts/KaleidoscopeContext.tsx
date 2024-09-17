@@ -1,18 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '../components/Router/AuthContext';
 import { FixturesData } from '../components/KaleidoscopePage/kaleidoscopeTypes';
-import { ALIASES } from '../components/KaleidoscopePage/aliases';
+import { KNOWN_FIXTURES } from '../components/KaleidoscopePage/KNOWN_FIXTURES';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { FixtureName } from '../components/DashboardPage/obtainTiles';
 
-
-export interface FixtureName {
-  original: string,
-  display: string
-}
 
 interface KaleidoscopeContextType {
-  fixturesData: FixturesData | null;
-  fixtureNames: FixtureName[] | null;
+  fixturesData: FixturesData | undefined;
+  fixtureNames: FixtureName[] | undefined;
   //
   setProgram: (fixture: string, program: string) => string | undefined;
   setDiscrete: (fixture: string, program: string, parameterName: string, value: string) => string | undefined;
@@ -24,8 +20,8 @@ interface KaleidoscopeContextType {
 const KaleidoscopeContext = createContext<KaleidoscopeContextType | undefined>(undefined);
 
 export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
-  const [fixturesData, setFixturesData] = useState<FixturesData | null>(null);
-  const [fixtureNames, setFixtureNames] = useState<FixtureName[] | null>(null);
+  const [fixturesData, setFixturesData] = useState<FixturesData | undefined>(undefined);
+  const [fixtureNames, setFixtureNames] = useState<FixtureName[] | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
   const auth = useAuth();
@@ -33,11 +29,11 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (readyState === ReadyState.OPEN || readyState === ReadyState.CONNECTING) {
-        setError(undefined);
+      setError(undefined);
     } else {
-        setError("WebSocket for Kaleidoscope: state != OPEN or CONNECTING");
+      setError("WebSocket for Kaleidoscope: state != OPEN or CONNECTING");
     }
-}, [readyState]);
+  }, [readyState]);
 
   function setProgram(fixture: string, program: string) {
     console.log(`Setting program of fixture ${fixture} to ${program}`);
@@ -101,9 +97,9 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
             const extractedNames = Object.keys(parsedMessage.data.fixtures).sort();
             setFixtureNames(
               extractedNames.map(name => {
-                return {
+                return KNOWN_FIXTURES[name] || {
                   original: name,
-                  display: ALIASES[name] || name
+                  display: name
                 };
               })
             );
@@ -112,7 +108,7 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
           console.log("Received kaleidoscope update with health != good");
         }
     }
-}, [lastMessage]);
+  }, [lastMessage]);
 
 
   return (

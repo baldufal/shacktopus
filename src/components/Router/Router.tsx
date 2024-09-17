@@ -1,6 +1,4 @@
-import { Link, Outlet, Route, Routes } from "react-router-dom";
-import Menubar from "../Layout/Menubar";
-import { Box } from "@chakra-ui/react";
+import { Link, Route, Routes } from "react-router-dom";
 import DashboardPage from "../DashboardPage/DashboardPage";
 import SettingsPage from "../SettingsPage/SettingsPage";
 import HeatingPage from "../HeatingPage/HeatingPage";

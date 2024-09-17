@@ -1,13 +1,13 @@
 import { Box, Wrap, Text, Button, IconButton, VStack } from "@chakra-ui/react";
-import { FixtureName, useKaleidoscope } from "../../contexts/KaleidoscopeContext";
+import {  useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import "./../fixturebox.scss"
 import ItemSelector from "./ItemSelector";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { MdEdit } from "react-icons/md";
 import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
-import { obtainTiles } from "./obtainTiles";
+import { FixtureName, obtainTiles } from "./obtainTiles";
 import { tileFromFixtureName } from "./tileFromFixtureName";
 
 // Helper function to reorder list
@@ -23,9 +23,18 @@ function DashboardPage() {
   const { fixturesData, fixtureNames, error } = useKaleidoscope();
   const { indicator } = useThemeColors();
 
-  const { allTiles, initialSelectedTiles } = obtainTiles(fixtureNames, userData);
+  const { allTiles: initialAllTiles, initialSelectedTiles } = obtainTiles(fixtureNames, userData);
 
+  const [allTiles, setAllTiles] = useState<FixtureName[]>(initialAllTiles);
   const [selectedTiles, setSelectedTiles] = useState<FixtureName[]>(initialSelectedTiles);
+
+  useEffect(() => {
+    const { allTiles: initialAllTiles, initialSelectedTiles } = obtainTiles(fixtureNames, userData);
+    setAllTiles(initialAllTiles);
+    setSelectedTiles(initialSelectedTiles);
+  }, [fixtureNames, userData]);
+
+
 
   const [modifyMode, setModifyMode] = useState<boolean>(false);
 
@@ -115,9 +124,10 @@ function DashboardPage() {
             {selectedTiles.length > 0 ?
               <Wrap>
                 {selectedTiles.map((tile, index) => {
-                  return <div>
-                  {tileFromFixtureName(tile, index, fixturesData, fixtureNames, indicator)}
-                  <div></div>
+                  return <div
+                    key={tile.original}>
+                    {tileFromFixtureName(tile, index, fixturesData, fixtureNames, indicator)}
+                    <div key={tile.original} />
                   </div>
                 })}
               </Wrap>

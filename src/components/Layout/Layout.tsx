@@ -36,6 +36,7 @@ function Layout() {
                     <VStack marginTop={-4} >
                         {menuItems.map((item) =>
                             <IconButton
+                                key={item.name}
                                 bg={isActive(item.path) ? secondary : primary}
                                 icon={item.icon}
                                 aria-label={item.name}

@@ -106,15 +106,18 @@ function Menubar() {
 
                     <DrawerBody >
                         <VStack align={"start"} >
-                            {menuItems.map((menuitem) =>
-                                <HStack alignItems={"center"}>
+                            {menuItems.map((menuitem, index) =>
+                                <HStack
+                                    key={index}
+                                    alignItems={"center"}>
                                     <Icon
+                                        key={menuitem.name + "icon"}
                                         as={menuitem.as}
                                         color={isActive(menuitem.path) ? secondary : primary}
                                         onClick={() => handleLinkClick(menuitem.path)}
                                     />
                                     <Button
-                                        key={menuitem.name}
+                                        key={menuitem.name + "button"}
                                         marginBottom={"0.1rem"}
                                         variant="link"
                                         onClick={() => handleLinkClick(menuitem.path)}

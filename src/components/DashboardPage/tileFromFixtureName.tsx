@@ -1,14 +1,19 @@
 import { Box, VStack, Text } from "@chakra-ui/react"
-import { FixtureName } from "../../contexts/KaleidoscopeContext"
 import ThermocontrolDetails from "../HeatingPage/Thermocontrol/ThermocontrolDetails"
 import AuxBox, { AUX_BOXES, AuxBoxType } from "../HeatingPage/Thermocontrol_aux/AuxBox"
 import FixtureBox from "../KaleidoscopePage/FixtureBox"
 import { FixturesData } from "../KaleidoscopePage/kaleidoscopeTypes"
 import { IndicatorColors } from "../../contexts/ThemeContext"
 import { ReactNode } from "react"
+import { FixtureName } from "./obtainTiles"
 
-export const tileFromFixtureName = (tile: FixtureName, index: number, fixturesData: FixturesData | null, fixtureNames: FixtureName[] | null, indicator: IndicatorColors): ReactNode => 
-{ return tile.original === "tc" ?
+export const tileFromFixtureName = (tile: FixtureName,
+  index: number, fixturesData: FixturesData | undefined,
+  fixtureNames: FixtureName[] | undefined,
+  indicator: IndicatorColors
+): ReactNode => {
+
+  return tile.original === "tc" ?
     <ThermocontrolDetails
       key={index} />
     :
@@ -32,4 +37,4 @@ export const tileFromFixtureName = (tile: FixtureName, index: number, fixturesDa
           </VStack>
         </Box>
 
-    }
+}

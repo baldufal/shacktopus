@@ -1,10 +1,10 @@
 import { Text, VStack, HStack, IconButton, Flex } from "@chakra-ui/react";
-import { FixtureName } from "../../contexts/KaleidoscopeContext";
 import "./../fixturebox.scss"
 import "./itemselector.scss"
 import { MdAdd, MdCheckBox, MdOutlineCheckBoxOutlineBlank, MdRemove } from "react-icons/md";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { useThemeColors } from "../../contexts/ThemeContext";
+import { FixtureName } from "./obtainTiles";
 
 
 interface ItemSelectorProps {

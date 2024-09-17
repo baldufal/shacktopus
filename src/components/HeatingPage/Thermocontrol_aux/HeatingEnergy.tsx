@@ -12,10 +12,10 @@ function Energy(props: AuxBoxProps) {
         props.dataFromAPI["energy_consumption_24h"] &&
         props.dataFromAPI["energy_consumption_current"];
 
-        if (!props.error && props.loading)
-            return <Skeleton className="fixturebox" width={"250px"} height={"250px"}></Skeleton>
+    if (!props.error && props.loading)
+        return <Skeleton className="fixturebox" width={"250px"} height={"250px"}></Skeleton>
 
-    if ( !dataFromAPI_ok)
+    if (!dataFromAPI_ok)
         return (<Box
             className="fixturebox"
             width={"fit-content"}
@@ -31,42 +31,51 @@ function Energy(props: AuxBoxProps) {
     const power = props.dataFromAPI!["energy_consumption_current"] as number;
 
     return (
-        <Box
-            className="fixturebox"
-            width={"fit-content"}
-            borderColor={dataFromAPI_ok ? props.borderColor : indicator.error}
-            p={2}>
-            {props.error ?
-                <Text color={indicator.error}>{props.error}</Text> :
-                dataFromAPI_ok ?
-                    <VStack align={"start"}>
-                        <Text className="fixturebox_heading">{props.title}</Text>
+        <div className="containerdiv">
+            <div className="backgroundTest" />
 
-                        <Divider />
-                        <Text>Current</Text>
-                        <Progress
-                            width={"100%"}
-                            height={"1rem"}
-                            max={1.69}
-                            value={power} />
-                        <Text>{power.toFixed(2) + " kW"}</Text>
+            <Box
+                className="fixturebox"
+                width={"fit-content"}
+                borderColor={dataFromAPI_ok ? props.borderColor : indicator.error}
+                p={2}
+            //backgroundColor={"transparent"}
+            >
+                {props.error ?
+                    <Text color={indicator.error}>{props.error}</Text> :
+                    dataFromAPI_ok ?
+                        <VStack
 
+                            align={"start"}>
+                            <Text className="fixturebox_heading">{props.title}</Text>
 
-                        <Divider />
-                        <Text>Last 24h</Text>
-                        <Progress
-                        width={"100%"}
-                        height={"1rem"}
-                            max={1.69 * 24}
-                            value={energy} />
-                        <Text>{energy.toFixed(2) + " kWh"}</Text>
+                            <Divider />
+                            <Text>Current</Text>
+                            <Progress
+                                width={"100%"}
+                                height={"1rem"}
+                                max={1.69}
+                                value={power} />
+                            <Text>{power.toFixed(2) + " kW"}</Text>
 
 
-                    </VStack>
-                    :
-                    <Text color={indicator.error}>{"Data from API not okay"}</Text>
-            }
-        </Box>
+                            <Divider />
+                            <Text>Last 24h</Text>
+                            <Progress
+                                width={"100%"}
+                                height={"1rem"}
+                                max={1.69 * 24}
+                                value={energy} />
+                            <Text>{energy.toFixed(2) + " kWh"}</Text>
+
+
+                        </VStack>
+                        :
+                        <Text color={indicator.error}>{"Data from API not okay"}</Text>
+                }
+            </Box>
+        </div>
+
     )
 }
 

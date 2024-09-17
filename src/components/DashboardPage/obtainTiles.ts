@@ -1,14 +1,24 @@
-import { FixtureName } from "../../contexts/KaleidoscopeContext";
 import { AUX_BOXES } from "../HeatingPage/Thermocontrol_aux/AuxBox";
 import { UserResponse } from "../Router/AuthContext";
 
-export const obtainTiles = (fixtureNames: FixtureName[] | null, userData: UserResponse | undefined): { allTiles: FixtureName[], initialSelectedTiles: FixtureName[] } => {
+export type FixtureName =  {
+    original: string,
+    display: string,
+    background_active?: string,
+    background_inactive?: string,
+  }
+
+export const obtainTiles = (fixtureNames: FixtureName[] | undefined, userData: UserResponse | undefined):
+ { allTiles: FixtureName[], initialSelectedTiles: FixtureName[] } => {
     // These are the tiles that we currently receive from the APIs
-    const currentAvailableTiles = [{ display: "Thermocontrol", original: "tc" },
-    ...AUX_BOXES,
-    ...(fixtureNames ? fixtureNames : [])]
+    const currentAvailableTiles = [
+        { display: "Thermocontrol", original: "tc" },
+        ...AUX_BOXES,
+        ...(fixtureNames ? fixtureNames : [])
+    ]
 
     // These are the favorites that we loaded from the backend server
+    // We identify them based on the original name
     const savedFavoriteTiles = userData ? userData.userConfig.dashboard.map((dashboardItem) =>
         currentAvailableTiles.find((tile) => tile.original === dashboardItem) || { original: dashboardItem, display: dashboardItem }
     ) : [];
@@ -18,9 +28,13 @@ export const obtainTiles = (fixtureNames: FixtureName[] | null, userData: UserRe
     const allTiles: FixtureName[] = [
         ...currentAvailableTiles,
         ...savedFavoriteTiles
-    ].filter((tile, index, self) =>
-        index === self.findIndex((t) => t.original === tile.original)
-    ).sort((a, b) => a.display.localeCompare(b.display));
+    ]
+        // Filter out duplicates
+        .filter((tile, index, self) =>
+            index === self.findIndex((t) => t.original === tile.original)
+        )
+        // Sort based on display name
+        .sort((a, b) => a.display.localeCompare(b.display));
 
     const initialSelectedTiles = userData ?
         userData.userConfig.dashboard.map((dashboardItem) =>

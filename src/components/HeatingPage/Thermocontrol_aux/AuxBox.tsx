@@ -6,7 +6,7 @@ import { TCUpdates, ThermocontrolAuxData } from "../Thermocontrol/ThermocontrolD
 import AuxDetails from "./AuxDetails";
 import ClimateDetails from "./ClimateDetails";
 import HeatingEnergy from "./HeatingEnergy";
-import { FixtureName } from "../../../contexts/KaleidoscopeContext";
+import { FixtureName } from "../../DashboardPage/obtainTiles";
 
 export type AuxBoxProps = {
     title: string,
