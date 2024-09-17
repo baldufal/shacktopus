@@ -68,9 +68,17 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                         loading ?
                             indicator.dirty : indicator.ok}>
                     <VStack align={"start"}>
-                        <Flex bg={"Background"} borderRadius={"0.375rem"} padding={"0.2rem"} margin={"-0.2rem"}>
-                            <Text className="fixturebox_heading">{props.fixtureName.display}</Text>
+                        <Flex >
+                            <Text
+                                className="fixturebox_heading"
+                                bg={"Background"}
+                                borderRadius={"0.375rem"}
+                                padding={"0.2rem"}
+                                margin={"-0.2rem"}>
+                                {props.fixtureName.display}
+                            </Text>
                             <Button
+                                marginTop={"1px"}
                                 marginStart={"10px"}
                                 size={"20px"}
                                 borderRadius={"20px"}
