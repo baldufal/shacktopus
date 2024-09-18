@@ -6,7 +6,6 @@ if ($args.Count -eq 0) {
 
 # Function to deploy frontend
 function Deploy-Frontend {
-    Write-Host "Remember to place certificates in shacktopus/cert/ and shacktopus/nginx/certs/"
     Write-Host "Rebuilding and redeploying frontend..."
     docker-compose build frontend
     docker-compose up -d frontend

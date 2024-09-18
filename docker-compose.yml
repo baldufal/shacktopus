@@ -12,6 +12,8 @@ services:
   backend:
     build: ../reef/
     # No need to expose ports here as communication works via docker network
+    volumes:
+      - shacktopus-user-config:/app/userconfig
     networks:
       - shacktopus-network
     environment:
@@ -21,3 +23,6 @@ services:
 networks:
   shacktopus-network:
     driver: bridge
+
+volumes:
+  shacktopus-user-config:

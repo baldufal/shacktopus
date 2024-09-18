@@ -26,7 +26,7 @@
     left: 0px;
     width: 100%;
     height: min(100%, 300px); // 300px is the maximum width of fixture boxes. This prevents the background from moving down
-    z-index: -10;
+    z-index: -1;
     filter: blur(1px);
     opacity: .4;
 }

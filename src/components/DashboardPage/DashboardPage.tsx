@@ -20,7 +20,7 @@ const reorder = (list: any[], startIndex: number, endIndex: number) => {
 
 function DashboardPage() {
   const { userData, updateUserConfig } = useAuth();
-  const { fixturesData, fixtureNames, error } = useKaleidoscope();
+  const { fixturesData, fixtureNames } = useKaleidoscope();
   const { indicator } = useThemeColors();
 
   const { allTiles: initialAllTiles, initialSelectedTiles } = obtainTiles(fixtureNames, userData);

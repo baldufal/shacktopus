@@ -8,7 +8,6 @@ fi
 
 # Function to deploy frontend
 deploy_frontend() {
-  echo "Remember to place certificates in shacktopus/cert/ and shacktopus/nginx/certs/"
   echo "Rebuilding and redeploying frontend..."
   docker-compose build frontend
   docker-compose up -d frontend

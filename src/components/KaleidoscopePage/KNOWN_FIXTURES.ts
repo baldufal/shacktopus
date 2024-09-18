@@ -1,4 +1,6 @@
 import { FixtureName } from "../DashboardPage/obtainTiles";
+import fairy_lights_off from './../../assets/fairy_lights/off.png';
+import fairy_lights_on from './../../assets/fairy_lights/on.png';
 
 export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
     'kitchen_rgbw': {
@@ -16,8 +18,8 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
     'lichterketten': {
         original: 'lichterketten',
         display: 'Fairy Lights',
-        background_active: "url('/src/assets/fairy_lights/on.png')",
-        background_inactive: "url('/src/assets/fairy_lights/off.png')"
+        background_active: "url('" + fairy_lights_on + "')",
+        background_inactive: "url('" + fairy_lights_off + "')"
     },
     'putzlicht': {
         original: 'putzlicht',
