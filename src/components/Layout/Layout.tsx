@@ -10,15 +10,31 @@ function Layout() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [largeScreen, setScreenSize] = useState<boolean>(
+    const [largeScreen, setLargeScreen] = useState<boolean>(
         window.matchMedia("(min-width: 768px)").matches
     )
 
+    const [hugeScreen, setHugeScreen] = useState<boolean>(
+        window.matchMedia("(min-width: 1024px)").matches
+    )
+
     useEffect(() => {
-        window
-            .matchMedia("(min-width: 768px)")
-            .addEventListener('change', e => setScreenSize(e.matches));
+        const mediaQuery768 = window.matchMedia("(min-width: 768px)");
+        const mediaQuery1024 = window.matchMedia("(min-width: 1024px)");
+    
+        const handle768Change = (e: { matches: boolean | ((prevState: boolean) => boolean); }) => setLargeScreen(e.matches);
+        const handle1024Change = (e: { matches: boolean | ((prevState: boolean) => boolean); }) => setHugeScreen(e.matches);
+    
+        mediaQuery768.addEventListener('change', handle768Change);
+        mediaQuery1024.addEventListener('change', handle1024Change);
+    
+        // Cleanup function
+        return () => {
+            mediaQuery768.removeEventListener('change', handle768Change);
+            mediaQuery1024.removeEventListener('change', handle1024Change);
+        };
     }, []);
+    
 
     const isActive = (path: string) => location.pathname === path;
 
@@ -33,15 +49,18 @@ function Layout() {
                 <HStack
                     p={4}
                     align={"start"}>
+
                     <VStack marginTop={-4} >
+
                         {menuItems.map((item) =>
-                            <IconButton
-                                key={item.name}
-                                bg={isActive(item.path) ? secondary : primary}
-                                icon={item.icon}
-                                aria-label={item.name}
-                                onClick={() => navigate(item.path)}
-                            />)}
+                            (item.path != "/floorplan" || hugeScreen) ?
+                                <IconButton
+                                    key={item.name}
+                                    bg={isActive(item.path) ? secondary : primary}
+                                    icon={item.icon}
+                                    aria-label={item.name}
+                                    onClick={() => navigate(item.path)}
+                                /> : null)}
                     </VStack>
                     <Outlet />
                 </HStack>

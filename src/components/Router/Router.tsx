@@ -6,6 +6,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../LoginPage.tsx/LoginPage";
 import KaleidoscopePage from "../KaleidoscopePage/KaleidoscopePage";
 import Layout from "../Layout/Layout";
+import FloorPlanPage from "../FloorPlanPage/FloorPlanPage";
 
 function Router() {
 
@@ -14,6 +15,9 @@ function Router() {
       <Route path="/" element={<Layout />}>
         <Route index element={
           <ProtectedRoute element={<DashboardPage />} />
+        } />
+        <Route path="floorplan" element={
+          <ProtectedRoute element={<FloorPlanPage />} />
         } />
         <Route path="kaleidoscope" element={
           <ProtectedRoute element={<KaleidoscopePage />} />

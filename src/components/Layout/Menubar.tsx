@@ -3,8 +3,9 @@ import { HamburgerIcon } from "@chakra-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
-import { MdDashboard, MdLightbulb, MdSettings } from "react-icons/md";
+import { MdArchitecture, MdDashboard, MdLightbulb, MdSettings } from "react-icons/md";
 import { IoIosFlame } from "react-icons/io";
+import { useState, useEffect } from "react";
 
 export type MenuItem = {
     name: string;
@@ -19,6 +20,12 @@ export const menuItems: MenuItem[] = [
         path: "/",
         icon: <MdDashboard />,
         as: MdDashboard
+    },
+    {
+        name: "Floor Plan",
+        path: "/floorplan",
+        icon: <MdArchitecture />,
+        as: MdArchitecture
     },
     {
         name: "Kaleidoscope",
@@ -52,6 +59,22 @@ function Menubar() {
 
     const auth = useAuth();
 
+    const [hugeScreen, setHugeScreen] = useState<boolean>(
+        window.matchMedia("(min-width: 1024px)").matches
+    )
+
+    useEffect(() => {
+        const mediaQuery1024 = window.matchMedia("(min-width: 1024px)");
+
+        const handle1024Change = (e: { matches: boolean | ((prevState: boolean) => boolean); }) => setHugeScreen(e.matches);
+
+        mediaQuery1024.addEventListener('change', handle1024Change);
+
+        return () => {
+            mediaQuery1024.removeEventListener('change', handle1024Change);
+        };
+    }, []);
+
     const handleLinkClick = (path: string) => {
         navigate(path);
         onClose();
@@ -59,21 +82,7 @@ function Menubar() {
 
     const isActive = (path: string) => location.pathname === path;
 
-    let locationString = "";
-    switch (location.pathname) {
-        case "/":
-            locationString = "Dashboard";
-            break;
-        case "/kaleidoscope":
-            locationString = "Kaleidoscope";
-            break;
-        case "/heating":
-            locationString = "Heating";
-            break;
-        case "/settings":
-            locationString = "Settings"
-            break;
-    }
+    const locationString = menuItems.find((menuItem) => menuItem.path === location.pathname)?.name || ""
 
     return (
         <Box
@@ -107,25 +116,27 @@ function Menubar() {
                     <DrawerBody >
                         <VStack align={"start"} >
                             {menuItems.map((menuitem, index) =>
-                                <HStack
-                                    key={index}
-                                    alignItems={"center"}>
-                                    <Icon
-                                        key={menuitem.name + "icon"}
-                                        as={menuitem.as}
-                                        color={isActive(menuitem.path) ? secondary : primary}
-                                        onClick={() => handleLinkClick(menuitem.path)}
-                                    />
-                                    <Button
-                                        key={menuitem.name + "button"}
-                                        marginBottom={"0.1rem"}
-                                        variant="link"
-                                        onClick={() => handleLinkClick(menuitem.path)}
-                                        color={isActive(menuitem.path) ? secondary : primary}
-                                    >
-                                        {menuitem.name}
-                                    </Button>
-                                </HStack>
+                                (menuitem.path != "/floorplan" || hugeScreen) ?
+                                    <HStack
+                                        key={index}
+                                        alignItems={"center"}>
+                                        <Icon
+                                            key={menuitem.name + "icon"}
+                                            as={menuitem.as}
+                                            color={isActive(menuitem.path) ? secondary : primary}
+                                            onClick={() => handleLinkClick(menuitem.path)}
+                                        />
+                                        <Button
+                                            key={menuitem.name + "button"}
+                                            marginBottom={"0.1rem"}
+                                            variant="link"
+                                            onClick={() => handleLinkClick(menuitem.path)}
+                                            color={isActive(menuitem.path) ? secondary : primary}
+                                        >
+                                            {menuitem.name}
+                                        </Button>
+                                    </HStack>
+                                    : null
                             )}
                             <Divider m="1em"></Divider>
                             <Switch
