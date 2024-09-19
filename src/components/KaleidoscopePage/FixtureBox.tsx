@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useColorMode, useDisclosure, useToast, VStack, Wrap } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useColorMode, useColorModeValue, useDisclosure, useToast, VStack, Wrap } from "@chakra-ui/react";
 import { Fixture } from "./kaleidoscopeTypes";
 import ParameterBox from "./ParameterBox";
 import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
@@ -11,6 +11,8 @@ import { FixtureName } from "../DashboardPage/obtainTiles";
 function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
 
     const { colorMode } = useColorMode()
+    const headingBg = useColorModeValue("white", "gray.700");
+    
     const { setProgram, error: kaleidoscopeSetError } = useKaleidoscope();
 
     const programNames = Object.keys(props.data.programs).sort().filter((value) => value !== "EXTERNAL");
@@ -71,7 +73,7 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                         <Flex >
                             <Text
                                 className="fixturebox_heading"
-                                bg={"Background"}
+                                bg={headingBg}
                                 borderRadius={"0.375rem"}
                                 padding={"0.2rem"}
                                 margin={"-0.2rem"}>

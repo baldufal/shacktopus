@@ -5,7 +5,6 @@ import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
 import { MdArchitecture, MdDashboard, MdLightbulb, MdSettings } from "react-icons/md";
 import { IoIosFlame } from "react-icons/io";
-import { useState, useEffect } from "react";
 
 export type MenuItem = {
     name: string;
@@ -59,22 +58,6 @@ function Menubar() {
 
     const auth = useAuth();
 
-    const [hugeScreen, setHugeScreen] = useState<boolean>(
-        window.matchMedia("(min-width: 1024px)").matches
-    )
-
-    useEffect(() => {
-        const mediaQuery1024 = window.matchMedia("(min-width: 1024px)");
-
-        const handle1024Change = (e: { matches: boolean | ((prevState: boolean) => boolean); }) => setHugeScreen(e.matches);
-
-        mediaQuery1024.addEventListener('change', handle1024Change);
-
-        return () => {
-            mediaQuery1024.removeEventListener('change', handle1024Change);
-        };
-    }, []);
-
     const handleLinkClick = (path: string) => {
         navigate(path);
         onClose();
@@ -116,7 +99,6 @@ function Menubar() {
                     <DrawerBody >
                         <VStack align={"start"} >
                             {menuItems.map((menuitem, index) =>
-                                (menuitem.path != "/floorplan" || hugeScreen) ?
                                     <HStack
                                         key={index}
                                         alignItems={"center"}>
@@ -136,7 +118,6 @@ function Menubar() {
                                             {menuitem.name}
                                         </Button>
                                     </HStack>
-                                    : null
                             )}
                             <Divider m="1em"></Divider>
                             <Switch

@@ -1,9 +1,10 @@
+import { RoomName } from "../FloorPlanPage/components/Rooms";
 import { AUX_BOXES } from "../HeatingPage/Thermocontrol_aux/AuxBox";
 import { UserResponse } from "../Router/AuthContext";
 
 export type FloorplanPosition = {
     top: string,
-    left: string
+    left: string,
 }
 
 export type FixtureName =  {
@@ -11,7 +12,8 @@ export type FixtureName =  {
     display: string,
     background_active?: string,
     background_inactive?: string,
-    floorplan_position?: FloorplanPosition,
+    floorplan_position?: FloorplanPosition[],
+    rooms?: RoomName[]
   }
 
 export const obtainTiles = (fixtureNames: FixtureName[] | undefined, userData: UserResponse | undefined):

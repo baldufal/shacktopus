@@ -1,100 +1,98 @@
-import { Box, IconButton, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useColorMode, useDisclosure, Text } from "@chakra-ui/react";
+import { Box, Image, useColorMode } from "@chakra-ui/react";
 import floorplan from "./../../assets/floorplan.png"
-import { MdLight } from "react-icons/md";
-import "./../fixturebox.scss"
 import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
-import FixtureBox from "../KaleidoscopePage/FixtureBox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KNOWN_FIXTURES } from "../KaleidoscopePage/KNOWN_FIXTURES";
+import Rooms from "./components/Rooms";
+import { FixtureName } from "../DashboardPage/obtainTiles";
+import Symbols from "./components/Symbols";
 
 function FloorPlanPage() {
 
-    const { fixturesData, fixtureNames, error } = useKaleidoscope();
+    const { fixturesData, fixtureNames } = useKaleidoscope();
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [knownFixtureNames, setKnownFixtureNames] = useState<FixtureName[]>(
+        fixtureNames ?
+            fixtureNames!.map(name => KNOWN_FIXTURES[name.original] || undefined).filter(element => element != undefined)
+            : []
+    );
+
+    useEffect(() => {
+        console.log("fixture names: " + fixtureNames?.map(fn => fn.original))
+
+        const updatedNames = fixtureNames ?
+            fixtureNames!.map(name => KNOWN_FIXTURES[name.original] || undefined).filter(element => element != undefined)
+            : [];
+
+        setKnownFixtureNames(updatedNames);
+        console.log("known fixture names: " + updatedNames.map(fn => fn.original))
+        console.log("Defined: " + (fixtureNames && fixturesData) ? "yes" : "no")
+
+    }, [fixtureNames]);
 
     const { colorMode } = useColorMode()
     const darkMode = colorMode === "dark";
 
-    const [clickedFixture, setClickedFixture] = useState<string>("");
+    const [largeScreen, setLargeScreen] = useState<boolean>(
+        window.matchMedia("(min-width: 768px)").matches)
+    const [hugeScreen, setHugeScreen] = useState<boolean>(
+        window.matchMedia("(min-width: 1024px)").matches)
 
-    const clickOnFixture = (fixtureName: string) => {
-        setClickedFixture(fixtureName);
-        onOpen();
-    }
+    useEffect(() => {
+        const mediaQuery768 = window.matchMedia("(min-width: 768px)");
+        const mediaQuery1024 = window.matchMedia("(min-width: 1024px)");
+
+        const handle768Change = (e: { matches: boolean | ((prevState: boolean) => boolean); }) => setLargeScreen(e.matches);
+        const handle1024Change = (e: { matches: boolean | ((prevState: boolean) => boolean); }) => setHugeScreen(e.matches);
+
+        mediaQuery768.addEventListener('change', handle768Change);
+        mediaQuery1024.addEventListener('change', handle1024Change);
+
+        // Cleanup function
+        return () => {
+            mediaQuery768.removeEventListener('change', handle768Change);
+            mediaQuery1024.removeEventListener('change', handle1024Change);
+        };
+    }, []);
 
     return (
-        <>
-            <Box
-                as="main"
-                flex="1"
-                // p={4}
-                paddingTop={0}
-                width="100%"
+
+        <Box
+            as="main"
+            flex="1"
+            //p={4}
+            marginTop={largeScreen ? "-2rem" : ""}
+            width="100%"
+        >
+
+            <div
+                style={{
+                    position: "relative",
+                    display: "inline-block",
+                    width: "auto",
+                    maxWidth: "min(1200px, 100%)",
+                }}
             >
+                {fixtureNames && fixturesData ?
+                    <Rooms
+                        fixtureNames={knownFixtureNames}
+                        fixturesData={fixturesData} />
+                    : null}
+                {fixtureNames && fixturesData && hugeScreen ?
+                    <Symbols
+                        fixtureNames={knownFixtureNames}
+                        fixturesData={fixturesData} />
+                    : null}
+                < Image
+                    zIndex={-1}
+                    opacity={0.8}
+                    filter={darkMode ? "invert(100%)" : ""}
+                    src={floorplan}
+                />
+            </div>
 
-                <div
-                    style={{ position: "relative",
-                        display: "inline-block", // Ensures that the div wraps around the image
-            width: "auto", // Ensures the width adjusts to the image size
-                     }}
-                >
-                    {fixtureNames && fixturesData ?
-                        fixtureNames.map((name) =>
-                            (KNOWN_FIXTURES[name.original]
-                                && KNOWN_FIXTURES[name.original].floorplan_position) ?
-                                <div
-                                    key={name.original}
-                                    style={{
-                                        zIndex: 1,
-                                        position: "absolute",
-                                        top: KNOWN_FIXTURES[name.original].floorplan_position!.top,
-                                        left: KNOWN_FIXTURES[name.original].floorplan_position!.left,
-                                        transform: "translate(-50%, -50%)",
-                                    }}
-                                >
-                                    <IconButton
-                                        zIndex={1}
-                                        aria-label={name.original}
-                                        onClick={() => clickOnFixture(name.original)}
-                                        icon={<MdLight />}
-                                    />
-                                </div>
-                                : null)
-                        : null}
-                    < Image
-                        zIndex={0}
-                        opacity={0.8}
-                        filter={darkMode ? "invert(100%)" : ""}
-                        src={floorplan}
-                    />
-                </div>
+        </Box>
 
-            </Box>
-
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        {error ? (
-                            <Text>{error}</Text>
-                        ) : fixtureNames && fixturesData ? (
-                            <div key={7}>
-                                <FixtureBox
-                                    key={77}
-                                    fixtureName={KNOWN_FIXTURES[clickedFixture]}
-                                    data={fixturesData.fixtures[clickedFixture]}
-                                />
-                                <div />
-                            </div>
-                        ) : (
-                            <Text>Loading...</Text>
-                        )}
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </>
     );
 
 }
