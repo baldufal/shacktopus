@@ -11,12 +11,12 @@ function ClimateDetails(props: AuxBoxProps) {
 
     // All the data we need is there
     const dataFromAPI_ok = props.dataFromAPI &&
-        props.dataFromAPI["temperature_inside"] &&
-        props.dataFromAPI["humidity_inside"] &&
-        props.dataFromAPI["gas_inside"] &&
-        props.dataFromAPI["temperature_outside"] &&
-        props.dataFromAPI["humidity_outside"] &&
-        props.dataFromAPI["temperature_basement"];
+        props.dataFromAPI["temperature_inside"] != undefined &&
+        props.dataFromAPI["humidity_inside"] != undefined &&
+        props.dataFromAPI["gas_inside"] != undefined &&
+        props.dataFromAPI["temperature_outside"] != undefined &&
+        props.dataFromAPI["humidity_outside"] != undefined &&
+        props.dataFromAPI["temperature_basement"] != undefined;
 
     if (!props.error && props.loading)
         return <Skeleton className="fixturebox" width={"150px"} height={"400px"}></Skeleton>

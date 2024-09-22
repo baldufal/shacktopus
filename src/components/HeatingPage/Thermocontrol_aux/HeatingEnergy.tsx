@@ -9,8 +9,8 @@ function Energy(props: AuxBoxProps) {
 
     // All the data we need is there
     const dataFromAPI_ok = props.dataFromAPI &&
-        props.dataFromAPI["energy_consumption_24h"] &&
-        props.dataFromAPI["energy_consumption_current"];
+        props.dataFromAPI["energy_consumption_24h"] != undefined &&
+        props.dataFromAPI["energy_consumption_current"] != undefined;
 
     if (!props.error && props.loading)
         return <Skeleton className="fixturebox" width={"250px"} height={"250px"}></Skeleton>
