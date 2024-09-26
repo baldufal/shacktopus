@@ -1,6 +1,8 @@
 import { FixtureName } from "../DashboardPage/obtainTiles";
 import fairy_lights_off from './../../assets/fairy_lights/off.png';
 import fairy_lights_on from './../../assets/fairy_lights/on.png';
+import spoider_off from './../../assets/spoider/off.png';
+import spoider_on from './../../assets/spoider/on.png';
 
 export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
     'kitchen_rgbw': {
@@ -66,6 +68,8 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
     'spoider': {
         original: 'spoider',
         display: 'Spoider',
+        background_active: "url('" + spoider_on + "')",
+        background_inactive: "url('" + spoider_off + "')",
         floorplan_position: [{
             top: "49%",
             left: "22%"
