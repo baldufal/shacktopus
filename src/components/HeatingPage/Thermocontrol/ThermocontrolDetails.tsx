@@ -1,4 +1,4 @@
-import { Box, Divider, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Switch, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Flex, Icon, Skeleton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Switch, Text, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
@@ -6,6 +6,7 @@ import { useThemeColors } from "../../../contexts/ThemeContext";
 import { Permission, useAuth } from "../../Router/AuthContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./../../fixturebox.scss"
+import { MdHourglassTop, MdLock } from "react-icons/md";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -18,7 +19,7 @@ export interface ThermocontrolSettableDataType {
 
 export type ThermocontrolAuxData = {
     [key: string]: number | boolean | string;
-  };
+};
 
 export type TCUpdates = {
     type: "tc" | "tc_aux";
@@ -39,7 +40,7 @@ function ThermocontrolDetails() {
 
     const { primary, bwForeground, indicator } = useThemeColors();
 
-    const REFRESH_INTERVAL = 300;
+    const ADDITIONAL_WAIT = 100;
     const DEBOUNCE_DELAY = 200;
 
     const [dataFromAPI, setDataFromAPI] = useState<ThermocontrolDataType | null>(null);
@@ -66,8 +67,10 @@ function ThermocontrolDetails() {
     // Stop periodic UI updates while we are editing
     const [isTyping, setIsTyping] = useState<boolean>(false);
     const isTypingRef = useRef(isTyping);
-    // API request was sent and not yet answered
+    // No data received yet
     const [loading, setLoading] = useState<boolean>(true);
+    // API request was sent and not yet answered
+    const [dirty, setDirty] = useState<boolean>(true);
     // Last API request returned an error
     const [error, setError] = useState<string | undefined>(undefined);
     // Used for debouncing
@@ -76,7 +79,7 @@ function ThermocontrolDetails() {
 
     const writePermission = auth.userData && auth.userData.permissions.find((val) => val === Permission.HEATING) != undefined
 
-    const { sendMessage, lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`);
+    const { sendMessage, lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`, { share: true, retryOnError: true });
 
 
     useEffect(() => {
@@ -86,20 +89,21 @@ function ThermocontrolDetails() {
     // Debounced function to handle UI data changes
     const handleMessage = useCallback(
         (message: MessageEvent) => {
-            setLoading(false);
             if (isTypingRef.current) {
                 console.log("Skipping data fetch because of ongoing user input");
                 return;
             }
             try {
                 const json = JSON.parse(message.data) as TCUpdates
-                if(json.type != "tc")
+                if (json.type != "tc")
                     return;
                 if (!json.stale) {
                     const data = json.data!;
                     setDataFromAPI(data);
                     updateDataFromUI(data);
                     setError(undefined);
+                    setDirty(false);
+                    setLoading(false);
                 } else {
                     setError("TC update health != good");
                 }
@@ -134,8 +138,7 @@ function ThermocontrolDetails() {
                 clearTimeout(timeoutId2);
 
             setIsTyping(true);
-            // For marking data in ui as dirty
-            setLoading(true);
+            setDirty(true);
 
 
             const newTimeoutId = window.setTimeout(() => {
@@ -147,24 +150,37 @@ function ThermocontrolDetails() {
 
             const newTimeoutId2 = window.setTimeout(() => {
                 setIsTyping(false);
-            }, DEBOUNCE_DELAY + REFRESH_INTERVAL)
+            }, DEBOUNCE_DELAY + ADDITIONAL_WAIT)
             setTimeoutId2(newTimeoutId2)
         },
         [timeoutId, timeoutId2, auth.userData!.token]
     );
 
+    if (!error && loading)
+        return <Skeleton
+            width={"250px"}
+            height={"450px"} />
+
+    const borderColor = error ? indicator.error : dirty ? indicator.dirty : indicator.ok;
     return (
         <Box
             className="fixturebox"
             width={"fit-content"}
-            borderColor={
-                error ? indicator.error :
-                    writePermission ?
-                        (loading ? indicator.dirty : indicator.ok)
-                        : indicator.read_only} p={2}>
+            borderColor={borderColor}
+            p={2}>
             {error ? <Text color={indicator.error}>{error}</Text> :
                 <VStack align={"start"}>
-                    <Text className="fixturebox_heading">ThermoControl</Text>
+                    <Flex width={"100%"}>
+                        <Text className="fixturebox_heading">ThermoControl</Text>
+                        <Spacer />
+                        {writePermission ?
+                            (dirty ?
+                                <Icon as={MdHourglassTop} color={indicator.dirty} />
+                                : null)
+                            :
+                            <Icon as={MdLock} />}
+                    </Flex>
+
                     <Divider></Divider>
                     <Text>Target temperature</Text>
                     <TemperatureInput

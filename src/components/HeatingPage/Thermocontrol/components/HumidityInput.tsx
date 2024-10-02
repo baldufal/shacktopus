@@ -12,9 +12,9 @@ function HumidityInput(props: { isDisabled?: boolean, dataFromUI: ThermocontrolS
             onChange: (_valueString, valueAsNumber) => props.onChange(valueAsNumber),
         })
 
-    const inc = getIncrementButtonProps()
-    const dec = getDecrementButtonProps()
-    const input = getInputProps()
+    const inc = props.isDisabled ? null : getIncrementButtonProps();
+    const dec = props.isDisabled ? null : getDecrementButtonProps();
+    const input = getInputProps();
 
     return (
         <HStack maxW='200px'>

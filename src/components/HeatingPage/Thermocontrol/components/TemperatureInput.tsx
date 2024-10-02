@@ -12,13 +12,13 @@ function TemperatureInput(props: { isDisabled?: boolean, dataFromUI: Thermocontr
             onChange: (_valueString, valueAsNumber) => props.onChange(valueAsNumber),
         })
 
-    const inc = getIncrementButtonProps()
-    const dec = getDecrementButtonProps()
-    const input = getInputProps()
+    const inc = props.isDisabled ? null :  getIncrementButtonProps();
+    const dec = props.isDisabled ? null : getDecrementButtonProps();
+    const input = getInputProps();
 
     return (
         <HStack maxW='200px'>
-            <Button {...dec} isDisabled={props.isDisabled}>-</Button>
+            <Button { ...dec} isDisabled={props.isDisabled}>-</Button>
             <Input {...input} isDisabled={props.isDisabled} />
             <Button {...inc} isDisabled={props.isDisabled}>+</Button>
         </HStack>

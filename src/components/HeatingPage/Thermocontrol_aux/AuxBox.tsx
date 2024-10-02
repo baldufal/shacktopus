@@ -12,7 +12,6 @@ export type AuxBoxProps = {
     title: string,
     loading: boolean,
     error: string | undefined,
-    stale: boolean,
     dataFromAPI: ThermocontrolAuxData | undefined,
     borderColor: string
 }
@@ -44,9 +43,9 @@ function AuxBox(props: { type: AuxBoxType }) {
     // Last API request returned an error
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | undefined>(undefined);
-    const [stale, setStale] = useState<boolean>(false);
+    const [, setStale] = useState<boolean>(false);
 
-    const { lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`);
+    const { lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`, {share: true, retryOnError: true});
 
     const handleMessage = useCallback(
         (message: MessageEvent) => {
@@ -86,16 +85,16 @@ function AuxBox(props: { type: AuxBoxType }) {
     const borderColor =
         (error || !dataFromAPI) ?
             indicator.error :
-            (stale ? indicator.dirty : indicator.read_only);
+            indicator.ok;
 
     // THIS MUST BE KEPT UP TO DATE WITH AuxBoxes DEFINITION AT THE TOP
     switch (props.type) {
         case AUX_BOXES.at(0)!.original:
-            return (<AuxDetails title={AUX_BOXES.at(0)!.display} loading={loading} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
+            return (<AuxDetails title={AUX_BOXES.at(0)!.display} loading={loading} error={error}  dataFromAPI={dataFromAPI} borderColor={borderColor} />)
         case AUX_BOXES.at(1)!.original:
-            return (<ClimateDetails title={AUX_BOXES.at(1)!.display} loading={loading} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
+            return (<ClimateDetails title={AUX_BOXES.at(1)!.display} loading={loading} error={error} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
         case AUX_BOXES.at(2)!.original:
-            return (<HeatingEnergy title={AUX_BOXES.at(2)!.display} loading={loading} error={error} stale={stale} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
+            return (<HeatingEnergy title={AUX_BOXES.at(2)!.display} loading={loading} error={error} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
 
     }
 }

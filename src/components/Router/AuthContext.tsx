@@ -69,7 +69,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     useEffect(() => {
-        // Wenn ein Token-Ablaufzeit gesetzt ist, stelle sicher, dass ein Timer gesetzt wird
         if (userData) {
             const currentTime = Date.now();
             const timeLeft = userData.tokenExpiration * 1000 - currentTime;
@@ -82,7 +81,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
                 return () => clearTimeout(timer); // Bereinige den Timer bei Änderungen
             } else {
-                // Falls das Token bereits abgelaufen ist, sofort ausloggen
                 refreshToken();
             }
         }

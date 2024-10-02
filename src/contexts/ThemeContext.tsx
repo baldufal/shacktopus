@@ -42,7 +42,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             bwForeground,
             bwBackground,
             indicator: {
-                ok: "green",
+                ok: "",
                 read_only: "lightblue",
                 dirty: "orange",
                 error: "red"

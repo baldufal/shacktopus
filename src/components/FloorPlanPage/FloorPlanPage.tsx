@@ -18,15 +18,11 @@ function FloorPlanPage() {
     );
 
     useEffect(() => {
-        console.log("fixture names: " + fixtureNames?.map(fn => fn.original))
-
         const updatedNames = fixtureNames ?
             fixtureNames!.map(name => KNOWN_FIXTURES[name.original] || undefined).filter(element => element != undefined)
             : [];
 
         setKnownFixtureNames(updatedNames);
-        console.log("known fixture names: " + updatedNames.map(fn => fn.original))
-        console.log("Defined: " + (fixtureNames && fixturesData) ? "yes" : "no")
 
     }, [fixtureNames]);
 

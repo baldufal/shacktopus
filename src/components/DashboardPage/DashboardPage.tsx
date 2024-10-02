@@ -2,7 +2,7 @@ import { Box, Wrap, Text, Button, IconButton, VStack } from "@chakra-ui/react";
 import {  useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import "./../fixturebox.scss"
 import ItemSelector from "./ItemSelector";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { MdEdit } from "react-icons/md";
 import { useAuth } from "../Router/AuthContext";
@@ -23,7 +23,9 @@ function DashboardPage() {
   const { fixturesData, fixtureNames } = useKaleidoscope();
   const { indicator } = useThemeColors();
 
-  const { allTiles: initialAllTiles, initialSelectedTiles } = obtainTiles(fixtureNames, userData);
+  const { allTiles: initialAllTiles, initialSelectedTiles } = useMemo(() => {
+    return obtainTiles(fixtureNames, userData)
+  }, [fixtureNames, userData]);;
 
   const [allTiles, setAllTiles] = useState<FixtureName[]>(initialAllTiles);
   const [selectedTiles, setSelectedTiles] = useState<FixtureName[]>(initialSelectedTiles);
