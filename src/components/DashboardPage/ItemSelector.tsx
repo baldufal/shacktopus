@@ -18,7 +18,6 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
 
   const { secondary, bwForeground } = useThemeColors();
 
-
   return (
     <VStack
     width={"100%"}

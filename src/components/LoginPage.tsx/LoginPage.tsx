@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './../Router/AuthContext';
 import { Box, Button, Image, Input, Text, VStack } from '@chakra-ui/react';
-import shacktopus from './../../assets/shacktopus.png';
+import shacktopus from './../../assets/shacktopus.webp';
 
 const LoginPage: React.FC = () => {
-    const [username, setUsername] = useState('guest');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const auth = useAuth();
@@ -13,7 +13,9 @@ const LoginPage: React.FC = () => {
     const location = useLocation();
 
     const handleSubmit = async () => {
-        const loginResult = await auth.login(username, password);
+        const loginResult = username.length === 0 ?
+            await auth.login("guest", "") :
+            await auth.login(username, password);
         if (loginResult.error) {
             console.log(loginResult.error);
             setError('Login failed. Please check your credentials and try again.');

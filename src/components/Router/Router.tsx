@@ -1,32 +1,53 @@
 import { Link, Route, Routes } from "react-router-dom";
-import DashboardPage from "../DashboardPage/DashboardPage";
-import SettingsPage from "../SettingsPage/SettingsPage";
-import HeatingPage from "../HeatingPage/HeatingPage";
 import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../LoginPage.tsx/LoginPage";
-import KaleidoscopePage from "../KaleidoscopePage/KaleidoscopePage";
 import Layout from "../Layout/Layout";
-import FloorPlanPage from "../FloorPlanPage/FloorPlanPage";
+import { lazy, Suspense } from "react";
 
 function Router() {
+
+  const Dashboard = lazy(() => import("../DashboardPage/DashboardPage"));
+  const FloorPlan = lazy(() => import("../FloorPlanPage/FloorPlanPage"));
+  const Kaleidoscope = lazy(() => import("../KaleidoscopePage/KaleidoscopePage"));
+  const Heating = lazy(() => import("../HeatingPage/HeatingPage"));
+  const Settings = lazy(() => import("../SettingsPage/SettingsPage"));
 
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={
-          <ProtectedRoute element={<DashboardPage />} />
+          <ProtectedRoute element={
+            <Suspense >
+              <Dashboard />
+            </Suspense>} />
         } />
         <Route path="floorplan" element={
-          <ProtectedRoute element={<FloorPlanPage />} />
+          <ProtectedRoute element={
+            <Suspense >
+              <FloorPlan />
+            </Suspense>
+          } />
         } />
         <Route path="kaleidoscope" element={
-          <ProtectedRoute element={<KaleidoscopePage />} />
+          <ProtectedRoute element={
+            <Suspense >
+              <Kaleidoscope />
+            </Suspense>
+          } />
         } />
         <Route path="heating" element={
-          <ProtectedRoute element={<HeatingPage />} />
+          <ProtectedRoute element={
+            <Suspense>
+              <Heating />
+            </Suspense>
+          } />
         } />
         <Route path="settings" element={
-          <ProtectedRoute element={<SettingsPage />} />
+          <ProtectedRoute element={
+            <Suspense>
+              <Settings />
+            </Suspense>
+          } />
         } />
         <Route path="*" element={
           <ProtectedRoute element={<NoMatch />} />

@@ -35,7 +35,6 @@ function DashboardPage() {
   }, [fixtureNames, userData]);
 
 
-
   const [modifyMode, setModifyMode] = useState<boolean>(false);
 
   const onDragEnd = (result: DropResult) => {

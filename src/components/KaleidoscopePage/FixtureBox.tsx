@@ -51,7 +51,8 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                         className="fixturebox_background"
                         style={{
                             backgroundImage: props.fixtureName.background_active,
-                            opacity: 1
+                            opacity: 1,
+                            zIndex: -2,
                         }} />
                     : null
                 }
