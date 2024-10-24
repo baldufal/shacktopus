@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useThemeColors } from "../../../contexts/ThemeContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./../../fixturebox.scss"
-import { TCUpdates, ThermocontrolAuxData } from "../Thermocontrol/ThermocontrolDetails";
 import AuxDetails from "./AuxDetails";
 import ClimateDetails from "./ClimateDetails";
 import HeatingEnergy from "./HeatingEnergy";
 import { FixtureName } from "../../DashboardPage/obtainTiles";
+import { useAuth } from "../../Router/AuthContext";
+import { TCUpdates, ThermocontrolAuxData, ThermocontrolMessage } from "../Thermocontrol/ThermocontrolMessage";
 
 export type AuxBoxProps = {
     title: string,
@@ -36,6 +37,7 @@ export const AUX_BOXES: FixtureName[] = [
 
 function AuxBox(props: { type: AuxBoxType }) {
 
+    const auth = useAuth();
     const { indicator } = useThemeColors();
 
     const [dataFromAPI, setDataFromAPI] = useState<ThermocontrolAuxData | undefined>(undefined);
@@ -45,23 +47,35 @@ function AuxBox(props: { type: AuxBoxType }) {
     const [error, setError] = useState<string | undefined>(undefined);
     const [, setStale] = useState<boolean>(false);
 
-    const { lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`, {share: true, retryOnError: true});
+    const { lastMessage, readyState } = useWebSocket(`ws://${window.location.host}/api/thermocontrol`, { share: true, retryOnError: true });
 
     const handleMessage = useCallback(
         (message: MessageEvent) => {
             try {
-                const json = JSON.parse(message.data) as TCUpdates
-                if (json.type != "tc_aux")
-                    return;
-                setStale(json.stale);
+                const parsedMessage = JSON.parse(message.data) as ThermocontrolMessage;
+                switch (parsedMessage.messageType) {
+                    case "error":
+                        console.log("Received thermocontrol error: " + parsedMessage.error);
+                        break;
+                    case "tokenError":
+                        console.log("Received thermocontrol token error: " + parsedMessage.error);
+                        // Investigate token health
+                        auth.refreshToken();
+                        break;
+                    case "update":
+                        const update = parsedMessage.data as TCUpdates
+                        if (update.type != "tc_aux")
+                            return;
+                        setStale(update.stale);
 
-                const data = json.data_aux!;
-                setDataFromAPI(data);
+                        const data = update.data_aux!;
+                        setDataFromAPI(data);
 
-                setError(undefined);
-                setLoading(false);
+                        setError(undefined);
+                        setLoading(false);
+                }
             } catch (error) {
-                setError("An error occured during parsing data");
+                setError("An error occured during parsing thermocontrol message");
                 console.log(error)
             }
         },
@@ -90,7 +104,7 @@ function AuxBox(props: { type: AuxBoxType }) {
     // THIS MUST BE KEPT UP TO DATE WITH AuxBoxes DEFINITION AT THE TOP
     switch (props.type) {
         case AUX_BOXES.at(0)!.original:
-            return (<AuxDetails title={AUX_BOXES.at(0)!.display} loading={loading} error={error}  dataFromAPI={dataFromAPI} borderColor={borderColor} />)
+            return (<AuxDetails title={AUX_BOXES.at(0)!.display} loading={loading} error={error} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
         case AUX_BOXES.at(1)!.original:
             return (<ClimateDetails title={AUX_BOXES.at(1)!.display} loading={loading} error={error} dataFromAPI={dataFromAPI} borderColor={borderColor} />)
         case AUX_BOXES.at(2)!.original:

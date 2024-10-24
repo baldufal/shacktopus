@@ -22,6 +22,8 @@ interface AuthContextType {
     userData: UserResponse | undefined;
     login: (username: string, password: string) => Promise<{ error: string | undefined }>;
     logout: () => void;
+    // Refresh token if possible, otherwise logout
+    refreshToken: () => void;
     isAuthenticated: boolean;
     isLoading: boolean;
     updateUserConfig: (config: UserConfig) => Promise<string | undefined>;
@@ -167,7 +169,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const isAuthenticated = !!userData && timeUntilExpiration > 0;
 
     return (
-        <AuthContext.Provider value={{ userData, login, logout, isAuthenticated, isLoading, updateUserConfig}}>
+        <AuthContext.Provider value={{ userData, login, logout, refreshToken, isAuthenticated, isLoading, updateUserConfig}}>
             {children}
         </AuthContext.Provider>
     );

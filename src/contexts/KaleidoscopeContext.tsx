@@ -4,6 +4,7 @@ import { FixturesData } from '../components/KaleidoscopePage/kaleidoscopeTypes';
 import { KNOWN_FIXTURES } from '../components/KaleidoscopePage/KNOWN_FIXTURES';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { FixtureName } from '../components/DashboardPage/obtainTiles';
+import { KaleidoscopeMessage } from './KaleidoscopeMessage';
 
 
 interface KaleidoscopeContextType {
@@ -88,25 +89,35 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (lastMessage !== null) {
-      const parsedMessage = JSON.parse(lastMessage.data);
-      if (parsedMessage.messageType === "update")
-        if (parsedMessage.health === "good") {
-          setError(undefined);
-          setFixturesData(parsedMessage.data as FixturesData);
-          if (!fixtureNames) {
-            const extractedNames = Object.keys(parsedMessage.data.fixtures).sort();
-            setFixtureNames(
-              extractedNames.map(name => {
-                return KNOWN_FIXTURES[name] || {
-                  original: name,
-                  display: name
-                };
-              })
-            );
+      const parsedMessage = JSON.parse(lastMessage.data) as KaleidoscopeMessage;
+      switch (parsedMessage.messageType) {
+        case "error":
+          console.log("Received kaleidoscope error: " + parsedMessage.error);
+          break;
+        case "tokenError":
+          console.log("Received kaleidoscope token error: " + parsedMessage.error);
+          // Investigate token health
+          auth.refreshToken();
+          break;
+        case "update":
+          if (parsedMessage.health === "good") {
+            setError(undefined);
+            setFixturesData(parsedMessage.data as FixturesData);
+            if (!fixtureNames) {
+              const extractedNames = Object.keys(parsedMessage.data.fixtures).sort();
+              setFixtureNames(
+                extractedNames.map(name => {
+                  return KNOWN_FIXTURES[name] || {
+                    original: name,
+                    display: name
+                  };
+                })
+              );
+            }
+          } else {
+            console.log("Received kaleidoscope update with health != good");
           }
-        } else {
-          console.log("Received kaleidoscope update with health != good");
-        }
+      }
     }
   }, [lastMessage]);
 

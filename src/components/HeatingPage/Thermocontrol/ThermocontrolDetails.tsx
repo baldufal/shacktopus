@@ -7,6 +7,7 @@ import { Permission, useAuth } from "../../Router/AuthContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./../../fixturebox.scss"
 import { MdHourglassTop, MdLock } from "react-icons/md";
+import { TCUpdates, ThermocontrolDataType, ThermocontrolMessage } from "./ThermocontrolMessage";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -17,22 +18,6 @@ export interface ThermocontrolSettableDataType {
     use_ventilation_for_heating: boolean;
 }
 
-export type ThermocontrolAuxData = {
-    [key: string]: number | boolean | string;
-};
-
-export type TCUpdates = {
-    type: "tc" | "tc_aux";
-    stale: boolean;
-    data?: ThermocontrolDataType;
-    data_aux?: ThermocontrolAuxData;
-}
-
-interface ThermocontrolDataType extends ThermocontrolSettableDataType {
-    emergency_heating_is_active: boolean;
-    data_age_humidity: number;
-    data_age_temperature: number;
-}
 
 function ThermocontrolDetails() {
 
@@ -89,27 +74,40 @@ function ThermocontrolDetails() {
     // Debounced function to handle UI data changes
     const handleMessage = useCallback(
         (message: MessageEvent) => {
-            if (isTypingRef.current) {
-                console.log("Skipping data fetch because of ongoing user input");
-                return;
-            }
             try {
-                const json = JSON.parse(message.data) as TCUpdates
-                if (json.type != "tc")
-                    return;
-                if (!json.stale) {
-                    const data = json.data!;
-                    setDataFromAPI(data);
-                    updateDataFromUI(data);
-                    setError(undefined);
-                    setDirty(false);
-                    setLoading(false);
-                } else {
-                    setError("TC update health != good");
+                const parsedMessage = JSON.parse(message.data) as ThermocontrolMessage;
+                switch (parsedMessage.messageType) {
+                    case "error":
+                        console.log("Received thermocontrol error: " + parsedMessage.error);
+                        break;
+                    case "tokenError":
+                        console.log("Received thermocontrol token error: " + parsedMessage.error);
+                        // Investigate token health
+                        auth.refreshToken();
+                        break;
+                    case "update":
+                        if (isTypingRef.current) {
+                            console.log("Skipping data fetch because of ongoing user input");
+                            return;
+                        }
+    
+                        const update = parsedMessage.data as TCUpdates
+                        if (update.type != "tc")
+                            return;
+                        if (!update.stale) {
+                            const data = update.data!;
+                            setDataFromAPI(data);
+                            updateDataFromUI(data);
+                            setError(undefined);
+                            setDirty(false);
+                            setLoading(false);
+                        } else {
+                            setError("TC update health != good");
+                        }
                 }
             } catch (error) {
-                setError("An error occured during parsing data");
-                console.log(error)
+                setError("An error occured during parsing thermocontrol message");
+                console.log("An error occured during parsing thermocontrol message: " + error)
             }
         },
         [isTyping]
