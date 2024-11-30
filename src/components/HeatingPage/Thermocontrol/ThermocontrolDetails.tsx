@@ -7,7 +7,7 @@ import { Permission, useAuth } from "../../Router/AuthContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./../../fixturebox.scss"
 import { MdHourglassTop, MdLock } from "react-icons/md";
-import { TCUpdates, ThermocontrolDataType, ThermocontrolMessage } from "./ThermocontrolMessage";
+import { TcUpdates, TcData, TcMessage } from "./ThermocontrolMessage";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -28,7 +28,7 @@ function ThermocontrolDetails() {
     const ADDITIONAL_WAIT = 100;
     const DEBOUNCE_DELAY = 200;
 
-    const [dataFromAPI, setDataFromAPI] = useState<ThermocontrolDataType | null>(null);
+    const [dataFromAPI, setDataFromAPI] = useState<TcData | null>(null);
     const [dataFromUI, setDataFromUI] = useState<ThermocontrolSettableDataType>(
         {
             extra_ventilation: 0,
@@ -38,7 +38,7 @@ function ThermocontrolDetails() {
             use_ventilation_for_cooling: false,
             use_ventilation_for_heating: false
         });
-    const updateDataFromUI = (apiData: ThermocontrolDataType): void => {
+    const updateDataFromUI = (apiData: TcData): void => {
         setDataFromUI({
             extra_ventilation: apiData.extra_ventilation,
             max_heating_power: apiData.max_heating_power,
@@ -75,7 +75,7 @@ function ThermocontrolDetails() {
     const handleMessage = useCallback(
         (message: MessageEvent) => {
             try {
-                const parsedMessage = JSON.parse(message.data) as ThermocontrolMessage;
+                const parsedMessage = JSON.parse(message.data) as TcMessage;
                 switch (parsedMessage.messageType) {
                     case "error":
                         console.log("Received thermocontrol error: " + parsedMessage.error);
@@ -91,7 +91,7 @@ function ThermocontrolDetails() {
                             return;
                         }
     
-                        const update = parsedMessage.data as TCUpdates
+                        const update = parsedMessage.data as TcUpdates
                         if (update.type != "tc")
                             return;
                         if (!update.stale) {

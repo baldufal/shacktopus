@@ -7,13 +7,13 @@ import ClimateDetails from "./ClimateDetails";
 import HeatingEnergy from "./HeatingEnergy";
 import { FixtureName } from "../../DashboardPage/obtainTiles";
 import { useAuth } from "../../Router/AuthContext";
-import { TCUpdates, ThermocontrolAuxData, ThermocontrolMessage } from "../Thermocontrol/ThermocontrolMessage";
+import { TcAuxData, TcMessage, TcUpdates } from "../Thermocontrol/ThermocontrolMessage";
 
 export type AuxBoxProps = {
     title: string,
     loading: boolean,
     error: string | undefined,
-    dataFromAPI: ThermocontrolAuxData | undefined,
+    dataFromAPI: TcAuxData | undefined,
     borderColor: string
 }
 
@@ -40,7 +40,7 @@ function AuxBox(props: { type: AuxBoxType }) {
     const auth = useAuth();
     const { indicator } = useThemeColors();
 
-    const [dataFromAPI, setDataFromAPI] = useState<ThermocontrolAuxData | undefined>(undefined);
+    const [dataFromAPI, setDataFromAPI] = useState<TcAuxData | undefined>(undefined);
 
     // Last API request returned an error
     const [loading, setLoading] = useState<boolean>(true);
@@ -52,7 +52,7 @@ function AuxBox(props: { type: AuxBoxType }) {
     const handleMessage = useCallback(
         (message: MessageEvent) => {
             try {
-                const parsedMessage = JSON.parse(message.data) as ThermocontrolMessage;
+                const parsedMessage = JSON.parse(message.data) as TcMessage;
                 switch (parsedMessage.messageType) {
                     case "error":
                         console.log("Received thermocontrol error: " + parsedMessage.error);
@@ -63,7 +63,7 @@ function AuxBox(props: { type: AuxBoxType }) {
                         auth.refreshToken();
                         break;
                     case "update":
-                        const update = parsedMessage.data as TCUpdates
+                        const update = parsedMessage.data as TcUpdates
                         if (update.type != "tc_aux")
                             return;
                         setStale(update.stale);
