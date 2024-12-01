@@ -11,13 +11,27 @@ services:
 
   backend:
     build: ../reef/
-    # No need to expose ports here as communication works via docker network
-    volumes:
-      - shacktopus-user-config:/app/userconfig
     networks:
       - shacktopus-network
     environment:
       - NODE_ENV=production
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/user_management?authSource=admin
+    restart: unless-stopped
+    depends_on:
+      - mongodb  # Ensure MongoDB is started before the backend
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    ports:
+      - "27017:27017" # Expose port for debugging or external tools
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db # Persistent storage for MongoDB
+    networks:
+      - shacktopus-network
     restart: unless-stopped
 
 networks:
@@ -25,4 +39,4 @@ networks:
     driver: bridge
 
 volumes:
-  shacktopus-user-config:
+  mongodb_data:
