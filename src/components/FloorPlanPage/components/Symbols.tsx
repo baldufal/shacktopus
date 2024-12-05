@@ -1,4 +1,4 @@
-import { IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure } from "@chakra-ui/react";
+import { IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip, useDisclosure } from "@chakra-ui/react";
 import { MdLight } from "react-icons/md";
 import { useState } from "react";
 import FixtureBox from "../../KaleidoscopePage/FixtureBox";
@@ -32,12 +32,14 @@ function Symbols(props: { fixtureNames: FixtureName[], fixturesData: FixturesDat
                             transform: "translate(-50%, -50%)",
                         }}
                     >
-                        <IconButton
-                            zIndex={1}
-                            aria-label={name.original}
-                            onClick={() => clickOnFixture(name.original)}
-                            icon={<MdLight />}
-                        />
+                        <Tooltip label={name.display}>
+                            <IconButton
+                                zIndex={1}
+                                aria-label={name.original}
+                                onClick={() => clickOnFixture(name.original)}
+                                icon={<MdLight />}
+                            />
+                        </Tooltip>
                     </div>)
 
                     : null)

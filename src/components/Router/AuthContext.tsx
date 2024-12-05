@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 export enum Permission {
+    USER_MANAGEMENT = 'USER_MANAGEMENT',
     LIGHT = 'LIGHT',
     HEATING = 'HEATING',
 }
