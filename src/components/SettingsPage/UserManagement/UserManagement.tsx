@@ -5,7 +5,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import UserBox from "./UserBox";
 import { MdAdd } from "react-icons/md";
-import EditUserDialog from "./EditUserDialog";
+import AddUserDialog from "./AddUserDialog";
 
 type UserResponse = [{ username: string, permissions: Permission[] }];
 
@@ -63,12 +63,10 @@ function UserManagement() {
                 </VStack>
             </Box>
             {addIsOpen && (
-                <EditUserDialog
+                <AddUserDialog
                     reloadUsers={getUsers}
-                    addUser={true}
                     isOpen={addIsOpen}
-                    onClose={() => setAddIsOpen(false)}
-                    user={null} />
+                    onClose={() => setAddIsOpen(false)}/>
             )}</>
 
     );

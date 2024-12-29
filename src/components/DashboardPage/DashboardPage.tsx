@@ -23,6 +23,7 @@ function DashboardPage() {
   const { userData, updateUserConfig } = useAuth();
   const { fixturesData, fixtureNames } = useKaleidoscope();
   const { indicator } = useThemeColors();
+  const [modifyMode, setModifyMode] = useState<boolean>(false);
 
   const { allTiles: initialAllTiles, initialSelectedTiles } = useMemo(() => {
     return obtainTiles(fixtureNames, userData)
@@ -51,10 +52,8 @@ function DashboardPage() {
     const results = fuse.search(searchString);
     const items = results.map((result) => result.item);
     setSearchResults(items);
-  }, [searchString]);
+  }, [searchString, modifyMode]);
 
-
-  const [modifyMode, setModifyMode] = useState<boolean>(false);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) {

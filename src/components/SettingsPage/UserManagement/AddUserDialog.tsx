@@ -1,38 +1,39 @@
-import { Modal, Text, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Box, Wrap, VStack } from "@chakra-ui/react";
+import { Modal, Text, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, Button, Box, Wrap, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { Permission, useAuth } from "../../Router/AuthContext";
 import { useThemeColors } from "../../../contexts/ThemeContext";
 import axios from "axios";
 
-// Data needed to update or create a user
-type UserUpdate = {
+// Data needed to create a user
+export type UserCreationRequest = {
     username: string,
-    password?: string,
+    password: string,
     permissions?: Permission[]
 };
 
-interface EditUserDialogProps {
+interface AddUserDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    user: { username: string; permissions: Permission[] };
     reloadUsers: () => void;
 }
 
-const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, reloadUsers }) => {
-    const [permissions, setPermissions] = useState(user?.permissions || []);
+const AddUserDialog: React.FC<AddUserDialogProps> = ({ isOpen, onClose, reloadUsers }) => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [permissions, setPermissions] = useState<Permission[]>([]);
     const theme = useThemeColors();
     const auth = useAuth();
 
     const handleSave = async () => {
-        const userUpdate = { username: user.username, permissions };
+        const userCreationRequest = { username, password, permissions }
         try {
-            const response = await axios.post(`http://${window.location.host}/api/update-user?token=${auth.userData?.token}`,
-                userUpdate as UserUpdate
+            const response = await axios.post(`http://${window.location.host}/api/create-user?token=${auth.userData?.token}`,
+                userCreationRequest as UserCreationRequest
             );
 
             console.log(response.data.message);
         } catch (error) {
-            console.error('Error updating user:', error);
+            console.error('Error saving user:', error);
         }
 
         reloadUsers();
@@ -43,10 +44,18 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, 
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>{"Edit User " + user.username}</ModalHeader>
+                <ModalHeader>{"Add User"}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <VStack align={"start"}>
+                        <FormControl>
+                            <FormLabel>Username</FormLabel>
+                            <Input value={username} onChange={(e) => setUsername(e.target.value)} />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Password</FormLabel>
+                            <Input value={password} onChange={(e) => setPassword(e.target.value)} />
+                        </FormControl>
                         <Text>Selected Permissions</Text>
                         <Box
                             borderRadius={"0.375rem"}
@@ -96,6 +105,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, 
                 <ModalFooter>
                     <Button onClick={onClose} mr={3}>Cancel</Button>
                     <Button
+                        isDisabled={username.length < 3}
                         onClick={handleSave}>
                         Save
                     </Button>
@@ -105,4 +115,4 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, 
     );
 };
 
-export default EditUserDialog;
+export default AddUserDialog;

@@ -104,7 +104,6 @@ function UserBox(props: { username: string, permissions: Permission[], reloadUse
             </AlertDialog>
             {selectedUser && isEditOpen && (
                 <EditUserDialog
-                    addUser={false}
                     isOpen={isEditOpen}
                     onClose={() => setIsEditOpen(false)}
                     user={selectedUser} 
