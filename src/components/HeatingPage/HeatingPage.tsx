@@ -1,6 +1,7 @@
 import { Box, Wrap } from "@chakra-ui/react";
 import ThermocontrolDetails from "./Thermocontrol/ThermocontrolDetails";
 import AuxBox from "./Thermocontrol_aux/AuxBox";
+import RadiantHeaters from "./Thermocontrol/RadiantHeaters";
 
 function HeatingPage() {
 
@@ -28,6 +29,10 @@ function HeatingPage() {
                 </div>
                 <div>
                     <AuxBox type={"details"} />
+                    <div />
+                </div>
+                <div>
+                    <RadiantHeaters />
                     <div />
                 </div>
             </Wrap>

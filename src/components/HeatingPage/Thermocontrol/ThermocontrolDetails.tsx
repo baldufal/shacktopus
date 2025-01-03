@@ -16,6 +16,7 @@ export interface ThermocontrolSettableDataType {
     target_temperature: number;
     use_ventilation_for_cooling: boolean;
     use_ventilation_for_heating: boolean;
+    heizstrahler_is_active?: boolean;
 }
 
 
@@ -90,7 +91,7 @@ function ThermocontrolDetails() {
                             console.log("Skipping data fetch because of ongoing user input");
                             return;
                         }
-    
+
                         const update = parsedMessage.data as TcUpdates
                         if (update.type != "tc")
                             return;
@@ -178,7 +179,8 @@ function ThermocontrolDetails() {
                             :
                             <Icon as={MdLock} />}
                     </Flex>
-
+                    <Divider></Divider>
+                    <Text>Current mode: {dataFromAPI?.current_heating_mode}</Text>
                     <Divider></Divider>
                     <Text>Target temperature</Text>
                     <TemperatureInput

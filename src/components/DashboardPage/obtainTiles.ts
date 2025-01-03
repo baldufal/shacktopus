@@ -21,6 +21,7 @@ export const obtainTiles = (fixtureNames: FixtureName[] | undefined, userData: U
     // These are the tiles that we currently receive from the APIs
     const currentAvailableTiles = [
         { display: "Thermocontrol", original: "tc" },
+        { display: "Radiant Heaters Lock", original: "rh" },
         ...AUX_BOXES,
         ...(fixtureNames ? fixtureNames : [])
     ]

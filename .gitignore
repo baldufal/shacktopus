@@ -27,4 +27,5 @@ dist-ssr
 cert
 nginx/certs/*
 
+# Environment variables
 .env
