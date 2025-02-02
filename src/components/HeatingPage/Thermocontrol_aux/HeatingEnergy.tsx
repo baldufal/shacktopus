@@ -10,7 +10,7 @@ function Energy(props: AuxBoxProps) {
     // All the data we need is there
     const dataFromAPI_ok = props.dataFromAPI &&
         props.dataFromAPI["energy_consumption_24h"] != undefined &&
-        props.dataFromAPI["energy_consumption_current"] != undefined;
+        props.dataFromAPI["energy_consumption_current_W"] != undefined;
 
     if (!props.error && props.loading)
         return <Skeleton className="fixturebox" width={"250px"} height={"250px"}></Skeleton>
@@ -28,7 +28,7 @@ function Energy(props: AuxBoxProps) {
         </Box>)
 
     const energy = props.dataFromAPI!["energy_consumption_24h"] as number;
-    const power = props.dataFromAPI!["energy_consumption_current"] as number;
+    const power = props.dataFromAPI!["energy_consumption_current_W"] as number;
 
     return (
         <div className="containerdiv">
@@ -54,9 +54,9 @@ function Energy(props: AuxBoxProps) {
                             <Progress
                                 width={"100%"}
                                 height={"1rem"}
-                                max={1.69}
+                                max={1690}
                                 value={power} />
-                            <Text>{power.toFixed(2) + " kW"}</Text>
+                            <Text>{power.toFixed(0) + " W"}</Text>
 
 
                             <Divider />
@@ -64,9 +64,9 @@ function Energy(props: AuxBoxProps) {
                             <Progress
                                 width={"100%"}
                                 height={"1rem"}
-                                max={1.69 * 24}
+                                max={1690 * 24}
                                 value={energy} />
-                            <Text>{energy.toFixed(2) + " kWh"}</Text>
+                            <Text>{(energy / 1000).toFixed(1) + " kWh"}</Text>
 
 
                         </VStack>
