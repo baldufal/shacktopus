@@ -4,6 +4,18 @@ Shacktopus is a React-based web ui for controlling custom smart home stuff in th
 
 It depends on it's backend server, [Reef](https://github.com/baldufal/reef).
 
+## Running it via docker
+
+As a prerequesite you need to have [Docker](https://www.docker.com/) installed.
+
+1. Create a folder for shacktopus and reef, e.g. using `mkdir shacktopus` and `cd shacktopus`
+2. Pull the repo using `git pull git@github.com:baldufal/shacktopus.git` or `git pull https://github.com/baldufal/shacktopus.git`
+3. Create a *.env* file by copying the file *.env.example* and updating it with arbitrary credentials for the MongoDB instance.
+4. In the parent folder, pull the Reef repo using `git pull git@github.com:baldufal/reef.git` or `git pull https://github.com/baldufal/reef.git`
+5. Configure Reef via the config.js as described [here](https://github.com/baldufal/reef)
+6. Run `docker compose up`.
+7. Optional: Pull new code and redeploy the frontend, the backend or both using one of the redeploy scripts.
+
 ## Setting it up for development
 
 As a prerequesite you need to have [Node JS](https://nodejs.org/) installed.
