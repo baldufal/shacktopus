@@ -63,9 +63,13 @@ function AuxDetails(props: AuxBoxProps) {
 
                             let readableKey = key.replace(/_/g, " ");
 
-                            let readableValue = value? typeof value === "number" ?
-                                (value > 999 ? value.toFixed(0) : value.toFixed(2)) :
-                                typeof value === "boolean" ? (value ? "True" : "False") : value.toString() : "null";
+                            let readableValue = value !== null && value !== undefined
+                                ? typeof value === "number"
+                                    ? (value < 0.01 ? 0 : value > 999 ? value.toFixed(0) : value.toFixed(2))
+                                    : typeof value === "boolean"
+                                        ? (value ? "True" : "False")
+                                        : value.toString()
+                                : "null";
 
                             return (
                                 <Box
