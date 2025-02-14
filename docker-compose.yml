@@ -21,7 +21,7 @@ services:
       - mongodb  # Ensure MongoDB is started before the backend
 
   mongodb:
-    image: mongo:5.0
+    image: mongo:8.0
     container_name: mongodb
     ports:
       - "27017:27017" # Expose port for debugging or external tools
