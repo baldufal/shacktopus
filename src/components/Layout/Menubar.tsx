@@ -5,6 +5,7 @@ import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
 import { MdArchitecture, MdDashboard, MdLightbulb, MdSettings } from "react-icons/md";
 import { IoIosFlame } from "react-icons/io";
+import { TbScript } from "react-icons/tb";
 
 export type MenuItem = {
     name: string;
@@ -37,6 +38,12 @@ export const menuItems: MenuItem[] = [
         path: "/heating",
         icon: <IoIosFlame />,
         as: IoIosFlame
+    },
+    {
+        name: "Scripts",
+        path: "/scripts",
+        icon: <TbScript  />,
+        as: TbScript
     },
     {
         name: "Settings",

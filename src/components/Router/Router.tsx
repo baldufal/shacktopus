@@ -3,6 +3,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../LoginPage.tsx/LoginPage";
 import Layout from "../Layout/Layout";
 import { lazy, Suspense } from "react";
+import ScriptsPage from "../ScriptsPage/ScriptsPage";
 
 function Router() {
 
@@ -39,6 +40,13 @@ function Router() {
           <ProtectedRoute element={
             <Suspense>
               <Heating />
+            </Suspense>
+          } />
+        } />
+        <Route path="scripts" element={
+          <ProtectedRoute element={
+            <Suspense>
+              <ScriptsPage />
             </Suspense>
           } />
         } />
