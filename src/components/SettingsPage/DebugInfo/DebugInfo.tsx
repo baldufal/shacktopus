@@ -18,7 +18,7 @@ function DebugInfo() {
                 <Divider />
                 <VStack className="settings-stack" align={"start"} spacing={"2em"}>
                     <Text>{"MODE: " + process.env.NODE_ENV}</Text>
-                    <Text>{"Token : " + auth.userData?.token}</Text>
+                    <Text wordBreak={"break-all"}>{"Token : " + auth.userData?.token}</Text>
                     <Text>{"Token expiration at: " + formattedExpiration}</Text>
                 </VStack>
             </VStack>

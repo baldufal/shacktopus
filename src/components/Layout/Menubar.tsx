@@ -97,7 +97,8 @@ function Menubar() {
                     <DrawerHeader >Shacktopus</DrawerHeader>
 
                     <DrawerBody >
-                        <VStack align={"start"} >
+                        <VStack 
+                        align={"start"}>
                             {menuItems.map((menuitem, index) =>
                                     <HStack
                                         key={index}

@@ -164,7 +164,10 @@ function DashboardPage() {
                 : (
                   selectedTiles.length > 0 ?
                     <Text>No tiles found. Clear search bar to display dashboard items.</Text> :
-                    <Text>No dashboard tiles selected.</Text>)}
+                    <>
+                      <Text>No dashboard tiles selected.</Text>
+                      <Text> You can select tiles via the button in the top right corner.</Text>
+                    </>)}
             </VStack>
 
           </>

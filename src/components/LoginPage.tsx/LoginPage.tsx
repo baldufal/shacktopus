@@ -44,12 +44,12 @@ const LoginPage: React.FC = () => {
         <VStack >
             <Image
                 src={shacktopus}
-                boxSize={"max(30vw, 200px)"}
-                marginTop={"5vh"}
+                boxSize={"min(50vh, 100vw)"}
+                marginTop={"0pxh"}
                 alt='Shacktopus Logo' />
 
             <VStack
-                marginTop={"10vh"}>
+                marginTop={"0px"}>
                 <Button
                 onClick={handleGuestLogin}
                 >Login as Guest</Button>
@@ -58,8 +58,7 @@ const LoginPage: React.FC = () => {
                 >
                     or</Text>
                 <Box
-                    minWidth={"180px"}
-                    width={"18vw"}>
+                    width={"min(80vw, 250px)"}>
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                     <Text>User</Text>
                     <Input
