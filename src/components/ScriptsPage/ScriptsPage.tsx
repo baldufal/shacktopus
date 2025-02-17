@@ -9,7 +9,8 @@ function ScriptsPage() {
     const [script, setScript] = useState(`{
     "parameters": [
         { "name": "light_intensity", "type": "NUMBER", "value": 50, "min": 0, "max": 100},
-        { "name": "color", "type": "COLOR_RGB", "red": 0.2, "green": 0.3, "blue": 0.4}
+        { "name": "color", "type": "COLOR_RGB", "red": 0.2, "green": 0.3, "blue": 0.4},
+        { "name": "bool", "type": "BOOLEAN", "value": true}
     ],
     "computations": [
         { "name": "scaled_intensity", "type": "LINEAR", "variable": "$light_intensity", "factor": "$color.blue", "offset": 10 }
