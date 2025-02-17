@@ -1,5 +1,4 @@
-import { Script } from "vm";
-import { VARIABLE_NAME_REGEX } from "./Script";
+import {Script, VARIABLE_NAME_REGEX } from "./Script";
 
 type ValidationResult = { valid: true; script: Script } | { valid: false; error: string };
 
@@ -26,6 +25,9 @@ export function validateScript(jsonString: string): ValidationResult {
         for (const param of parameters) {
             const paramError = validateParameter(param);
             if (paramError) return { valid: false, error: paramError };
+            if (variableTypes.has(param.name)) {
+                return {valid: false, error: `Duplicate parameter variable: '${param.name}'.`};
+            }
             variableTypes.set(param.name, param.type);
             if (param.type === "COLOR_RGB") {
                 variableTypes.set(`${param.name}.red`, "NUMBER");

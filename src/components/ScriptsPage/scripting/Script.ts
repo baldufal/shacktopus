@@ -1,3 +1,9 @@
+export type ScriptContainer = {
+    id: string;
+    name: string;
+    script: string;
+}
+
 export type Script = {
     parameters: ScriptParameter[];
     computations: ScriptComputation[];

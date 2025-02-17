@@ -2,6 +2,7 @@ import { Box, Text, Textarea, VStack, Wrap, Button } from "@chakra-ui/react";
 import "../fixturebox.scss"
 import { useState } from "react";
 import { validateScript } from "./scripting/validateScript";
+import ScriptBox from "./ScriptBox";
 
 function ScriptsPage() {
 
@@ -22,6 +23,12 @@ function ScriptsPage() {
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScript(event.target.value);
+        
+        const validationResult = validateScript(event.target.value);
+        if (validationResult.valid)
+            setResult("Valid!")
+        else
+            setResult(validationResult.error)
     };
 
     const handleClick = () => {
@@ -41,7 +48,12 @@ function ScriptsPage() {
             paddingTop={0}
             width="100%">
             <Wrap>
-                {<Text>To be implemented...</Text>}
+                <ScriptBox 
+                data={{
+                    id: "asdf",
+                    name: "Script",
+                    script: script
+                }} />
             </Wrap>
             <VStack>
                 <Textarea
