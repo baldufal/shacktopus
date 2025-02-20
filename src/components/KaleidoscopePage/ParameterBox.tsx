@@ -1,14 +1,12 @@
-import { Box, HStack, Radio, RadioGroup, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, useToast } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { ContinuousParameter, DiscreteParameter, Parameter } from "./kaleidoscopeTypes";
-import { useThemeColors } from "../../contexts/ThemeContext";
 import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import { useCallback, useEffect, useState } from "react";
 import "./../fixturebox.scss";
 
 function DiscreteParameterBox(props: { fixture: string, program: string, parameterName: string, data: DiscreteParameter }) {
 
-    const toast = useToast()
-    const { indicator } = useThemeColors();
+    //const toast = useToast()
     const valueNames = Object.keys(props.data.levels).sort()
     const { setDiscrete, error: kaleidoscopeSetError } = useKaleidoscope();
     const [loading, setLoading] = useState<boolean>(true);
@@ -24,10 +22,11 @@ function DiscreteParameterBox(props: { fixture: string, program: string, paramet
             paddingTop={"2px"}
             paddingBottom={"2px"}
             borderColor={kaleidoscopeSetError ?
-                indicator.read_only : loading ?
-                    indicator.dirty : indicator.ok}>
+                "indicator.read_only" : loading ?
+                    "indicator.dirty" : "indicator.ok"}>
 
             <Text>{props.parameterName}</Text>
+            {/*
             <RadioGroup
                 isDisabled={kaleidoscopeSetError ? true : false}
                 value={props.data.current_level}
@@ -52,6 +51,8 @@ function DiscreteParameterBox(props: { fixture: string, program: string, paramet
                         </Radio>)}
                 </HStack>
             </RadioGroup>
+             */}
+            
         </Box>
 
     )
@@ -61,7 +62,6 @@ function DiscreteParameterBox(props: { fixture: string, program: string, paramet
 function ContinuousParameterBox(props: { fixture: string, program: string, parameterName: string, data: ContinuousParameter }) {
     const REFRESH_INTERVAL = 300;
     const DEBOUNCE_DELAY = 200;
-    const { primary, bwForeground, indicator } = useThemeColors();
     const { setContinuous, error: kaleidoscopeSetError } = useKaleidoscope();
 
     const [uiValue, setUiValue] = useState<number>(props.data.current);
@@ -74,7 +74,7 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
     const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
     const [timeoutId2, setTimeoutId2] = useState<number | undefined>(undefined);
 
-    const toast = useToast()
+    //const toast = useToast()
 
     useEffect(() => {
         if (!isTyping) {
@@ -97,6 +97,7 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
 
             const newTimeoutId = window.setTimeout(() => {
                 const error = setContinuous(props.fixture, props.program, props.parameterName, newValue)
+                /*
                 if (error)
                     toast({
                         title: "Error",
@@ -105,6 +106,8 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
                         duration: 2000,
                         isClosable: true
                     })
+                 */
+                
             }, DEBOUNCE_DELAY);
             setTimeoutId(newTimeoutId);
 
@@ -125,9 +128,10 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
             paddingTop={"2px"}
             paddingBottom={"2px"}
             borderColor={kaleidoscopeSetError ?
-                indicator.read_only : loading ?
-                    indicator.dirty : indicator.ok}>
+                "indicator.read_only" : loading ?
+                    "indicator.dirty" : "indicator.ok"}>
             <Text>{props.parameterName}</Text>
+            {/*
             <Slider
                 isDisabled={kaleidoscopeSetError ? true : false}
                 minWidth={"250px"}
@@ -154,6 +158,8 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
                     </Text>
                 </SliderThumb>
             </Slider>
+            */}
+            
         </Box>
     )
 }

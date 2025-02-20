@@ -1,4 +1,4 @@
-import { Box, Divider, HStack, IconButton, Spacer, Text, VStack } from "@chakra-ui/react";
+import { Box, HStack, IconButton, Separator, Spacer, Text, VStack } from "@chakra-ui/react";
 import "./../settingsPage.scss";
 import { Permission, useAuth } from "../../Router/AuthContext";
 import axios from "axios";
@@ -35,10 +35,10 @@ function UserManagement() {
     return (
         <>
             <Box className="settings-box">
-                <VStack className="settings-box-stack" align={"start"} spacing={1}>
+                <VStack className="settings-box-stack" align={"start"} gap={1}>
                     <Text className="settings-box-heading shacktopus-heading">User Management</Text>
-                    <Divider />
-                    <VStack className="settings-stack" align={"start"} spacing={"2em"} width={"100%"}>
+                    <Separator />
+                    <VStack className="settings-stack" align={"start"} gap={"2em"} width={"100%"}>
 
                         {error ? <Text>{error}</Text> :
 
@@ -48,8 +48,9 @@ function UserManagement() {
                                     <Spacer />
                                     <IconButton
                                         aria-label={"add user"}
-                                        icon={<MdAdd />}
-                                        onClick={() => setAddIsOpen(true)} />
+                                        onClick={() => setAddIsOpen(true)}>
+                                        <MdAdd />
+                                    </IconButton>
                                 </HStack>
                                 {users && users.map(user =>
                                     <UserBox
@@ -66,7 +67,7 @@ function UserManagement() {
                 <AddUserDialog
                     reloadUsers={getUsers}
                     isOpen={addIsOpen}
-                    onClose={() => setAddIsOpen(false)}/>
+                    onClose={() => setAddIsOpen(false)} />
             )}</>
 
     );

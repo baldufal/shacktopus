@@ -1,11 +1,8 @@
-import { Box, Divider, Progress, Skeleton, Text, VStack } from "@chakra-ui/react";
-import { useThemeColors } from "../../../contexts/ThemeContext";
+import { Box, Separator, Skeleton, Text, VStack } from "@chakra-ui/react";
 import "./../../fixturebox.scss"
 import { AuxBoxProps } from "./AuxBox";
 
 function Energy(props: AuxBoxProps) {
-
-    const { indicator } = useThemeColors();
 
     // All the data we need is there
     const dataFromAPI_ok = props.dataFromAPI &&
@@ -19,11 +16,11 @@ function Energy(props: AuxBoxProps) {
         return (<Box
             className="fixturebox"
             width={"fit-content"}
-            borderColor={indicator.error}
+            borderColor={"indicator.error"}
             p={2}>
             {props.error ?
-                <Text color={indicator.error}>{props.error}</Text> :
-                <Text color={indicator.error}>{"Data from API missing"}</Text>
+                <Text color={"indicator.error"}>{props.error}</Text> :
+                <Text color={"indicator.error"}>{"Data from API missing"}</Text>
             }
         </Box>)
 
@@ -37,41 +34,47 @@ function Energy(props: AuxBoxProps) {
             <Box
                 className="fixturebox"
                 width={"fit-content"}
-                borderColor={dataFromAPI_ok ? props.borderColor : indicator.error}
+                borderColor={dataFromAPI_ok ? props.borderColor : "indicator.error"}
                 p={2}
             //backgroundColor={"transparent"}
             >
                 {props.error ?
-                    <Text color={indicator.error}>{props.error}</Text> :
+                    <Text color={"indicator.error"}>{props.error}</Text> :
                     dataFromAPI_ok ?
                         <VStack
 
                             align={"start"}>
                             <Text className="fixturebox_heading">{props.title}</Text>
 
-                            <Divider />
+                            <Separator />
                             <Text>Current</Text>
+                            {/*
                             <Progress
                                 width={"100%"}
                                 height={"1rem"}
                                 max={1690}
                                 value={power} />
+                             */}
+
                             <Text>{power.toFixed(0) + " W"}</Text>
 
 
-                            <Divider />
+                            <Separator />
                             <Text>Last 24h</Text>
+                            {/*
                             <Progress
                                 width={"100%"}
                                 height={"1rem"}
                                 max={1690 * 24}
                                 value={energy} />
+                            */}
+
                             <Text>{(energy / 1000).toFixed(1) + " kWh"}</Text>
 
 
                         </VStack>
                         :
-                        <Text color={indicator.error}>{"Data from API not okay"}</Text>
+                        <Text color={"indicator.error"}>{"Data from API not okay"}</Text>
                 }
             </Box>
         </div>

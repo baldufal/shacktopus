@@ -3,7 +3,6 @@ import "./../fixturebox.scss"
 import "./itemselector.scss"
 import { MdAdd, MdCheckBox, MdOutlineCheckBoxOutlineBlank, MdRemove } from "react-icons/md";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
-import { useThemeColors } from "../../contexts/ThemeContext";
 import { FixtureName } from "./obtainTiles";
 
 
@@ -16,11 +15,9 @@ interface ItemSelectorProps {
 
 function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelectorProps) {
 
-  const { secondary, bwForeground } = useThemeColors();
-
   return (
     <VStack
-    width={"100%"}
+      width={"100%"}
       align={"start"}>
       <Text
         className="itemselectorheading"
@@ -28,14 +25,16 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
       <HStack>
         <IconButton
           aria-label={"select all"}
-          icon={<MdCheckBox />}
           onClick={() => setSelectedTiles(allTiles)}
-        />
+        >
+          <MdCheckBox />
+        </IconButton>
         <IconButton
           aria-label={"deselect all"}
-          icon={<MdOutlineCheckBoxOutlineBlank />}
           onClick={() => setSelectedTiles([])}
-        />
+        >
+          <MdOutlineCheckBoxOutlineBlank />
+        </IconButton>
       </HStack>
       <Flex
         direction={['column', 'column', 'row']} // Column for mobile, row for larger screens
@@ -64,14 +63,13 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       key={selected.original}
-                      bg={secondary}
+                      colorPalette={"secondary"}
                       className="dragitem"
                     >
                       <IconButton
-                        isRound={true}
+                        rounded={"full"}
                         padding={"0"}
                         aria-label="remove"
-                        icon={<MdRemove />}
                         onClick={() =>
                           setSelectedTiles((tiles) =>
                             tiles.filter(
@@ -79,9 +77,11 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
                             )
                           )
                         }
-                      />
+                      >
+                        <MdRemove />
+                      </IconButton>
                       <Text
-                        color={bwForeground}>
+        >
                         {selected.display}</Text>
                     </HStack>
                   )}
@@ -120,19 +120,19 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         key={unselected.original}
-                        bg={secondary}
+                        colorPalette={"secondary"}
                         className="dragitem"
                       >
                         <IconButton
                           aria-label={"add"}
-                          icon={<MdAdd />}
-                          isRound={true}
+                          rounded={"full"}
                           onClick={() =>
                             setSelectedTiles((selected) => [...selected, unselected])
                           }
-                        />
-                        <Text
-                          color={bwForeground}>
+                        >
+                          <MdAdd />
+                        </IconButton>
+                        <Text>
                           {unselected.display}</Text>
                       </HStack>
                     )}

@@ -2,6 +2,7 @@ import { useNumberInput, HStack, Button, Input } from "@chakra-ui/react"
 import { ThermocontrolSettableDataType } from "../ThermocontrolDetails"
 
 function HumidityInput(props: { isDisabled?: boolean, dataFromUI: ThermocontrolSettableDataType, onChange: (humidity: number) => void }) {
+    /*
     const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
         useNumberInput({
             step: 1,
@@ -23,6 +24,8 @@ function HumidityInput(props: { isDisabled?: boolean, dataFromUI: ThermocontrolS
             <Button {...inc} isDisabled={props.isDisabled}>+</Button>
         </HStack>
     )
+        */
+       return null
 }
 
 

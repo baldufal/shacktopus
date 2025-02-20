@@ -8,7 +8,7 @@ function SettingsPage() {
     const auth = useAuth();
 
     return (
-        <VStack className="settings-stack" align={"start"} spacing={"2em"} width={"100%"}>
+        <VStack className="settings-stack" align={"start"} gap={"2em"} width={"100%"}>
             {auth.userData?.permissions.includes(Permission.USER_MANAGEMENT) && <UserManagement/>}
             <DebugInfo/>
         </VStack>

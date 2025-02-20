@@ -3,15 +3,13 @@ import ThermocontrolDetails from "../HeatingPage/Thermocontrol/ThermocontrolDeta
 import AuxBox, { AUX_BOXES, AuxBoxType } from "../HeatingPage/Thermocontrol_aux/AuxBox"
 import FixtureBox from "../KaleidoscopePage/FixtureBox"
 import { FixturesData } from "../KaleidoscopePage/kaleidoscopeTypes"
-import { IndicatorColors } from "../../contexts/ThemeContext"
 import { ReactNode } from "react"
 import { FixtureName } from "./obtainTiles"
 import RadiantHeaters from "../HeatingPage/Thermocontrol/RadiantHeaters"
 
 export const tileFromFixtureName = (tile: FixtureName,
   index: number, fixturesData: FixturesData | undefined,
-  fixtureNames: FixtureName[] | undefined,
-  indicator: IndicatorColors
+  fixtureNames: FixtureName[] | undefined
 ): ReactNode => {
 
   return tile.original === "tc" ?
@@ -32,7 +30,7 @@ export const tileFromFixtureName = (tile: FixtureName,
           :
           <Box
             key={index}
-            borderColor={indicator.error}
+            borderColor={"indicator.error"}
             p={2}
             className="fixturebox">
             <VStack>

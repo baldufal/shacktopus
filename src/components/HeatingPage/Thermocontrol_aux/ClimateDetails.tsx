@@ -1,14 +1,10 @@
-import { Box, CircularProgress, CircularProgressLabel, Divider, HStack, Icon, Progress, Skeleton, Text, VStack } from "@chakra-ui/react";
-import { useThemeColors } from "../../../contexts/ThemeContext";
+import { Box, HStack, Icon, Separator, Skeleton, Text, VStack } from "@chakra-ui/react";
 import "./../../fixturebox.scss"
 import { ColorTriple, interpolateColor } from "./interpolateColor";
 import { GiPoisonGas } from "react-icons/gi";
 import { AuxBoxProps } from "./AuxBox";
 
 function ClimateDetails(props: AuxBoxProps) {
-
-    const { indicator } = useThemeColors();
-
     // All the data we need is there
     const dataFromAPI_ok = props.dataFromAPI &&
         props.dataFromAPI["temperature_inside"] != undefined &&
@@ -26,11 +22,11 @@ function ClimateDetails(props: AuxBoxProps) {
         return (<Box
             className="fixturebox"
             width={"fit-content"}
-            borderColor={indicator.error}
+            borderColor={"indicator.error"}
             p={2}>
             {props.error ?
-                <Text color={indicator.error}>{props.error}</Text> :
-                <Text color={indicator.error}>{"Data from API missing"}</Text>
+                <Text color={"indicator.error"}>{props.error}</Text> :
+                <Text color={"indicator.error"}>{"Data from API missing"}</Text>
             }
         </Box>)
 
@@ -63,16 +59,17 @@ function ClimateDetails(props: AuxBoxProps) {
         <Box
             className="fixturebox"
             width={"fit-content"}
-            borderColor={dataFromAPI_ok ? props.borderColor : indicator.error}
+            borderColor={dataFromAPI_ok ? props.borderColor : "indicator.error"}
             p={2}>
             {props.error ?
-                <Text color={indicator.error}>{props.error}</Text> :
+                <Text color={"indicator.error"}>{props.error}</Text> :
                 dataFromAPI_ok ?
                     <VStack align={"start"}>
                         <Text className="fixturebox_heading">{props.title}</Text>
-                        <Divider />
+                        <Separator />
                         <Text>Inside</Text>
                         <HStack>
+                            {/*
                             <CircularProgress
                                 color={interpolateColor(temp_inside, tempColors)}
                                 size={"4rem"}
@@ -92,19 +89,25 @@ function ClimateDetails(props: AuxBoxProps) {
                                 <CircularProgressLabel>{hum_inside.toFixed(0) + "%"}</CircularProgressLabel>
 
                             </CircularProgress>
+                             */}
+                            
                         </HStack>
                         <HStack width={"100%"}>
                             <Icon as={GiPoisonGas} />
+                            {/*
                             <Progress
                                 width={"100%"}
                                 height={"1rem"}
                                 min={40}
                                 max={120}
                                 value={gas_inside / 1000} />
+                            */}
+                            
                         </HStack>
 
-                        <Divider />
+                        <Separator />
                         <Text>Basement</Text>
+                        {/*
                         <CircularProgress
                             color={interpolateColor(temp_basement, tempColors)}
                             size={"4rem"}
@@ -114,9 +117,12 @@ function ClimateDetails(props: AuxBoxProps) {
                             value={temp_basement} >
                             <CircularProgressLabel>{temp_basement.toFixed(1) + "°C"}</CircularProgressLabel>
                         </CircularProgress>
-                        <Divider />
+                         */}
+                        
+                        <Separator />
                         <Text>Outside</Text>
                         <HStack>
+                            {/*
                             <CircularProgress
                                 color={interpolateColor(temp_outside, tempColors)}
                                 size={"4rem"}
@@ -135,12 +141,14 @@ function ClimateDetails(props: AuxBoxProps) {
                                 value={hum_outside} >
                                 <CircularProgressLabel>{hum_outside.toFixed(0) + "%"}</CircularProgressLabel>
                             </CircularProgress>
+                             */}
+                            
                         </HStack>
 
 
                     </VStack>
                     :
-                    <Text color={indicator.error}>{"Data from API not okay"}</Text>
+                    <Text color={"indicator.error"}>{"Data from API not okay"}</Text>
             }
         </Box>
     )

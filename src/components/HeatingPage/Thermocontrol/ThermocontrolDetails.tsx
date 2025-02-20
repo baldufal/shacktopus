@@ -1,13 +1,13 @@
-import { Box, Divider, Flex, Icon, Skeleton, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spacer, Switch, Text, VStack } from "@chakra-ui/react";
+import { Box, Separator, Flex, Icon, Skeleton, Spacer, Text, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import TemperatureInput from "./components/TemperatureInput";
 import HumidityInput from "./components/HumidityInput";
-import { useThemeColors } from "../../../contexts/ThemeContext";
 import { Permission, useAuth } from "../../Router/AuthContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./../../fixturebox.scss"
 import { MdHourglassTop, MdLock } from "react-icons/md";
 import { TcUpdates, TcData, TcMessage } from "./ThermocontrolMessage";
+import { Switch } from "../../ui/switch";
 
 export interface ThermocontrolSettableDataType {
     extra_ventilation: number;
@@ -23,8 +23,6 @@ export interface ThermocontrolSettableDataType {
 function ThermocontrolDetails() {
 
     const auth = useAuth();
-
-    const { primary, bwForeground, indicator } = useThemeColors();
 
     const ADDITIONAL_WAIT = 100;
     const DEBOUNCE_DELAY = 200;
@@ -160,28 +158,28 @@ function ThermocontrolDetails() {
             width={"250px"}
             height={"450px"} />
 
-    const borderColor = error ? indicator.error : dirty ? indicator.dirty : indicator.ok;
+    const borderColor = error ? "indicator.error" : dirty ? "indicator.dirty" : "indicator.ok";
     return (
         <Box
             className="fixturebox"
             width={"fit-content"}
             borderColor={borderColor}
             p={2}>
-            {error ? <Text color={indicator.error}>{error}</Text> :
+            {error ? <Text color={"indicator.error"}>{error}</Text> :
                 <VStack align={"start"}>
                     <Flex width={"100%"}>
                         <Text className="fixturebox_heading">ThermoControl</Text>
                         <Spacer />
                         {writePermission ?
                             (dirty ?
-                                <Icon as={MdHourglassTop} color={indicator.dirty} />
+                                <Icon as={MdHourglassTop} color={"indicator.dirty"} />
                                 : null)
                             :
                             <Icon as={MdLock} />}
                     </Flex>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Text>Current mode: {dataFromAPI?.current_heating_mode}</Text>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Text>Target temperature</Text>
                     <TemperatureInput
                         isDisabled={!writePermission}
@@ -192,7 +190,7 @@ function ThermocontrolDetails() {
                             debouncedSendData(updatedData);
                         }}>
                     </TemperatureInput>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Text>Target humidity</Text>
                     <HumidityInput
                         isDisabled={!writePermission}
@@ -203,9 +201,10 @@ function ThermocontrolDetails() {
                             debouncedSendData(updatedData);
                         }}
                     ></HumidityInput>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Text>Extra ventilation</Text>
                     <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
+                        {/*
                         <Slider
                             isDisabled={!writePermission}
                             defaultValue={0}
@@ -232,10 +231,12 @@ function ThermocontrolDetails() {
                                 </Text>
                             </SliderThumb>
                         </Slider>
+                         */}
                     </Box>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Text>Max heating power</Text>
                     <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
+                        {/*
                         <Slider
                             isDisabled={!writePermission}
                             defaultValue={0}
@@ -262,23 +263,24 @@ function ThermocontrolDetails() {
                                 </Text>
                             </SliderThumb>
                         </Slider>
+                        */}
                     </Box>
 
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Switch
-                        isDisabled={!writePermission}
-                        isChecked={dataFromUI?.use_ventilation_for_heating}
-                        onChange={(event) => {
-                            const updatedData = { ...dataFromUI, use_ventilation_for_heating: event.target.checked }
+                        disabled={!writePermission}
+                        checked={dataFromUI?.use_ventilation_for_heating}
+                        onCheckedChange={(event) => {
+                            const updatedData = { ...dataFromUI, use_ventilation_for_heating: event.checked }
                             setDataFromUI(updatedData);
                             debouncedSendData(updatedData);
                         }}>Use ventilation for heating</Switch>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Switch
-                        isDisabled={!writePermission}
-                        isChecked={dataFromUI?.use_ventilation_for_cooling}
-                        onChange={(event) => {
-                            const updatedData = { ...dataFromUI, use_ventilation_for_cooling: event.target.checked }
+                        disabled={!writePermission}
+                        checked={dataFromUI?.use_ventilation_for_cooling}
+                        onCheckedChange={(event) => {
+                            const updatedData = { ...dataFromUI, use_ventilation_for_cooling: event.checked }
                             setDataFromUI(updatedData);
                             debouncedSendData(updatedData);
                         }}>

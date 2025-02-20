@@ -1,4 +1,4 @@
-import { Box, Image, useColorMode } from "@chakra-ui/react";
+import { Box, Image } from "@chakra-ui/react";
 import floorplan from "./../../assets/floorplan.png"
 import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import { useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { KNOWN_FIXTURES } from "../KaleidoscopePage/KNOWN_FIXTURES";
 import Rooms from "./components/Rooms";
 import { FixtureName } from "../DashboardPage/obtainTiles";
 import Symbols from "./components/Symbols";
+import { useColorMode } from "../ui/color-mode";
 
 function FloorPlanPage() {
 

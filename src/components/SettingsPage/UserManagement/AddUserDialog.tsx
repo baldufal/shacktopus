@@ -1,8 +1,8 @@
-import { Modal, Text, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, Button, Box, Wrap, VStack } from "@chakra-ui/react";
+import { Text, Input, Button, Box, Wrap, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { Permission, useAuth } from "../../Router/AuthContext";
-import { useThemeColors } from "../../../contexts/ThemeContext";
 import axios from "axios";
+import { DrawerBackdrop, DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerFooter, DrawerHeader, DrawerRoot, DrawerTitle } from "../../ui/drawer";
 
 // Data needed to create a user
 export type UserCreationRequest = {
@@ -21,7 +21,6 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({ isOpen, onClose, reloadUs
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [permissions, setPermissions] = useState<Permission[]>([]);
-    const theme = useThemeColors();
     const auth = useAuth();
 
     const handleSave = async () => {
@@ -41,13 +40,17 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({ isOpen, onClose, reloadUs
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>{"Add User"}</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
+        
+        <DrawerRoot open={isOpen} onOpenChange={(e) => onClose()}>
+                <DrawerBackdrop />
+                <DrawerContent>
+                    <DrawerHeader>
+                        <DrawerTitle>Add User</DrawerTitle>
+                        <DrawerCloseTrigger>Close</DrawerCloseTrigger>
+                    </DrawerHeader>
+                    <DrawerBody>
                     <VStack align={"start"}>
+                        {/*
                         <FormControl>
                             <FormLabel>Username</FormLabel>
                             <Input value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -56,6 +59,8 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({ isOpen, onClose, reloadUs
                             <FormLabel>Password</FormLabel>
                             <Input value={password} onChange={(e) => setPassword(e.target.value)} />
                         </FormControl>
+                         */}
+                        
                         <Text>Selected Permissions</Text>
                         <Box
                             borderRadius={"0.375rem"}
@@ -64,15 +69,14 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({ isOpen, onClose, reloadUs
                             minWidth={"100%"}
                         >
                             <Wrap>
-                                {permissions.length > 0 ? permissions.map(permission =>
-                                    <Button
-                                        key={permission}
-                                        bg={theme.secondary}
-                                        className="permission"
-                                        onClick={() => setPermissions(permissions.filter(p => p !== permission))}
-                                    >
-                                        {permission}
-                                    </Button>)
+                                {permissions.length > 0 ? permissions.map(permission => <Button
+                                    key={permission}
+                                    bg={"brand.secondary.solid"}
+                                    className="permission"
+                                    onClick={() => setPermissions(permissions.filter(p => p !== permission))}
+                                >
+                                    {permission}
+                                </Button>)
                                     :
                                     <Text opacity={0.5} className="permission">Click on permissions below to select them!</Text>}
                             </Wrap>
@@ -87,31 +91,30 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({ isOpen, onClose, reloadUs
                             minWidth={"100%"}
                         >
                             <Wrap>
-                                {Object.values(Permission).filter(avail => !permissions.includes(avail)).map(permission =>
-                                    <Button
-                                        key={permission}
-                                        bg={theme.secondary}
-                                        className="permission"
-                                        onClick={() => setPermissions([...permissions, permission])}
-                                    >
-                                        {permission}
-                                    </Button>)}
+                                {Object.values(Permission).filter(avail => !permissions.includes(avail)).map(permission => <Button
+                                    key={permission}
+                                    bg={"brand.secondary.solid"}
+                                    className="permission"
+                                    onClick={() => setPermissions([...permissions, permission])}
+                                >
+                                    {permission}
+                                </Button>)}
                             </Wrap>
 
                         </Box>
                     </VStack>
-
-                </ModalBody>
-                <ModalFooter>
+                    </DrawerBody>
+                    <DrawerFooter>
                     <Button onClick={onClose} mr={3}>Cancel</Button>
                     <Button
-                        isDisabled={username.length < 3}
+                        disabled={username.length < 3}
                         onClick={handleSave}>
                         Save
                     </Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+                    </DrawerFooter>
+                    <DrawerCloseTrigger />
+                </DrawerContent>
+            </DrawerRoot>
     );
 };
 

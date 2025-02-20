@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { MdEdit } from "react-icons/md";
 import { useAuth } from "../Router/AuthContext";
-import { useThemeColors } from "../../contexts/ThemeContext";
 import { FixtureName, obtainTiles } from "./obtainTiles";
 import { tileFromFixtureName } from "./tileFromFixtureName";
 import Fuse from 'fuse.js';
@@ -22,7 +21,6 @@ const reorder = (list: any[], startIndex: number, endIndex: number) => {
 function DashboardPage() {
   const { userData, updateUserConfig } = useAuth();
   const { fixturesData, fixtureNames } = useKaleidoscope();
-  const { indicator } = useThemeColors();
   const [modifyMode, setModifyMode] = useState<boolean>(false);
 
   const { allTiles: initialAllTiles, initialSelectedTiles } = useMemo(() => {
@@ -135,8 +133,8 @@ function DashboardPage() {
               right={"1rem"}
               onClick={() => setModifyMode(true)}
               aria-label={"edit dashboard"}
-              icon={<MdEdit />}
-            />
+            ><MdEdit />
+            </IconButton>
             <VStack
               alignItems={"start"}>
               <HStack width={"full"}>
@@ -156,7 +154,7 @@ function DashboardPage() {
                   {searchResults.map((tile, index) => {
                     return <div
                       key={tile.original}>
-                      {tileFromFixtureName(tile, index, fixturesData, fixtureNames, indicator)}
+                      {tileFromFixtureName(tile, index, fixturesData, fixtureNames)}
                       <div key={tile.original} />
                     </div>
                   })}

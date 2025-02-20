@@ -43,10 +43,11 @@ function Layout() {
                             <IconButton
                                 key={item.name}
                                 colorScheme={isActive(item.path) ? "secondary" : "primary"}
-                                icon={item.icon}
                                 aria-label={item.name}
-                                onClick={() => navigate(item.path)}
-                            />)}
+                                onClick={() => navigate(item.path)}>
+                                {item.icon}
+                            </IconButton>
+                        )}
                     </VStack>
                     <Outlet />
                 </HStack>

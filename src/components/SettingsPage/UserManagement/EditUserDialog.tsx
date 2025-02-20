@@ -1,8 +1,19 @@
-import { Modal, Text, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Box, Wrap, VStack } from "@chakra-ui/react";
+import { Text, Button, Box, Wrap, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { Permission, useAuth } from "../../Router/AuthContext";
-import { useThemeColors } from "../../../contexts/ThemeContext";
 import axios from "axios";
+import {
+    DrawerActionTrigger,
+    DrawerBackdrop,
+    DrawerBody,
+    DrawerCloseTrigger,
+    DrawerContent,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerRoot,
+    DrawerTitle,
+    DrawerTrigger,
+} from "../../ui/drawer";
 
 // Data needed to update or create a user
 type UserUpdate = {
@@ -20,7 +31,6 @@ interface EditUserDialogProps {
 
 const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, reloadUsers }) => {
     const [permissions, setPermissions] = useState(user?.permissions || []);
-    const theme = useThemeColors();
     const auth = useAuth();
 
     const handleSave = async () => {
@@ -40,12 +50,14 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, 
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>{"Edit User " + user.username}</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
+        <DrawerRoot open={isOpen} onOpenChange={(e) => onClose()}>
+            <DrawerBackdrop />
+
+            <DrawerContent>
+                <DrawerHeader>
+                    <DrawerTitle>{"Edit User " + user.username}</DrawerTitle>
+                </DrawerHeader>
+                <DrawerBody>
                     <VStack align={"start"}>
                         <Text>Selected Permissions</Text>
                         <Box
@@ -58,7 +70,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, 
                                 {permissions.length > 0 ? permissions.map(permission =>
                                     <Button
                                         key={permission}
-                                        bg={theme.secondary}
+                                        colorPalette={"secondary"}
                                         className="permission"
                                         onClick={() => setPermissions(permissions.filter(p => p !== permission))}
                                     >
@@ -81,7 +93,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, 
                                 {Object.values(Permission).filter(avail => !permissions.includes(avail)).map(permission =>
                                     <Button
                                         key={permission}
-                                        bg={theme.secondary}
+                                        colorPalette={"secondary"}
                                         className="permission"
                                         onClick={() => setPermissions([...permissions, permission])}
                                     >
@@ -91,17 +103,18 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, onClose, user, 
 
                         </Box>
                     </VStack>
-
-                </ModalBody>
-                <ModalFooter>
+                </DrawerBody>
+                <DrawerFooter>
                     <Button onClick={onClose} mr={3}>Cancel</Button>
                     <Button
                         onClick={handleSave}>
                         Save
                     </Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+                </DrawerFooter>
+                <DrawerCloseTrigger />
+            </DrawerContent>
+        </DrawerRoot>
+
     );
 };
 

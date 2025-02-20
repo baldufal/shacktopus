@@ -1,4 +1,5 @@
-import { Box, Text, Switch } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
+import { Switch } from "../ui/switch";
 
 
 function ParameterBoolean(props: { name: string, value: boolean, setValue: (newValue: boolean) => void }) {
@@ -13,9 +14,9 @@ function ParameterBoolean(props: { name: string, value: boolean, setValue: (newV
                 
                 <Text>{props.name}</Text>
             <Switch
-                isChecked={props.value}
-                onChange={(event) =>
-                    props.setValue(event.target.checked)}>
+                checked={props.value}
+                onCheckedChange={(event) =>
+                    props.setValue(event.checked)}>
             </Switch>
         </Box>
     )

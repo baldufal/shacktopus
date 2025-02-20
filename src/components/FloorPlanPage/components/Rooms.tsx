@@ -1,8 +1,9 @@
-import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure, Button, ModalHeader, VStack } from "@chakra-ui/react";
+import { Button, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { FixtureName } from "../../DashboardPage/obtainTiles";
 import { FixturesData } from "../../KaleidoscopePage/kaleidoscopeTypes";
 import FixtureBox from "../../KaleidoscopePage/FixtureBox";
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot, DialogTitle } from "../../ui/dialog";
 
 export type RoomName = "kitchen" | "toilet" | "main room" | "bedroom" | "annex" | "awning";
 
@@ -68,7 +69,7 @@ const rooms: Room[] = [
 
 function Rooms(props: { fixtureNames: FixtureName[], fixturesData: FixturesData }) {
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [open, setOpen] = useState<boolean>(false);
 
     const [clickedRoom, setClickedRoom] = useState<string>("");
     const [fixturesInRooom, setFixturesInRoom] = useState<FixtureName[]>([]);
@@ -78,7 +79,7 @@ function Rooms(props: { fixtureNames: FixtureName[], fixturesData: FixturesData 
         setClickedRoom(roomName);
         const fixtures = props.fixtureNames.filter(fixture => fixture.rooms?.find((room => room === roomName)) != undefined);
         setFixturesInRoom(fixtures);
-        onOpen();
+        setOpen(true);
     }
 
     return (
@@ -102,13 +103,12 @@ function Rooms(props: { fixtureNames: FixtureName[], fixturesData: FixturesData 
             </Button>)
 
             }
-
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>{rooms.find(room => room.name === clickedRoom)?.display}</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
+            <DialogRoot lazyMount open={open} onOpenChange={(e) => setOpen(e.open)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{rooms.find(room => room.name === clickedRoom)?.display}</DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
                         <VStack>
                             {fixturesInRooom.map(fixture =>
                                 props.fixturesData.fixtures[fixture.original] ?
@@ -122,10 +122,10 @@ function Rooms(props: { fixtureNames: FixtureName[], fixturesData: FixturesData 
 
                                     : null)}
                         </VStack>
-
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+                    </DialogBody>
+                    <DialogCloseTrigger />
+                </DialogContent>
+            </DialogRoot>
         </>
     );
 

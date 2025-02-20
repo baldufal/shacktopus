@@ -1,17 +1,34 @@
-import { useDisclosure, Button, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, IconButton, Box, VStack, Switch, useColorMode, Divider, DrawerFooter, Text, Heading, Spacer, MenuItem, HStack, Icon, As } from "@chakra-ui/react";
+import {
+    Button, IconButton, Box, VStack, Text, Heading, Spacer, MenuItem, HStack, Icon,
+    Separator,
+    Link
+} from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Router/AuthContext";
-import { useThemeColors } from "../../contexts/ThemeContext";
 import { MdArchitecture, MdDashboard, MdLightbulb, MdSettings } from "react-icons/md";
 import { IoIosFlame } from "react-icons/io";
 import { TbScript } from "react-icons/tb";
+import { useColorMode } from "../ui/color-mode";
+import {
+    DrawerBackdrop,
+    DrawerBody,
+    DrawerCloseTrigger,
+    DrawerContent,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerRoot,
+    DrawerTitle,
+    DrawerTrigger,
+} from "../ui/drawer";
+import React, { useState } from "react";
+import { Switch } from "../ui/switch";
 
 export type MenuItem = {
     name: string;
     path: string;
     icon: JSX.Element;
-    as: As;
+    as: React.ElementType;
 }
 
 export const menuItems: MenuItem[] = [
@@ -42,7 +59,7 @@ export const menuItems: MenuItem[] = [
     {
         name: "Scripts",
         path: "/scripts",
-        icon: <TbScript  />,
+        icon: <TbScript />,
         as: TbScript
     },
     {
@@ -56,9 +73,8 @@ export const menuItems: MenuItem[] = [
 function Menubar() {
 
     const { colorMode, toggleColorMode } = useColorMode()
-    const { primary, secondary } = useThemeColors();
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [open, setOpen] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -67,7 +83,7 @@ function Menubar() {
 
     const handleLinkClick = (path: string) => {
         navigate(path);
-        onClose();
+        setOpen(false);
     };
 
     const isActive = (path: string) => location.pathname === path;
@@ -82,54 +98,47 @@ function Menubar() {
             justifyContent="space-between"
             alignItems="center">
 
-            <IconButton
-                onClick={onOpen}
-                aria-label={"open menu"}
-                icon={<HamburgerIcon />} />
-
-            <Heading
-                marginStart={"10px"}
-            >{locationString}</Heading>
-
-            <Spacer></Spacer>
-
-            <Drawer
-                isOpen={isOpen}
-                placement='left'
-                onClose={onClose}
-            >
-                <DrawerOverlay />
+            <DrawerRoot
+                open={open}
+                onOpenChange={(e) => setOpen(e.open)}
+                placement={"start"}
+                >
+                <DrawerBackdrop />
+                <DrawerTrigger asChild>
+                    <IconButton
+                        onClick={() => setOpen(true)}
+                        aria-label={"open menu"}>
+                        <HamburgerIcon />
+                    </IconButton>
+                </DrawerTrigger>
                 <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerHeader >Shacktopus</DrawerHeader>
-
-                    <DrawerBody >
-                        <VStack 
-                        align={"start"}>
-                            {menuItems.map((menuitem, index) =>
-                                    <HStack
-                                        key={index}
-                                        alignItems={"center"}>
-                                        <Icon
-                                            key={menuitem.name + "icon"}
-                                            as={menuitem.as}
-                                            color={isActive(menuitem.path) ? secondary : primary}
-                                            onClick={() => handleLinkClick(menuitem.path)}
-                                        />
-                                        <Button
-                                            key={menuitem.name + "button"}
-                                            marginBottom={"0.1rem"}
-                                            variant="link"
-                                            onClick={() => handleLinkClick(menuitem.path)}
-                                            color={isActive(menuitem.path) ? secondary : primary}
-                                        >
-                                            {menuitem.name}
-                                        </Button>
-                                    </HStack>
+                    <DrawerHeader>
+                        <DrawerTitle>Shacktopus</DrawerTitle>
+                    </DrawerHeader>
+                    <DrawerBody>
+                        <VStack
+                            align={"start"}>
+                            {menuItems.map((menuitem, index) => <HStack
+                                key={index}
+                                alignItems={"center"}>
+                                <Icon
+                                    key={menuitem.name + "icon"}
+                                    as={menuitem.as}
+                                    color={isActive(menuitem.path) ? "brand.secondary.solid" : "brand.solid"}
+                                    onClick={() => handleLinkClick(menuitem.path)} />
+                                <Link
+                                    key={menuitem.name + "button"}
+                                    marginBottom={"0.1rem"}
+                                    onClick={() => handleLinkClick(menuitem.path)}
+                                    color={isActive(menuitem.path) ? "brand.secondary.solid" : "brand.solid"}
+                                >
+                                    {menuitem.name}
+                                </Link>
+                            </HStack>
                             )}
-                            <Divider m="1em"></Divider>
+                            <Separator m="1em"></Separator>
                             <Switch
-                                isChecked={colorMode === "dark"}
+                                checked={colorMode === "dark"}
                                 onChange={() => toggleColorMode()}>
                                 Dark Mode
                             </Switch>
@@ -142,9 +151,20 @@ function Menubar() {
                             <Button onClick={auth.logout}>Logout</Button>
                         </VStack>
                     </DrawerFooter>
+                    <DrawerCloseTrigger />
                 </DrawerContent>
-            </Drawer>
+            </DrawerRoot>
+
+            <Heading
+                marginStart={"10px"}
+            >{locationString}</Heading>
+
+            <Spacer></Spacer>
+
+
+
         </Box>
+
     )
 }
 

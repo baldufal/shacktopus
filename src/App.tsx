@@ -1,22 +1,19 @@
-import { ChakraProvider } from '@chakra-ui/react'
 import Router from './components/Router/Router'
-import theme from './theme'
+
 import { AuthProvider } from './components/Router/AuthContext'
 import { KaleidoscopeProvider } from './contexts/KaleidoscopeContext'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { Provider } from './components/ui/provider'
 
 function App() {
 
   return (
-    <ChakraProvider theme={theme}>
-      <ThemeProvider>
+    <Provider>
         <AuthProvider>
             <KaleidoscopeProvider>
               <Router />
             </KaleidoscopeProvider>
         </AuthProvider>
-      </ThemeProvider>
-    </ChakraProvider>
+      </Provider>
   )
 }
 

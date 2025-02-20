@@ -1,11 +1,9 @@
-import { Box, Divider, Skeleton, Text, VStack } from "@chakra-ui/react";
-import { useThemeColors } from "../../../contexts/ThemeContext";
+import { Box, Separator, Skeleton, Text, VStack } from "@chakra-ui/react";
 import "./../../fixturebox.scss"
 import { AuxBoxProps } from "./AuxBox";
 
 function AuxDetails(props: AuxBoxProps) {
 
-    const { indicator } = useThemeColors();
 
     if (!props.error && props.loading)
         return <Skeleton className="fixturebox" width={"250px"} height={"250px"}></Skeleton>
@@ -17,12 +15,12 @@ function AuxDetails(props: AuxBoxProps) {
             borderColor={props.borderColor}
             p={2}>
             {props.error ?
-                <Text color={indicator.error}>{props.error}</Text> :
+                <Text color={"indicator.error"}>{props.error}</Text> :
                 <VStack
                     align={"start"}
                 >
                     <Text className="fixturebox_heading">{props.title}</Text>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <VStack
                         align={"start"}
                         paddingRight={2}
@@ -83,7 +81,7 @@ function AuxDetails(props: AuxBoxProps) {
                                 </Box>
                             );
                         })
-                            : <Text color={indicator.error}>There is no data to display.</Text>}</VStack>
+                            : <Text color={"indicator.error"}>There is no data to display.</Text>}</VStack>
                 </VStack>
             }
         </Box>

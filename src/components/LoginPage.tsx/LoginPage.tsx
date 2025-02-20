@@ -51,6 +51,7 @@ const LoginPage: React.FC = () => {
             <VStack
                 marginTop={"0px"}>
                 <Button
+                colorPalette={"brand"}
                 onClick={handleGuestLogin}
                 >Login as Guest</Button>
                 <Text

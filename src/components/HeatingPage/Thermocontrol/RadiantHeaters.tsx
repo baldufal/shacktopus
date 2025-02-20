@@ -1,19 +1,16 @@
-import { Box, Divider, Flex, Icon, Skeleton, Spacer, Switch, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Icon, Separator, Skeleton, Spacer, Text, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
-import { useThemeColors } from "../../../contexts/ThemeContext";
 import { Permission, useAuth } from "../../Router/AuthContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./../../fixturebox.scss"
 import "./radiantheaters.scss"
 import { MdHourglassTop, MdLock } from "react-icons/md";
 import { TcUpdates, TcMessage } from "./ThermocontrolMessage";
+import { Switch } from "../../ui/switch";
 
 function RadiantHeaters() {
 
     const auth = useAuth();
-
-    const { indicator } = useThemeColors();
-
 
     const [data, setData] = useState<boolean>(false);
 
@@ -95,31 +92,31 @@ function RadiantHeaters() {
             width={"250px"}
             height={"450px"} />
 
-    const borderColor = error ? indicator.error : dirty ? indicator.dirty : indicator.ok;
+    const borderColor = error ? "indicator.error" : dirty ? "indicator.dirty" : "indicator.ok";
     return (
         <Box
             className={data ? "fixturebox radiantheatersactive" : "fixturebox"}
             width={"fit-content"}
             borderColor={borderColor}
             p={2}>
-            {error ? <Text color={indicator.error}>{error}</Text> :
+            {error ? <Text color={"indicator.error"}>{error}</Text> :
                 <VStack align={"start"}>
                     <Flex width={"100%"}>
                         <Text className="fixturebox_heading">Radiant Heaters Lock</Text>
                         <Spacer />
                         {writePermission ?
                             (dirty ?
-                                <Icon as={MdHourglassTop} color={indicator.dirty} />
+                                <Icon as={MdHourglassTop} color={"indicator.dirty"} />
                                 : null)
                             :
                             <Icon as={MdLock} />}
                     </Flex>
-                    <Divider></Divider>
+                    <Separator></Separator>
                     <Switch
-                        isDisabled={!writePermission}
-                        isChecked={data}
-                        onChange={(event) => {
-                            sendData(event.target.checked);
+                        disabled={!writePermission}
+                        checked={data}
+                        onCheckedChange={(event) => {
+                            sendData(event.checked);
                         }}>Unlock</Switch>
                 </VStack>
             }

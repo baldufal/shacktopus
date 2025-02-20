@@ -1,9 +1,18 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, IconButton, Spacer, Text, useDisclosure, Wrap } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { Box, Button, IconButton, Spacer, Text, Wrap } from "@chakra-ui/react";
+import { useState } from "react";
+import {
+    DialogActionTrigger,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle
+} from "../../ui/dialog"
 import { Permission, useAuth } from "../../Router/AuthContext";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { MdEdit } from "react-icons/md";
-import { useThemeColors } from "../../../contexts/ThemeContext";
 import EditUserDialog from "./EditUserDialog";
 import "./userManagement.scss";
 import axios from "axios";
@@ -13,9 +22,7 @@ import axios from "axios";
 function UserBox(props: { username: string, permissions: Permission[], reloadUsers: () => void }) {
 
     const auth = useAuth();
-    const theme = useThemeColors();
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const cancelRef = useRef<HTMLButtonElement>(null);
+    const [open, setOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<{ username: string, permissions: Permission[] } | null>(null);
 
@@ -29,7 +36,7 @@ function UserBox(props: { username: string, permissions: Permission[], reloadUse
         } catch (error) {
             console.error('Error deleting user:', error);
         }
-        onClose();
+        setOpen(false);
         props.reloadUsers();
     }
 
@@ -43,7 +50,7 @@ function UserBox(props: { username: string, permissions: Permission[], reloadUse
             <Box
                 width={"100%"}
                 padding={"0.2rem"}
-                borderColor={theme.primary}
+                borderColor={"brand.solid"}
                 borderWidth={"0.1rem"}
                 borderRadius={"0.375rem"}>
                 <Wrap width={"100%"}>
@@ -56,58 +63,61 @@ function UserBox(props: { username: string, permissions: Permission[], reloadUse
                     {props.permissions.map(permission =>
                         <Box
                             key={permission}
-                            bg={theme.secondary}
+                            bg={"brand.secondary.solid"}
                             className="permission">
                             <Text key={permission}>{permission}</Text>
                         </Box>)}
                     <Spacer />
                     <IconButton
-                        isDisabled={props.username === "admin"}
+                        disabled={props.username === "admin"}
                         marginTop={"2px"}
                         aria-label="edit"
-                        icon={<MdEdit />}
-                        onClick={() => handleEdit(props)} />
+                        onClick={() => handleEdit(props)}>
+                        <MdEdit />
+                    </IconButton>
                     <IconButton
-                        isDisabled={props.username === "admin" ||
+                        disabled={props.username === "admin" ||
                             props.username === "guest"}
                         marginTop={"2px"}
                         aria-label="delete"
-                        icon={<DeleteIcon />}
-                        onClick={onOpen} />
+                        onClick={() => setOpen(true)}>
+                        <DeleteIcon />
+                    </IconButton>
                 </Wrap>
             </Box>
-            <AlertDialog
-                isOpen={isOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={onClose}
+
+            <DialogRoot
+                lazyMount
+                open={open}
+                onOpenChange={(e) => setOpen(e.open)}
+                role="alertdialog"
             >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                            Delete User
-                        </AlertDialogHeader>
 
-                        <AlertDialogBody>
-                            Are you sure you want to delete this user? This action cannot be undone.
-                        </AlertDialogBody>
-
-                        <AlertDialogFooter>
-                            <Button ref={cancelRef} onClick={onClose}>
-                                Cancel
-                            </Button>
-                            <Button onClick={handleDelete} ml={3}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete User</DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
+                    Are you sure you want to delete this user? This action cannot be undone.
+                    </DialogBody>
+                    <DialogFooter>
+                        <DialogActionTrigger asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogActionTrigger>
+                        <Button onClick={handleDelete} ml={3}>
                                 Delete
                             </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
+                    </DialogFooter>
+                    <DialogCloseTrigger />
+                </DialogContent>
+            </DialogRoot>
+
             {selectedUser && isEditOpen && (
                 <EditUserDialog
                     isOpen={isEditOpen}
                     onClose={() => setIsEditOpen(false)}
-                    user={selectedUser} 
-                    reloadUsers={props.reloadUsers}/>
+                    user={selectedUser}
+                    reloadUsers={props.reloadUsers} />
             )}
         </>
     )

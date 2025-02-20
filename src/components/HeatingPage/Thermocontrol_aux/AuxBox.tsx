@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useThemeColors } from "../../../contexts/ThemeContext";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./../../fixturebox.scss"
 import AuxDetails from "./AuxDetails";
@@ -38,7 +37,6 @@ export const AUX_BOXES: FixtureName[] = [
 function AuxBox(props: { type: AuxBoxType }) {
 
     const auth = useAuth();
-    const { indicator } = useThemeColors();
 
     const [dataFromAPI, setDataFromAPI] = useState<TcAuxData | undefined>(undefined);
 
@@ -98,8 +96,8 @@ function AuxBox(props: { type: AuxBoxType }) {
 
     const borderColor =
         (error || !dataFromAPI) ?
-            indicator.error :
-            indicator.ok;
+            "indicator.error" :
+            "indicator.ok";
 
     // THIS MUST BE KEPT UP TO DATE WITH AuxBoxes DEFINITION AT THE TOP
     switch (props.type) {
