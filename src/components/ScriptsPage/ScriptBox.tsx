@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useColorMode, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import { useThemeColors } from "../../contexts/ThemeContext";
 import "./../fixturebox.scss"
 import { ScriptContainer } from "./scripting/Script";
@@ -8,8 +8,6 @@ import ParameterBoolean from "./ParameterBoolean";
 import ParameterColorRGB from "./ParameterColorRGB";
 
 function ScriptBox(props: { data: ScriptContainer }) {
-
-    const { colorMode } = useColorMode()
 
 
     const { indicator } = useThemeColors();
@@ -28,7 +26,9 @@ function ScriptBox(props: { data: ScriptContainer }) {
                 borderColor=
                 {script.valid ?
                     indicator.ok : indicator.error}>
-                <VStack align={"start"}>
+                <VStack
+                 align={"start"}
+                 >
                     <Flex >
                         <Text
                             className="fixturebox_heading"
@@ -54,12 +54,12 @@ function ScriptBox(props: { data: ScriptContainer }) {
                             {script.script.parameters.map((parameter, index) => {
                                 switch (parameter.type) {
                                     case "BOOLEAN":
-                                        return <ParameterBoolean 
-                                        name={parameter.name} 
-                                        value={parameter.value} 
-                                        setValue={function (newValue: boolean): void {
-                                            console.log(newValue)
-                                        } }/>
+                                        return <ParameterBoolean
+                                            name={parameter.name}
+                                            value={parameter.value}
+                                            setValue={function (newValue: boolean): void {
+                                                console.log(newValue);
+                                            }} />
                                     case "NUMBER":
                                         return <ParameterNumber
                                             name={parameter.name}
@@ -71,13 +71,13 @@ function ScriptBox(props: { data: ScriptContainer }) {
                                             }} />
                                     case "COLOR_RGB":
                                         return <ParameterColorRGB
-                                        name={parameter.name}
-                                        red={parameter.red}
-                                        green={parameter.green}
-                                        blue={parameter.blue}
-                                        setValue={function (newValue: {red: number, green: number, blue: number}): void {
-                                            console.log(newValue);
-                                        }}/>
+                                            name={parameter.name}
+                                            red={parameter.red}
+                                            green={parameter.green}
+                                            blue={parameter.blue}
+                                            setValue={function (newValue: { red: number, green: number, blue: number }): void {
+                                                console.log(newValue);
+                                            }} />
                                     default:
                                         return <Text key={index}>Unknown Parameter</Text>;
                                 }
