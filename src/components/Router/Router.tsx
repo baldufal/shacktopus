@@ -8,6 +8,7 @@ import ScriptsPage from "../ScriptsPage/ScriptsPage";
 function Router() {
 
   const Dashboard = lazy(() => import("../DashboardPage/DashboardPage"));
+  const EditDashboard = lazy(() => import("../DashboardPage/EditDashboardPage"));
   const FloorPlan = lazy(() => import("../FloorPlanPage/FloorPlanPage"));
   const Kaleidoscope = lazy(() => import("../KaleidoscopePage/KaleidoscopePage"));
   const Heating = lazy(() => import("../HeatingPage/HeatingPage"));
@@ -21,6 +22,13 @@ function Router() {
             <Suspense >
               <Dashboard />
             </Suspense>} />
+        } />
+        <Route path="edit-dashboard" element={
+          <ProtectedRoute element={
+            <Suspense >
+              <EditDashboard />
+            </Suspense>
+          } />
         } />
         <Route path="floorplan" element={
           <ProtectedRoute element={

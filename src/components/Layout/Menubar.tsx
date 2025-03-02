@@ -12,6 +12,7 @@ export type MenuItem = {
     path: string;
     icon: JSX.Element;
     as: As;
+    hide?: boolean;
 }
 
 export const menuItems: MenuItem[] = [
@@ -20,6 +21,13 @@ export const menuItems: MenuItem[] = [
         path: "/",
         icon: <MdDashboard />,
         as: MdDashboard
+    },
+    {
+        name: "Edit Dashboard",
+        path: "/edit-dashboard",
+        icon: <MdDashboard />,
+        as: MdDashboard,
+        hide: true,
     },
     {
         name: "Floor Plan",
@@ -107,6 +115,7 @@ function Menubar() {
                         <VStack 
                         align={"start"}>
                             {menuItems.map((menuitem, index) =>
+                            menuitem.hide ? null :
                                     <HStack
                                         key={index}
                                         alignItems={"center"}>

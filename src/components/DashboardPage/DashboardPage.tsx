@@ -1,33 +1,25 @@
 import { Box, Wrap, Text, Button, IconButton, VStack, Input, HStack } from "@chakra-ui/react";
 import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import "./../fixturebox.scss"
-import ItemSelector from "./ItemSelector";
 import { useEffect, useMemo, useState } from "react";
-import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { MdEdit } from "react-icons/md";
 import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
 import { FixtureName, obtainTiles } from "./obtainTiles";
 import { tileFromFixtureName } from "./tileFromFixtureName";
 import Fuse from 'fuse.js';
-
-// Helper function to reorder list
-const reorder = (list: any[], startIndex: number, endIndex: number) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
+import { useNavigate } from "react-router-dom";
 
 function DashboardPage() {
-  const { userData, updateUserConfig } = useAuth();
+  const navigate = useNavigate();
+  
+  const { userData } = useAuth();
   const { fixturesData, fixtureNames } = useKaleidoscope();
   const { indicator } = useThemeColors();
-  const [modifyMode, setModifyMode] = useState<boolean>(false);
 
   const { allTiles: initialAllTiles, initialSelectedTiles } = useMemo(() => {
     return obtainTiles(fixtureNames, userData)
-  }, [fixtureNames, userData]);;
+  }, [fixtureNames, userData?.userConfig.dashboard]);;
 
   const [allTiles, setAllTiles] = useState<FixtureName[]>(initialAllTiles);
   const [selectedTiles, setSelectedTiles] = useState<FixtureName[]>(initialSelectedTiles);
@@ -36,7 +28,7 @@ function DashboardPage() {
     const { allTiles: initialAllTiles, initialSelectedTiles } = obtainTiles(fixtureNames, userData);
     setAllTiles(initialAllTiles);
     setSelectedTiles(initialSelectedTiles);
-  }, [fixtureNames, userData]);
+  }, [fixtureNames, userData?.userConfig.dashboard]);
 
   const [searchResults, setSearchResults] = useState<FixtureName[]>(selectedTiles);
   const [searchString, setSearchString] = useState<string>("");
@@ -52,53 +44,10 @@ function DashboardPage() {
     const results = fuse.search(searchString);
     const items = results.map((result) => result.item);
     setSearchResults(items);
-  }, [searchString, modifyMode]);
+  }, [searchString, fixtureNames, selectedTiles]);
 
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return;
-    }
-
-    if (result.source.droppableId === "selectedTiles"
-      && result.destination.droppableId === "selectedTiles") {
-      const reorderedTiles = reorder(
-        selectedTiles,
-        result.source.index,
-        result.destination.index
-      );
-
-      setSelectedTiles(reorderedTiles);
-    }
-
-    if (result.source.droppableId === "selectedTiles"
-      && result.destination.droppableId === "unselectedTiles") {
-      setSelectedTiles((selected) =>
-        selected.filter((_, index) => index !== result.source.index)
-      );
-    }
-
-    if (result.source.droppableId === "unselectedTiles"
-      && result.destination.droppableId === "selectedTiles") {
-
-      setSelectedTiles((selected) => {
-        const unselectedTiles = allTiles
-          .filter(
-            (tile) =>
-              selectedTiles.findIndex(
-                (selected) => selected.original === tile.original
-              ) === -1
-          );
-
-        return [...selected.slice(0, result.destination!.index),
-        unselectedTiles.at(result.source.index)!,
-        ...selected.slice(result.destination!.index)];
-      });
-    }
-  };
   return (
-    <DragDropContext
-      onDragEnd={onDragEnd}>
       <Box
         as="main"
         flex="1"
@@ -106,34 +55,13 @@ function DashboardPage() {
         paddingTop={0}
         width="100%">
 
-        {modifyMode ?
-          <VStack
-            align={"start"}
-            width={"100%"}>
-            <Button
-              onClick={() => {
-                updateUserConfig({ dashboard: selectedTiles.map((tile) => tile.original) })
-                setModifyMode(false)
-              }}>
-              Save and close</Button>
-            <ItemSelector
-              allTiles={allTiles}
-              selectedTiles={selectedTiles}
-              setSelectedTiles={setSelectedTiles} />
-            <Button
-              onClick={() => {
-                updateUserConfig({ dashboard: selectedTiles.map((tile) => tile.original) })
-                setModifyMode(false)
-              }}>
-              Save and close</Button>
-          </VStack>
-          :
+      
           <>
             <IconButton
               position={"absolute"}
               top={"1rem"}
               right={"1rem"}
-              onClick={() => setModifyMode(true)}
+              onClick={() => navigate("/edit-dashboard")}
               aria-label={"edit dashboard"}
               icon={<MdEdit />}
             />
@@ -169,11 +97,8 @@ function DashboardPage() {
                       <Text> You can select tiles via the button in the top right corner.</Text>
                     </>)}
             </VStack>
-
           </>
-        }
       </Box>
-    </DragDropContext>
 
   );
 }

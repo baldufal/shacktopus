@@ -40,6 +40,7 @@ function Layout() {
                     <VStack marginTop={-4} >
 
                         {menuItems.map((item) =>
+                            item.hide ? null :
                             <IconButton
                                 key={item.name}
                                 colorScheme={isActive(item.path) ? "secondary" : "primary"}
