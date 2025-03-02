@@ -108,6 +108,7 @@ export const KaleidoscopeProvider = ({ children }: { children: ReactNode }) => {
               setFixtureNames(
                 extractedNames.map(name => {
                   return KNOWN_FIXTURES[name] || {
+                    type: "fixture",
                     original: name,
                     display: name
                   };

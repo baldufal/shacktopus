@@ -3,7 +3,6 @@ import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import "./../fixturebox.scss"
 import ItemSelector from "./ItemSelector";
 import { useEffect, useMemo, useState } from "react";
-import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { MdEdit } from "react-icons/md";
 import { useAuth } from "../Router/AuthContext";
 import { useThemeColors } from "../../contexts/ThemeContext";
@@ -11,13 +10,6 @@ import { FixtureName, obtainTiles } from "./obtainTiles";
 import { tileFromFixtureName } from "./tileFromFixtureName";
 import Fuse from 'fuse.js';
 
-// Helper function to reorder list
-const reorder = (list: any[], startIndex: number, endIndex: number) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
 
 function DashboardPage() {
   const { userData, updateUserConfig } = useAuth();
@@ -54,51 +46,7 @@ function DashboardPage() {
     setSearchResults(items);
   }, [searchString, modifyMode]);
 
-
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return;
-    }
-
-    if (result.source.droppableId === "selectedTiles"
-      && result.destination.droppableId === "selectedTiles") {
-      const reorderedTiles = reorder(
-        selectedTiles,
-        result.source.index,
-        result.destination.index
-      );
-
-      setSelectedTiles(reorderedTiles);
-    }
-
-    if (result.source.droppableId === "selectedTiles"
-      && result.destination.droppableId === "unselectedTiles") {
-      setSelectedTiles((selected) =>
-        selected.filter((_, index) => index !== result.source.index)
-      );
-    }
-
-    if (result.source.droppableId === "unselectedTiles"
-      && result.destination.droppableId === "selectedTiles") {
-
-      setSelectedTiles((selected) => {
-        const unselectedTiles = allTiles
-          .filter(
-            (tile) =>
-              selectedTiles.findIndex(
-                (selected) => selected.original === tile.original
-              ) === -1
-          );
-
-        return [...selected.slice(0, result.destination!.index),
-        unselectedTiles.at(result.source.index)!,
-        ...selected.slice(result.destination!.index)];
-      });
-    }
-  };
   return (
-    <DragDropContext
-      onDragEnd={onDragEnd}>
       <Box
         as="main"
         flex="1"
@@ -173,8 +121,6 @@ function DashboardPage() {
           </>
         }
       </Box>
-    </DragDropContext>
-
   );
 }
 

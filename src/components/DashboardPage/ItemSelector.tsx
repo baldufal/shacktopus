@@ -1,10 +1,9 @@
-import { Text, VStack, HStack, IconButton, Flex } from "@chakra-ui/react";
+import { Text, VStack, HStack, IconButton, Flex, Button, ButtonGroup } from "@chakra-ui/react";
 import "./../fixturebox.scss"
 import "./itemselector.scss"
-import { MdAdd, MdCheckBox, MdOutlineCheckBoxOutlineBlank, MdRemove } from "react-icons/md";
-import { Droppable, Draggable } from "@hello-pangea/dnd";
-import { useThemeColors } from "../../contexts/ThemeContext";
-import { FixtureName } from "./obtainTiles";
+import { MdCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
+import { FixtureName, getIcon } from "./obtainTiles";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 
 interface ItemSelectorProps {
@@ -16,15 +15,14 @@ interface ItemSelectorProps {
 
 function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelectorProps) {
 
-  const { secondary, bwForeground } = useThemeColors();
 
   return (
     <VStack
-    width={"100%"}
+      width={"100%"}
       align={"start"}>
       <Text
         className="itemselectorheading"
-      >Select tiles and determine their order by dragging.</Text>
+      >Click on tiles to select or unselect them.</Text>
       <HStack>
         <IconButton
           aria-label={"select all"}
@@ -43,105 +41,121 @@ function ItemSelector({ allTiles, selectedTiles, setSelectedTiles }: ItemSelecto
         gap={8} // Spacing between the lists
         className="itemselectorstack">
 
-
         <Text>Selected</Text>
-        <Droppable droppableId="selectedTiles">
-          {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="fixturebox dropbox"
+        <VStack
+          align={"start"}
+          className="fixturebox dropbox"
+          spacing={0}
+        >
+          {selectedTiles.map((selected, selectedIndex) => (
+            <ButtonGroup
+              key={selected.original}
+              className="dragitem"
+              isAttached={true}
             >
-              {selectedTiles.map((selected, selectedIndex) => (
-                <Draggable
-                  key={selected.original}
-                  draggableId={selected.original}
-                  index={selectedIndex}
-                >
-                  {(provided) => (
-                    <HStack
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      key={selected.original}
-                      bg={secondary}
-                      className="dragitem"
-                    >
-                      <IconButton
-                        isRound={true}
-                        padding={"0"}
-                        aria-label="remove"
-                        icon={<MdRemove />}
-                        onClick={() =>
-                          setSelectedTiles((tiles) =>
-                            tiles.filter(
-                              (value) => value.original !== selected.original
-                            )
-                          )
-                        }
-                      />
-                      <Text
-                        color={bwForeground}>
-                        {selected.display}</Text>
-                    </HStack>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+              <IconButton
+                isRound={true}
+                aria-label="remove"
+                bg={getIcon(selected).color}
+                icon={getIcon(selected).icon}
+                onClick={() =>
+                  setSelectedTiles((tiles) =>
+                    tiles.filter(
+                      (value) => value.original !== selected.original
+                    )
+                  )
+                }
+              />
+              <Button
+                width={"250px"}
+                onClick={() =>
+                  setSelectedTiles((tiles) =>
+                    tiles.filter(
+                      (value) => value.original !== selected.original
+                    )
+                  )
+                }
+              >
+                {selected.display.substring(0, 22)}
+              </Button>
+              <IconButton
+                isRound={true}
+                aria-label="move up"
+                icon={<FaAngleUp />}
+                onClick={() =>
+                  setSelectedTiles((tiles) => {
+                    const newTiles = [...tiles];
+                    const [movedTile] = newTiles.splice(selectedIndex, 1);
+                    if (selectedIndex > 0) {
+                      newTiles.splice(selectedIndex - 1, 0, movedTile);
+                    } else {
+                      newTiles.push(movedTile);
+                    }
+                    return newTiles;
+                  })
+                }
+              />
+              <IconButton
+                aria-label="move up"
+                icon={<FaAngleDown />}
+                onClick={() =>
+                  setSelectedTiles((tiles) => {
+                    const newTiles = [...tiles];
+                    const [movedTile] = newTiles.splice(selectedIndex, 1);
+                    if (selectedIndex < tiles.length - 1) {
+                      newTiles.splice(selectedIndex + 1, 0, movedTile);
+                    } else {
+                      newTiles.unshift(movedTile);
+                    }
+                    return newTiles;
+                  }
+                  )
+                }
+              />
+            </ButtonGroup>
+          ))}
+        </VStack>
 
         <Text>Available</Text>
 
-        <Droppable droppableId="unselectedTiles">
-          {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="fixturebox dropbox"
-            >
-              {allTiles
-                .filter(
-                  (tile) =>
-                    selectedTiles.findIndex(
-                      (selected) => selected.original === tile.original
-                    ) === -1
-                )
-                .map((unselected, unselectedIndex) => (
-                  <Draggable
-                    key={unselected.original}
-                    draggableId={unselected.original}
-                    index={unselectedIndex}
-                  >
-                    {(provided) => (
-                      <HStack
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        key={unselected.original}
-                        bg={secondary}
-                        className="dragitem"
-                      >
-                        <IconButton
-                          aria-label={"add"}
-                          icon={<MdAdd />}
-                          isRound={true}
-                          onClick={() =>
-                            setSelectedTiles((selected) => [...selected, unselected])
-                          }
-                        />
-                        <Text
-                          color={bwForeground}>
-                          {unselected.display}</Text>
-                      </HStack>
-                    )}
-                  </Draggable>
-                ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+        <div
+          className="fixturebox dropbox"
+        >
+          {allTiles
+            .filter(
+              (tile) =>
+                selectedTiles.findIndex(
+                  (selected) => selected.original === tile.original
+                ) === -1
+            )
+            .map((unselected) => (
+              <ButtonGroup
+                className="dragitem"
+                isAttached={true}
+              >
+                <IconButton
+                  isRound={true}
+                  aria-label="add"
+                  bg={getIcon(unselected).color}
+                  icon={getIcon(unselected).icon}
+                  onClick={() =>
+                    setSelectedTiles((selected) => [...selected, unselected])
+                  }
+                />
+                <Button
+                  key={unselected.original}
+                  width={"250px"}
+                  onClick={() =>
+                    setSelectedTiles((selected) => [...selected, unselected])
+                  }
+                >
+                  {unselected.display.substring(0, 22)}
+                </Button>
+              </ButtonGroup>
+
+            ))}
+        </div>
+
       </Flex>
     </VStack>
 

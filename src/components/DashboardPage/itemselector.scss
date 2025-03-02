@@ -8,12 +8,11 @@
 
 .dropbox{
     min-height: 2rem;
-    width: 100%
+    max-width: 90vw;
 }
 
 .dragitem{
-    margin: 5px;
-    padding: 5px;
+    margin: 3px;
     border-radius: 0.375rem; // Same as Chakra UI button's border radius
     width: min(100% - 10px, 20rem - 10px);
 }

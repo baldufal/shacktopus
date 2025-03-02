@@ -6,6 +6,7 @@ import spoider_on from './../../assets/spoider/on.png';
 
 export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
     'kitchen_rgbw': {
+        type: "fixture",
         original: 'kitchen_rgbw',
         display: 'Kitchen Light',
         floorplan_position: [{
@@ -15,6 +16,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["kitchen"]
     },
     'kitchen_spots': {
+        type: "fixture",
         original: 'kitchen_spots',
         display: 'Kitchen Spots',
         floorplan_position: [{
@@ -24,6 +26,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["kitchen"]
     },
     'klo_rgbw': {
+        type: "fixture",
         original: 'klo_rgbw',
         display: 'Toilet Light',
         floorplan_position: [{
@@ -33,6 +36,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["toilet"]
     },
     'lichterketten': {
+        type: "fixture",
         original: 'lichterketten',
         display: 'Fairy Lights',
         background_active: "url('" + fairy_lights_on + "')",
@@ -44,6 +48,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["main room"]
     },
     'putzlicht': {
+        type: "fixture",
         original: 'putzlicht',
         display: 'Outside Work Lights',
         floorplan_position: [{
@@ -57,6 +62,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["annex", "awning"]
     },
     'red_green_party_light': {
+        type: "fixture",
         original: 'red_green_party_light',
         display: 'Party Spots red+green',
         floorplan_position: [{
@@ -66,6 +72,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["main room"]
     },
     'spoider': {
+        type: "fixture",
         original: 'spoider',
         display: 'Spoider',
         background_active: "url('" + spoider_on + "')",
@@ -77,10 +84,12 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["main room"]
     },
     'umluft': {
+        type: "circulation",
         original: 'umluft',
         display: 'Air Circulation'
     },
     'bedroom_light': {
+        type: "fixture",
         original: 'bedroom_light',
         display: 'Bedroom Light',
         floorplan_position: [{
@@ -90,6 +99,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["bedroom"]
     },
     'blacklight': {
+        type: "fixture",
         original: 'blacklight',
         display: 'Black Light',
         floorplan_position: [{
@@ -99,6 +109,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         rooms: ["main room"]
     },
     'front_door': {
+        type: "fixture",
         original: 'front_door',
         display: 'Front Door Light',
         floorplan_position: [{
