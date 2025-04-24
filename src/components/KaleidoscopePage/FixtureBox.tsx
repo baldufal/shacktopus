@@ -48,7 +48,7 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
             <div className="containerdiv">
                 {props.data.selected_program !== "OFF" ?
                     <div
-                        className="fixturebox_background"
+                        className="fixturebox_background_image"
                         style={{
                             backgroundImage: props.fixtureName.background_active,
                             opacity: 1,
@@ -56,9 +56,11 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                         }} />
                     : null
                 }
+                <div
+                    className={"fixturebox_background_color"} />
 
                 <div
-                    className={"fixturebox_background " +
+                    className={"fixturebox_background_image " +
                         (colorMode === "light" ? "" : "inverted")}
                     style={{ backgroundImage: props.fixtureName.background_inactive }} />
                 <Box

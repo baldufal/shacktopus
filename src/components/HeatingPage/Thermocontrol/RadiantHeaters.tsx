@@ -97,34 +97,37 @@ function RadiantHeaters() {
 
     const borderColor = error ? indicator.error : dirty ? indicator.dirty : indicator.ok;
     return (
-        <Box
-            className={data ? "fixturebox radiantheatersactive" : "fixturebox"}
-            width={"fit-content"}
-            borderColor={borderColor}
-            p={2}>
-            {error ? <Text color={indicator.error}>{error}</Text> :
-                <VStack align={"start"}>
-                    <Flex width={"100%"}>
-                        <Text className="fixturebox_heading">Radiant Heaters Lock</Text>
-                        <Spacer />
-                        {writePermission ?
-                            (dirty ?
-                                <Icon as={MdHourglassTop} color={indicator.dirty} />
-                                : null)
-                            :
-                            <Icon as={MdLock} />}
-                    </Flex>
-                    <Divider></Divider>
-                    <Switch
-                        isDisabled={!writePermission}
-                        isChecked={data}
-                        onChange={(event) => {
-                            sendData(event.target.checked);
-                        }}>Unlock</Switch>
-                </VStack>
-            }
-
-        </Box>
+        <div className="containerdiv">
+            <div
+                    className={"fixturebox_background_color"} />
+            <Box
+                className={data ? "fixturebox radiantheatersactive" : "fixturebox"}
+                width={"fit-content"}
+                borderColor={borderColor}
+                p={2}>
+                {error ? <Text color={indicator.error}>{error}</Text> :
+                    <VStack align={"start"}>
+                        <Flex width={"100%"}>
+                            <Text className="fixturebox_heading">Radiant Heaters Lock</Text>
+                            <Spacer />
+                            {writePermission ?
+                                (dirty ?
+                                    <Icon as={MdHourglassTop} color={indicator.dirty} />
+                                    : null)
+                                :
+                                <Icon as={MdLock} margin={"4px"}/>}
+                        </Flex>
+                        <Divider></Divider>
+                        <Switch
+                            isDisabled={!writePermission}
+                            isChecked={data}
+                            onChange={(event) => {
+                                sendData(event.target.checked);
+                            }}>Unlock</Switch>
+                    </VStack>
+                }
+            </Box>
+        </div>
     )
 }
 

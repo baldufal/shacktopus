@@ -8,9 +8,12 @@ function AuxDetails(props: AuxBoxProps) {
     const { indicator } = useThemeColors();
 
     if (!props.error && props.loading)
-        return <Skeleton className="fixturebox" width={"250px"} height={"250px"}></Skeleton>
+        return <Skeleton className="fixturebox" width={"350px"} height={"500px"}></Skeleton>
 
     return (
+        <div className="containerdiv">
+            <div
+                className={"fixturebox_background_color"} />
         <Box
             className="fixturebox"
             width={"fit-content"}
@@ -29,7 +32,12 @@ function AuxDetails(props: AuxBoxProps) {
                         marginRight={-2}
                         maxWidth={"400px"}
                         maxHeight={"500px"}
-                        overflow={"scroll"}>{props.dataFromAPI ? Object.entries(props.dataFromAPI).map(([key, value]) => {
+                        overflowY={"scroll"}
+                        style={{
+                            scrollbarWidth: "none"
+                        }}
+                        >
+                            {props.dataFromAPI ? Object.entries(props.dataFromAPI).map(([key, value]) => {
 
                             let symbol;
                             if (key.includes("dewpoint"))
@@ -87,6 +95,7 @@ function AuxDetails(props: AuxBoxProps) {
                 </VStack>
             }
         </Box>
+        </div>
     )
 }
 

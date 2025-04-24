@@ -60,6 +60,9 @@ function ClimateDetails(props: AuxBoxProps) {
 
 
     return (
+        <div className="containerdiv">
+            <div
+                className={"fixturebox_background_color"} />
         <Box
             className="fixturebox"
             width={"fit-content"}
@@ -143,6 +146,7 @@ function ClimateDetails(props: AuxBoxProps) {
                     <Text color={indicator.error}>{"Data from API not okay"}</Text>
             }
         </Box>
+        </div>
     )
 }
 

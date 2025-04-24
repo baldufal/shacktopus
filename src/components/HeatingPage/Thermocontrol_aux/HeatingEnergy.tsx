@@ -32,7 +32,8 @@ function Energy(props: AuxBoxProps) {
 
     return (
         <div className="containerdiv">
-            <div className="backgroundTest" />
+            <div
+                className={"fixturebox_background_color"} />
 
             <Box
                 className="fixturebox"

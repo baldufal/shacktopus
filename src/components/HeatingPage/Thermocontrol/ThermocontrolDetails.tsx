@@ -162,133 +162,136 @@ function ThermocontrolDetails() {
 
     const borderColor = error ? indicator.error : dirty ? indicator.dirty : indicator.ok;
     return (
-        <Box
-            className="fixturebox"
-            width={"fit-content"}
-            borderColor={borderColor}
-            p={2}>
-            {error ? <Text color={indicator.error}>{error}</Text> :
-                <VStack align={"start"}>
-                    <Flex width={"100%"}>
-                        <Text className="fixturebox_heading">ThermoControl</Text>
-                        <Spacer />
-                        {writePermission ?
-                            (dirty ?
-                                <Icon as={MdHourglassTop} color={indicator.dirty} />
-                                : null)
-                            :
-                            <Icon as={MdLock} />}
-                    </Flex>
-                    <Divider></Divider>
-                    <Text>Current mode: {dataFromAPI?.current_heating_mode}</Text>
-                    <Divider></Divider>
-                    <Text>Target temperature</Text>
-                    <TemperatureInput
-                        isDisabled={!writePermission}
-                        dataFromUI={dataFromUI}
-                        onChange={(temp) => {
-                            const updatedData = { ...dataFromUI, target_temperature: temp }
-                            setDataFromUI(updatedData);
-                            debouncedSendData(updatedData);
-                        }}>
-                    </TemperatureInput>
-                    <Divider></Divider>
-                    <Text>Target humidity</Text>
-                    <HumidityInput
-                        isDisabled={!writePermission}
-                        dataFromUI={dataFromUI}
-                        onChange={(humidity) => {
-                            const updatedData = { ...dataFromUI, target_humidity: humidity }
-                            setDataFromUI(updatedData);
-                            debouncedSendData(updatedData);
-                        }}
-                    ></HumidityInput>
-                    <Divider></Divider>
-                    <Text>Extra ventilation</Text>
-                    <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
-                        <Slider
+        <div className="containerdiv">
+            <div
+                className={"fixturebox_background_color"} />
+            <Box
+                className="fixturebox"
+                width={"fit-content"}
+                borderColor={borderColor}
+                p={2}>
+                {error ? <Text color={indicator.error}>{error}</Text> :
+                    <VStack align={"start"}>
+                        <Flex width={"100%"}>
+                            <Text className="fixturebox_heading">ThermoControl</Text>
+                            <Spacer />
+                            {writePermission ?
+                                (dirty ?
+                                    <Icon as={MdHourglassTop} color={indicator.dirty} />
+                                    : null)
+                                :
+                                <Icon as={MdLock} margin={"4px"}/>}
+                        </Flex>
+                        <Divider></Divider>
+                        <Text>Current mode: {dataFromAPI?.current_heating_mode}</Text>
+                        <Divider></Divider>
+                        <Text>Target temperature</Text>
+                        <TemperatureInput
                             isDisabled={!writePermission}
-                            defaultValue={0}
-                            min={0}
-                            max={1}
-                            step={0.1}
-                            value={dataFromUI?.extra_ventilation}
-                            onChange={(power) => {
-                                const updatedData = { ...dataFromUI, extra_ventilation: power }
+                            dataFromUI={dataFromUI}
+                            onChange={(temp) => {
+                                const updatedData = { ...dataFromUI, target_temperature: temp }
                                 setDataFromUI(updatedData);
                                 debouncedSendData(updatedData);
                             }}>
-                            <SliderTrack >
-                                <SliderFilledTrack />
-                            </SliderTrack>
-                            <SliderThumb
-                                boxSize={6}
-                                bg={primary}>
-                                <Text
-                                    color={bwForeground}
-                                    fontSize={"14px"}
-                                    fontWeight={"700"}>
-                                    {dataFromUI?.extra_ventilation}
-                                </Text>
-                            </SliderThumb>
-                        </Slider>
-                    </Box>
-                    <Divider></Divider>
-                    <Text>Max heating power</Text>
-                    <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
-                        <Slider
+                        </TemperatureInput>
+                        <Divider></Divider>
+                        <Text>Target humidity</Text>
+                        <HumidityInput
                             isDisabled={!writePermission}
-                            defaultValue={0}
-                            min={0}
-                            max={1}
-                            step={0.1}
-                            value={dataFromUI?.max_heating_power}
-                            onChange={(power) => {
-                                const updatedData = { ...dataFromUI, max_heating_power: power }
+                            dataFromUI={dataFromUI}
+                            onChange={(humidity) => {
+                                const updatedData = { ...dataFromUI, target_humidity: humidity }
+                                setDataFromUI(updatedData);
+                                debouncedSendData(updatedData);
+                            }}
+                        ></HumidityInput>
+                        <Divider></Divider>
+                        <Text>Extra ventilation</Text>
+                        <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
+                            <Slider
+                                isDisabled={!writePermission}
+                                defaultValue={0}
+                                min={0}
+                                max={1}
+                                step={0.1}
+                                value={dataFromUI?.extra_ventilation}
+                                onChange={(power) => {
+                                    const updatedData = { ...dataFromUI, extra_ventilation: power }
+                                    setDataFromUI(updatedData);
+                                    debouncedSendData(updatedData);
+                                }}>
+                                <SliderTrack >
+                                    <SliderFilledTrack />
+                                </SliderTrack>
+                                <SliderThumb
+                                    boxSize={6}
+                                    bg={primary}>
+                                    <Text
+                                        color={bwForeground}
+                                        fontSize={"14px"}
+                                        fontWeight={"700"}>
+                                        {dataFromUI?.extra_ventilation}
+                                    </Text>
+                                </SliderThumb>
+                            </Slider>
+                        </Box>
+                        <Divider></Divider>
+                        <Text>Max heating power</Text>
+                        <Box width={"full"} paddingEnd={"7px"} paddingStart={"7px"}>
+                            <Slider
+                                isDisabled={!writePermission}
+                                defaultValue={0}
+                                min={0}
+                                max={1}
+                                step={0.1}
+                                value={dataFromUI?.max_heating_power}
+                                onChange={(power) => {
+                                    const updatedData = { ...dataFromUI, max_heating_power: power }
+                                    setDataFromUI(updatedData);
+                                    debouncedSendData(updatedData);
+                                }}>
+                                <SliderTrack >
+                                    <SliderFilledTrack />
+                                </SliderTrack>
+                                <SliderThumb
+                                    boxSize={6}
+                                    bg={primary}>
+                                    <Text
+                                        color={bwForeground}
+                                        fontSize={"14px"}
+                                        fontWeight={"700"}>
+                                        {dataFromUI?.max_heating_power}
+                                    </Text>
+                                </SliderThumb>
+                            </Slider>
+                        </Box>
+
+                        <Divider></Divider>
+                        <Switch
+                            isDisabled={!writePermission}
+                            isChecked={dataFromUI?.use_ventilation_for_heating}
+                            onChange={(event) => {
+                                const updatedData = { ...dataFromUI, use_ventilation_for_heating: event.target.checked }
+                                setDataFromUI(updatedData);
+                                debouncedSendData(updatedData);
+                            }}>Use ventilation for heating</Switch>
+                        <Divider></Divider>
+                        <Switch
+                            isDisabled={!writePermission}
+                            isChecked={dataFromUI?.use_ventilation_for_cooling}
+                            onChange={(event) => {
+                                const updatedData = { ...dataFromUI, use_ventilation_for_cooling: event.target.checked }
                                 setDataFromUI(updatedData);
                                 debouncedSendData(updatedData);
                             }}>
-                            <SliderTrack >
-                                <SliderFilledTrack />
-                            </SliderTrack>
-                            <SliderThumb
-                                boxSize={6}
-                                bg={primary}>
-                                <Text
-                                    color={bwForeground}
-                                    fontSize={"14px"}
-                                    fontWeight={"700"}>
-                                    {dataFromUI?.max_heating_power}
-                                </Text>
-                            </SliderThumb>
-                        </Slider>
-                    </Box>
+                            Use ventilation for cooling</Switch>
 
-                    <Divider></Divider>
-                    <Switch
-                        isDisabled={!writePermission}
-                        isChecked={dataFromUI?.use_ventilation_for_heating}
-                        onChange={(event) => {
-                            const updatedData = { ...dataFromUI, use_ventilation_for_heating: event.target.checked }
-                            setDataFromUI(updatedData);
-                            debouncedSendData(updatedData);
-                        }}>Use ventilation for heating</Switch>
-                    <Divider></Divider>
-                    <Switch
-                        isDisabled={!writePermission}
-                        isChecked={dataFromUI?.use_ventilation_for_cooling}
-                        onChange={(event) => {
-                            const updatedData = { ...dataFromUI, use_ventilation_for_cooling: event.target.checked }
-                            setDataFromUI(updatedData);
-                            debouncedSendData(updatedData);
-                        }}>
-                        Use ventilation for cooling</Switch>
-
-                    {dataFromAPI?.emergency_heating_is_active ? <Text color={"red"}>Emergency heating is active!</Text> : null}
-                </VStack>
-            }
-
-        </Box>
+                        {dataFromAPI?.emergency_heating_is_active ? <Text color={"red"}>Emergency heating is active!</Text> : null}
+                    </VStack>
+                }
+            </Box>
+        </div>
     )
 }
 
