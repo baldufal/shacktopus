@@ -7,8 +7,15 @@ export enum Permission {
     HEATING = 'HEATING',
 }
 
+export type Script = {
+  id: string;
+  name: string;
+  content: string;
+}
+
 type UserConfig = {
     dashboard: string[];
+    scripts?: Script[];
 }
 
 export type UserResponse = {
@@ -38,6 +45,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const handleVisibilityChange = () => {
         if (document.visibilityState === 'visible' && userData) {
+            console.log("Token expiration: ", new Date(userData.tokenExpiration * 1000));
+            console.log("Current time: ", new Date());
             const timeLeft = userData.tokenExpiration * 1000 - Date.now();
             if (timeLeft <= 0) {
                 console.log("Logging out because token expired.");
@@ -154,6 +163,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const updateUserConfig = async (config: UserConfig): Promise<string | undefined> => {
+        console.log("Updating user config:", config);
         try {
             await axios.post(`http://${window.location.host}/api/userconfig?token=${userData!.token}`, config);
             await refreshToken();

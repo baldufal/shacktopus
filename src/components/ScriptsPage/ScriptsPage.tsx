@@ -1,45 +1,17 @@
-import { Box, Text, Textarea, VStack, Wrap, Button } from "@chakra-ui/react";
+import { Box, Wrap, Button } from "@chakra-ui/react";
 import "../fixturebox.scss"
 import { useState } from "react";
-import { validateScript } from "./scripting/validateScript";
 import ScriptBox from "./ScriptBox";
+import { useAuth } from "../Router/AuthContext";
+import AddScriptDialog from "./AddScriptDialog";
 
 function ScriptsPage() {
 
-    const [script, setScript] = useState(`{
-    "parameters": [
-        { "name": "light_intensity", "type": "NUMBER", "value": 50, "min": 0, "max": 100},
-        { "name": "color", "type": "COLOR_RGB", "red": 0.2, "green": 0.3, "blue": 0.4},
-        { "name": "bool", "type": "BOOLEAN", "value": true}
-    ],
-    "computations": [
-        { "name": "scaled_intensity", "type": "LINEAR", "variable": "$light_intensity", "factor": "$color.blue", "offset": 10 }
-    ],
-    "actions": [
-        { "type": "K_SET_CONTINUOUS", "fixture": "LivingRoom", "program": "Dim", "value": "$scaled_intensity" }
-    ]
-}`);
+    const { userData } = useAuth();
+    const scripts =
+        userData?.userConfig.scripts || [];
 
-    const [result, setResult] = useState("");
-
-    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setScript(event.target.value);
-        
-        const validationResult = validateScript(event.target.value);
-        if (validationResult.valid)
-            setResult("Valid!")
-        else
-            setResult(validationResult.error)
-    };
-
-    const handleClick = () => {
-        setResult("validating...");
-        const validationResult = validateScript(script);
-        if (validationResult.valid)
-            setResult("Valid!")
-        else
-            setResult(validationResult.error)
-    }
+    const [addIsOpen, setAddIsOpen] = useState(false);
 
     return (
         <Box
@@ -49,23 +21,17 @@ function ScriptsPage() {
             paddingTop={0}
             width="100%">
             <Wrap>
-                <ScriptBox 
-                data={{
-                    id: "asdf",
-                    name: "Script",
-                    script: script
-                }} />
+                {scripts.map(({ id, name }) =>
+                    <ScriptBox
+                        key={name}
+                        id={id} />
+                )}
+                <Button onClick={() => setAddIsOpen(true)}>Add Script</Button>
             </Wrap>
-            <VStack>
-                <Textarea
-                    height={"60vh"}
-                    value={script}
-                    onChange={handleChange} />
-                <Button
-                    onClick={handleClick}
-                >Check</Button>
-                <Text>{result}</Text>
-            </VStack>
+
+            <AddScriptDialog
+                isOpen={addIsOpen}
+                onClose={() => setAddIsOpen(false)} />
         </Box>
     )
 }

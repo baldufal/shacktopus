@@ -134,7 +134,7 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
                 defaultValue={0}
                 min={props.data.lower_limit_incl}
                 max={props.data.upper_limit_incl}
-                step={0.1}
+                step={(props.data.upper_limit_incl - props.data.lower_limit_incl) / 100}
                 value={uiValue}
                 onChange={(newValue) => {
                     setUiValue(newValue);
@@ -148,9 +148,9 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
                     bg={primary}>
                     <Text
                         color={bwForeground}
-                        fontSize={"14px"}
+                        fontSize={"10px"}
                         fontWeight={"700"}>
-                        {uiValue}
+                        {Math.round(uiValue * 100) / 100}
                     </Text>
                 </SliderThumb>
             </Slider>

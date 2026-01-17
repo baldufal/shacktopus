@@ -1,4 +1,4 @@
-import {Script, VARIABLE_NAME_REGEX } from "./Script";
+import { Script, VARIABLE_NAME_REGEX } from "./Script";
 
 type ValidationResult = { valid: true; script: Script } | { valid: false; error: string };
 
@@ -11,7 +11,7 @@ export function validateScript(jsonString: string): ValidationResult {
     try {
         const parsed = JSON.parse(jsonString);
         if (!parsed || typeof parsed !== "object") {
-            return { valid: false, error: "Invalid script structure: Expected an object." };
+            return { valid: false, error: "Invalid script structure: Expected a JSON object." };
         }
 
         const { parameters, computations, actions } = parsed;
@@ -26,7 +26,7 @@ export function validateScript(jsonString: string): ValidationResult {
             const paramError = validateParameter(param);
             if (paramError) return { valid: false, error: paramError };
             if (variableTypes.has(param.name)) {
-                return {valid: false, error: `Duplicate parameter variable: '${param.name}'.`};
+                return { valid: false, error: `Duplicate parameter variable: '${param.name}'.` };
             }
             variableTypes.set(param.name, param.type);
             if (param.type === "COLOR_RGB") {
@@ -40,7 +40,18 @@ export function validateScript(jsonString: string): ValidationResult {
         for (const computation of computations) {
             const computationError = validateComputation(computation, variableTypes);
             if (computationError) return { valid: false, error: computationError };
-            variableTypes.set(computation.name, computation.type === "LINEAR_RGB" ? "COLOR_RGB" : "NUMBER");
+            variableTypes.set(computation.name,
+                (computation.type === "LINEAR_RGB"
+                    || computation.type === "CONDITION_RGB"
+                    || computation.type === "CONSTRUCT_RGB") ?
+                    "COLOR_RGB" : "NUMBER");
+            if (computation.type === "LINEAR_RGB"
+                || computation.type === "CONDITION_RGB"
+                || computation.type === "CONSTRUCT_RGB") {
+                variableTypes.set(`${computation.name}.red`, "NUMBER");
+                variableTypes.set(`${computation.name}.green`, "NUMBER");
+                variableTypes.set(`${computation.name}.blue`, "NUMBER");
+            }
         }
 
         // Validate actions and check for correct variable usage
@@ -48,7 +59,7 @@ export function validateScript(jsonString: string): ValidationResult {
             const actionError = validateAction(action, variableTypes);
             if (actionError) return { valid: false, error: actionError };
         }
-
+        //console.log("Variable types: ", variableTypes);
         return { valid: true, script: parsed as Script };
     } catch (error) {
         return { valid: false, error: "Invalid JSON format: " + (error as Error).message };
@@ -68,6 +79,9 @@ function validateParameter(param: any): string | null {
     }
 
     switch (param.type) {
+        case "COMMENT":
+            return null;
+            
         case "BOOLEAN":
             return typeof param.value === "boolean" ? null : `BOOLEAN parameter '${param.name}' must be true or false.`;
 
@@ -112,10 +126,22 @@ function validateComputation(computation: any, variableTypes: Map<string, Variab
     }
 
     switch (computation.type) {
-        case "CONDITION_BOOLEAN":
+        case "CONSTRUCT_RGB":
+            if (!isValidVarOrNumber(computation.red, "NUMBER")) return `Invalid red value '${computation.red}'. Expected NUMBER.`;
+            if (!isValidVarOrNumber(computation.green, "NUMBER")) return `Invalid green value '${computation.green}'. Expected NUMBER.`;
+            if (!isValidVarOrNumber(computation.blue, "NUMBER")) return `Invalid blue value '${computation.blue}'. Expected NUMBER.`;
+            return null;
+
+        case "CONDITION":
             if (!isValidVarOrNumber(computation.condition, "BOOLEAN")) return `Condition variable '${computation.condition}' must be BOOLEAN.`;
             if (!isValidVarOrNumber(computation.then, "NUMBER")) return `Invalid 'then' value '${computation.then}'. Expected NUMBER.`;
             if (!isValidVarOrNumber(computation.else, "NUMBER")) return `Invalid 'else' value '${computation.else}'. Expected NUMBER.`;
+            return null;
+
+        case "CONDITION_RGB":
+            if (!isValidVarOrNumber(computation.condition, "BOOLEAN")) return `Condition variable '${computation.condition}' must be BOOLEAN.`;
+            if (!isValidVarOrNumber(computation.then, "COLOR_RGB")) return `Invalid 'then' value '${computation.then}'. Expected COLOR_RGB.`;
+            if (!isValidVarOrNumber(computation.else, "COLOR_RGB")) return `Invalid 'else' value '${computation.else}'. Expected COLOR_RGB.`;
             return null;
 
         case "LINEAR":
@@ -173,7 +199,10 @@ function validateAction(action: any, variableTypes: Map<string, VariableType>): 
                 : "Invalid K_SET_PROGRAM action structure.";
 
         case "K_SET_CONTINUOUS":
-            if (!isValidVarOrNumber(action.value, "NUMBER")) return `Invalid or undefined variable in K_SET_CONTINUOUS: '${action.value}'. Expected NUMBER.`;
+            if (!isValidVarOrNumber(action.value, "NUMBER"))
+                return `Invalid or undefined variable in K_SET_CONTINUOUS: '${action.value}'. Expected NUMBER.`;
+            if (!(typeof action.fixture === "string" && typeof action.program === "string" && typeof action.parameterName === "string"))
+                return "Invalid K_SET_CONTINUOUS action structure.";
             return null;
 
         case "K_SET_DISCRETE":

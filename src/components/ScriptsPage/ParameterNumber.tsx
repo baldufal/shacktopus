@@ -20,7 +20,7 @@ function ParameterNumber(props: { name: string, value: number, min: number, max:
                 defaultValue={0}
                 min={props.min}
                 max={props.max}
-                //step={0.1}
+                step={(props.max - props.min)/ 100}
                 value={props.value}
                 onChange={(newValue) => {
                     props.setValue(newValue)
@@ -33,7 +33,7 @@ function ParameterNumber(props: { name: string, value: number, min: number, max:
                     bg={primary}>
                     <Text
                         color={bwForeground}
-                        fontSize={"14px"}
+                        fontSize={"10px"}
                         fontWeight={"700"}>
                         {props.value}
                     </Text>

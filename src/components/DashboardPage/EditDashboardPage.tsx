@@ -94,7 +94,7 @@ function EditDashboardPage() {
                     width={"100%"}>
                     <Button
                         onClick={() => {
-                            updateUserConfig({ dashboard: selectedTiles.map((tile) => tile.original) })
+                            updateUserConfig({...userData!.userConfig, dashboard: selectedTiles.map((tile) => tile.original) })
                             navigate("/");
                         }}>
                         Save and close</Button>
@@ -104,7 +104,7 @@ function EditDashboardPage() {
                         setSelectedTiles={setSelectedTiles} />
                     <Button
                         onClick={() => {
-                            updateUserConfig({ dashboard: selectedTiles.map((tile) => tile.original) })
+                            updateUserConfig({...userData!.userConfig, dashboard: selectedTiles.map((tile) => tile.original) })
                             navigate("/");
                         }}>
                         Save and close</Button>
