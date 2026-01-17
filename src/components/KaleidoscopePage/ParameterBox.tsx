@@ -120,7 +120,7 @@ function ContinuousParameterBox(props: { fixture: string, program: string, param
     return (
         <Box
             width={"fit-content"}
-            border={"2px"}
+            //border={"2px"}
             p={2}
             paddingTop={"2px"}
             paddingBottom={"2px"}

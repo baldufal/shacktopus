@@ -109,7 +109,7 @@ function Menubar() {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader >Shacktopus</DrawerHeader>
+                    <DrawerHeader>{<a href="">Shacktopus</a>}</DrawerHeader>
 
                     <DrawerBody >
                         <VStack 

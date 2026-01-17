@@ -60,6 +60,7 @@ function ScriptBox(props: { id: string }) {
     return (
         <>
             <Box
+            position={"relative"}
                 width={"fit-content"}
                 maxWidth={"350px"}
                 className="fixturebox"
@@ -80,7 +81,10 @@ function ScriptBox(props: { id: string }) {
                             {container.name}
                         </Text>
                         <IconButton
-                            marginStart={"20px"}
+                            position={"absolute"}
+                            top={"4px"}
+                            right={"4px"}
+                            size={"sm"}
                             onClick={() => setEditIsOpen(true)}
                             aria-label={"edit script"}
                             icon={<MdEdit />}

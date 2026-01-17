@@ -13,13 +13,14 @@ function ParameterColorRGB(props: { name: string, red: number, green: number, bl
         <>
             <Box
                 width={"fit-content"}
-                border={"2px"}
+                //border={"2px"}
                 p={2}
                 paddingTop={"2px"}
                 paddingBottom={"2px"}>
 
                 <Text>{props.name}</Text>
                 <Button
+                marginTop={"2px"}
                     bg={`rgb(${props.red * 255}, ${props.green * 255}, ${props.blue * 255})`}
                     color={lightColor ? "black" : "white"}
                     padding={"10px"}
