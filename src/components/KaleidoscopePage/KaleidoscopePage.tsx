@@ -2,6 +2,8 @@ import { Box, Text, Wrap } from "@chakra-ui/react";
 import FixtureBox from "./FixtureBox";
 import { useKaleidoscope } from "../../contexts/KaleidoscopeContext";
 import "../fixturebox.scss"
+import { KNOWN_FIXTURES } from "./KNOWN_FIXTURES";
+
 
 function KaleidoscopePage() {
 
@@ -18,7 +20,14 @@ function KaleidoscopePage() {
                 {error ?
                     <Text>{error}</Text> :
                     fixtureNames && fixturesData ?
-                        fixtureNames.map((fixtureName, index) =>
+                        fixtureNames.sort((a, b) => {
+                            // Put unknown fixtures at the end, then sort alphabetically
+                            const aKnown = a.original in KNOWN_FIXTURES;
+                            const bKnown = b.original in KNOWN_FIXTURES;
+                            if (aKnown !== bKnown)
+                                return bKnown ? 1 : -1;
+                            return a.display.localeCompare(b.display);
+                        }).map((fixtureName, index) =>
                             <div key={index}>
                                 <FixtureBox
                                     key={index}

@@ -11,10 +11,22 @@ import { FixtureName } from "../DashboardPage/obtainTiles";
 function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
 
     const { colorMode } = useColorMode()
-    
+
     const { setProgram, error: kaleidoscopeSetError } = useKaleidoscope();
 
-    const programNames = Object.keys(props.data.programs).sort().filter((value) => value !== "EXTERNAL");
+    const programNames = Object.keys(props.data.programs)
+        .sort()
+        .filter((value) => value !== "EXTERNAL")
+        // Explicitely sort OFF, ON, MANUAL to the front
+        .sort((a, b) => {
+            const priority = ["OFF", "ON", "MANUAL"];
+            const aIndex = priority.indexOf(a);
+            const bIndex = priority.indexOf(b);
+            if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+            if (aIndex !== -1) return -1;
+            if (bIndex !== -1) return 1;
+            return 0;
+        });
     const selectedProgram = props.data.programs[props.data.selected_program];
     const parameterNames = Object.keys(selectedProgram.parameters).sort();
 
@@ -64,6 +76,7 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                         (colorMode === "light" ? "" : "inverted")}
                     style={{ backgroundImage: props.fixtureName.background_inactive }} />
                 <Box
+                    position={"relative"}
                     width={"fit-content"}
                     className="fixturebox"
                     p={2}
@@ -78,10 +91,14 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                                 bg={"var(--chakra-colors-chakra-body-bg)"}
                                 borderRadius={"0.375rem"}
                                 padding={"0.2rem"}
+                                paddingRight={"30px"}
                                 margin={"-0.2rem"}>
                                 {props.fixtureName.display}
                             </Text>
                             <Button
+                                position={"absolute"}
+                                top={"4px"}
+                                right={"4px"}
                                 marginTop={"1px"}
                                 marginStart={"10px"}
                                 size={"20px"}
@@ -99,7 +116,14 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                                     key={programName}
                                     margin="2px"
                                     padding={"10px"}
-                                    colorScheme={props.data.selected_program === programName ? "secondary" : "primary"}
+                                    borderWidth={props.data.selected_program === programName ? "5px" : undefined}
+                                    borderColor={props.data.selected_program === programName ?
+                                        props.data.selected_program === "OFF" ? "var(--chakra-colors-primary-700)" : "var(--chakra-colors-secondary-700)"
+                                        : undefined}
+                                    //fontSize={props.data.selected_program === programName ? undefined : "smaller"}
+                                    colorScheme={props.data.selected_program === programName ?
+                                        props.data.selected_program === "OFF" ? "primary" : "secondary"
+                                        : "grey"}
                                     onClick={() => changeProgram(programName)}
                                 >
                                     {programName}</Button>)}
@@ -126,6 +150,8 @@ function FixtureBox(props: { fixtureName: FixtureName, data: Fixture }) {
                         <VStack align={"start"}>
                             <Text>{"API name: " + props.fixtureName.original}</Text>
                             <Text maxWidth={"300px"}>{"Output aliases: " + props.data.output_aliases.sort()}</Text>
+                            {props.fixtureName.rooms &&
+                                <Text maxWidth={"300px"}>{"Areas: " + props.fixtureName.rooms}</Text>}
                         </VStack>
                     </ModalBody>
                 </ModalContent>

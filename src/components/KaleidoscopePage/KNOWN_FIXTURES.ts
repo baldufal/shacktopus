@@ -61,7 +61,7 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
         display: 'Party Spots red+green',
         floorplan_position: [{
             top: "30%",
-            left: "35%"
+            left: "40%"
         }],
         rooms: ["main room"]
     },
@@ -106,5 +106,14 @@ export const KNOWN_FIXTURES: { [key: string]: FixtureName } = {
             left: "74%"
         }],
         rooms: ["awning"]
+    },
+    'anbau_light': {
+        original: 'anbau_light',
+        display: 'Annex Light',
+        floorplan_position: [{
+            top: "80%",
+            left: "30%"
+        }],
+        rooms: ["annex"]
     }
 };

@@ -34,6 +34,7 @@ function Symbols(props: { fixtureNames: FixtureName[], fixturesData: FixturesDat
                     >
                         <Tooltip label={name.display}>
                             <IconButton
+                            colorScheme={props.fixturesData.fixtures[name.original].selected_program === "OFF" ? "primary" : "secondary"}
                                 zIndex={1}
                                 aria-label={name.original}
                                 onClick={() => clickOnFixture(name.original)}
