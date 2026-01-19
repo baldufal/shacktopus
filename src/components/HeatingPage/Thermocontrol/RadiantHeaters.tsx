@@ -92,8 +92,8 @@ function RadiantHeaters() {
 
     if (!error && loading)
         return <Skeleton
-            width={"250px"}
-            height={"450px"} />
+            width={"150px"}
+            height={"100px"} />
 
     const borderColor = error ? indicator.error : dirty ? indicator.dirty : indicator.ok;
     return (

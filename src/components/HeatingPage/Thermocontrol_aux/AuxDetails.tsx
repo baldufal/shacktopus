@@ -6,7 +6,7 @@ import { useState } from "react";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
 
 const HEIGHT_LARGE = "500px";
-const HEIGHT_SMALL = "250px";
+const HEIGHT_SMALL = "200px";
 
 function AuxDetails(props: AuxBoxProps) {
 
@@ -15,7 +15,7 @@ function AuxDetails(props: AuxBoxProps) {
     const [height, setHeight] = useState(HEIGHT_SMALL);
 
     if (!props.error && props.loading)
-        return <Skeleton className="fixturebox" width={"350px"} height={HEIGHT_SMALL}></Skeleton>
+        return <Skeleton className="fixturebox" width={"350px"} height={"250px"}></Skeleton>
 
     return (
         <div className="containerdiv">

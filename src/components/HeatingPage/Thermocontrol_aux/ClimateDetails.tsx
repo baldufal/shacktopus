@@ -18,7 +18,7 @@ function ClimateDetails(props: AuxBoxProps) {
         props.dataFromAPI["temperature_basement"] != undefined;
 
     if (!props.error && props.loading)
-        return <Skeleton className="fixturebox" width={"150px"} height={"400px"}></Skeleton>
+        return <Skeleton className="fixturebox" width={"200px"} height={"300px"}></Skeleton>
 
 
     if (!dataFromAPI_ok && !props.loading)

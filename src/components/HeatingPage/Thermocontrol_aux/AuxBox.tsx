@@ -22,12 +22,12 @@ export type AuxBoxType = "details" | "climate_details" | "energy";
 // THIS MUST BE KEPT UP TO DATE WITH RENDER CODE BELOW
 export const AUX_BOXES: FixtureName[] = [
     {
-        original: "details",
-        display: "ThermoControl AUX Details"
-    },
-    {
         original: "climate_details",
         display: "Climate Details"
+    },
+    {
+        original: "details",
+        display: "ThermoControl AUX Details"
     },
     {
         original: "energy",

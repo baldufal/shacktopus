@@ -1,5 +1,6 @@
 import { RoomName } from "../FloorPlanPage/components/Rooms";
 import { AUX_BOXES } from "../HeatingPage/Thermocontrol_aux/AuxBox";
+import { KNOWN_FIXTURES } from "../KaleidoscopePage/KNOWN_FIXTURES";
 import { UserResponse } from "../Router/AuthContext";
 
 export type FloorplanPosition = {
@@ -7,17 +8,18 @@ export type FloorplanPosition = {
     left: string,
 }
 
-export type FixtureName =  {
+export type FixtureName = {
     original: string,
     display: string,
     background_active?: string,
     background_inactive?: string,
     floorplan_position?: FloorplanPosition[],
     rooms?: RoomName[]
-  }
+}
 
-export const obtainTiles = (fixtureNames: FixtureName[] | undefined, userData: UserResponse | undefined):
- { allTiles: FixtureName[], initialSelectedTiles: FixtureName[] } => {
+const firstTiles = ["tc", ...AUX_BOXES.map(box => box.original), "rh"];
+
+export const obtainTiles = (fixtureNames: FixtureName[] | undefined, userData: UserResponse | undefined): { allTiles: FixtureName[], initialSelectedTiles: FixtureName[] } => {
     // These are the tiles that we currently receive from the APIs
     const currentAvailableTiles = [
         { display: "Thermocontrol", original: "tc" },
@@ -43,7 +45,21 @@ export const obtainTiles = (fixtureNames: FixtureName[] | undefined, userData: U
             index === self.findIndex((t) => t.original === tile.original)
         )
         // Sort based on display name
-        .sort((a, b) => a.display.localeCompare(b.display));
+        .sort((a, b) => {
+            // Put firstTiles at the beginning
+            const aInFirst = firstTiles.includes(a.original);
+            const bInFirst = firstTiles.includes(b.original);
+            if (aInFirst !== bInFirst)
+                return aInFirst ? -1 : 1;
+            if (aInFirst && bInFirst)
+                return firstTiles.indexOf(a.original) - firstTiles.indexOf(b.original);
+            // Put unknown fixtures at the end, then sort alphabetically
+            const aKnown = a.original in KNOWN_FIXTURES;
+            const bKnown = b.original in KNOWN_FIXTURES;
+            if (aKnown !== bKnown)
+                return bKnown ? 1 : -1;
+            return a.display.localeCompare(b.display);
+        });
 
     const initialSelectedTiles = userData ?
         userData.userConfig.dashboard.map((dashboardItem) =>

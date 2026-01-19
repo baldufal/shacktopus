@@ -171,8 +171,8 @@ function ThermocontrolDetails() {
 
     if (!error && loading)
         return <Skeleton
-            width={"250px"}
-            height={"450px"} />
+            width={"200px"}
+            height={"250px"} />
 
 
     const borderColor = error ? indicator.error : dirty ? indicator.dirty : indicator.ok;

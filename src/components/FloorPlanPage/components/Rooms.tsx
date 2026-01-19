@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FixtureName } from "../../DashboardPage/obtainTiles";
 import { FixturesData } from "../../KaleidoscopePage/kaleidoscopeTypes";
 import FixtureBox from "../../KaleidoscopePage/FixtureBox";
+import RadiantHeaters from "../../HeatingPage/Thermocontrol/RadiantHeaters";
 
 export type RoomName = "kitchen" | "toilet" | "main room" | "bedroom" | "annex" | "awning";
 
@@ -121,6 +122,7 @@ function Rooms(props: { fixtureNames: FixtureName[], fixturesData: FixturesData 
                                     </div>
 
                                     : null)}
+                            {clickedRoom === "annex" && <RadiantHeaters />}
                         </VStack>
 
                     </ModalBody>
