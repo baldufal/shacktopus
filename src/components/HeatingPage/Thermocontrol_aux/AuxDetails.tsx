@@ -6,7 +6,7 @@ import { useState } from "react";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
 
 const HEIGHT_LARGE = "500px";
-const HEIGHT_SMALL = "200px";
+const HEIGHT_SMALL = "197px"; // Same height as ThermocontrolDetails
 
 function AuxDetails(props: AuxBoxProps) {
 

@@ -60,7 +60,7 @@ function ScriptBox(props: { id: string }) {
     return (
         <>
             <Box
-            position={"relative"}
+                position={"relative"}
                 width={"fit-content"}
                 maxWidth={"350px"}
                 className="fixturebox"
@@ -77,7 +77,8 @@ function ScriptBox(props: { id: string }) {
                             bg={"var(--chakra-colors-chakra-body-bg)"}
                             borderRadius={"0.375rem"}
                             padding={"0.2rem"}
-                            margin={"-0.2rem"}>
+                            margin={"-0.2rem"}
+                            paddingEnd={"40px"}>
                             {container.name}
                         </Text>
                         <IconButton
@@ -138,13 +139,16 @@ function ScriptBox(props: { id: string }) {
                                 })}
                             </VStack>
                             <Divider />
-                            <Button
-                                onClick={() => {
-                                    executeScript(script.script, parameters, setProgram, setDiscrete, setContinuous);
-                                }}
-                            >
-                                Execute
-                            </Button>
+                            <Flex width={"full"} justifyContent={"center"}>
+                                <Button
+                                    onClick={() => {
+                                        executeScript(script.script, parameters, setProgram, setDiscrete, setContinuous);
+                                    }}
+                                >
+                                    Execute
+                                </Button>
+                            </Flex>
+
                         </>
                         :
                         <Text>Script contains error: {script.error}</Text>}

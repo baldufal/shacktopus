@@ -22,9 +22,12 @@ function ScriptsPage() {
             width="100%">
             <Wrap>
                 {scripts.map(({ id, name }) =>
-                    <ScriptBox
-                        key={name}
-                        id={id} />
+                    <div key={id}>
+                        <ScriptBox
+                            key={name}
+                            id={id} />
+                    </div>
+
                 )}
                 <Button onClick={() => setAddIsOpen(true)}>Add Script</Button>
             </Wrap>
