@@ -10,6 +10,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api/': {
+        //target: 'http://192.168.88.63/api/', // VPN
         target: 'http://localhost:8443/', // This must be the same port as configured in Reef
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),

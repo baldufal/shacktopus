@@ -1,7 +1,6 @@
-import { Box, CircularProgress, CircularProgressLabel, Divider, HStack, Skeleton, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Skeleton, Text, VStack } from "@chakra-ui/react";
 import { useThemeColors } from "../../../contexts/ThemeContext";
 import "./../../fixturebox.scss"
-import { ColorTriple, interpolateColor } from "./interpolateColor";
 import { AuxBoxProps } from "./AuxBox";
 
 function ClimateDetails(props: AuxBoxProps) {
@@ -40,24 +39,6 @@ function ClimateDetails(props: AuxBoxProps) {
     const hum_outside = props.dataFromAPI!["humidity_outside"] as number;
     const temp_basement = props.dataFromAPI!["temperature_basement"] as number;
 
-    const tempColors: [number, ColorTriple][] = [
-        [10, [0, 20, 200]],   // Blue
-        [15, [0, 200, 190]],  // Teal
-        [20, [0, 200, 20]],    // Green
-        [25, [0, 200, 20]],    // Green
-        [30, [200, 0, 0]],    // Red
-    ];
-
-    const humColors: [number, ColorTriple][] = [
-        [0, [200, 0, 0]],   // Red
-        [35, [200, 200, 0]],  // Yellow
-        [40, [0, 200, 20]],  // Green
-        [60, [0, 200, 20]],  // Green
-        [65, [0, 200, 190]],  // Teal
-        [100, [0, 20, 200]],    // Blue
-    ];
-
-
     return (
         <div className="containerdiv">
             <div
@@ -74,83 +55,15 @@ function ClimateDetails(props: AuxBoxProps) {
                             <Text className="fixturebox_heading">{props.title}</Text>
                             <Divider />
                             <Text>Inside</Text>
-                            <HStack>
-                                <CircularProgress
-                                    color={interpolateColor(temp_inside, tempColors)}
-                                    size={"4rem"}
-                                    min={0}
-                                    max={30}
-                                    capIsRound={true}
-                                    value={temp_inside} >
-                                    <CircularProgressLabel>{temp_inside.toFixed(1) + "°C"}</CircularProgressLabel>
-                                </CircularProgress>
-                                <CircularProgress
-                                    color={interpolateColor(hum_inside, humColors)}
-                                    size={"4rem"}
-                                    min={0}
-                                    max={100}
-                                    capIsRound={true}
-                                    value={hum_inside} >
-                                    <CircularProgressLabel>{hum_inside.toFixed(0) + "%"}</CircularProgressLabel>
-                                </CircularProgress>
-                            </HStack>
-
-                            {/*
-                        <HStack width={"100%"}>
-                            <Icon as={GiPoisonGas} />
-                            <Progress
-                                width={"100%"}
-                                height={"1rem"}
-                                min={40}
-                                max={120}
-                                value={gas_inside / 1000} />
-                        </HStack>
-                        */}
+                            <Text >{"🌡️ " + temp_inside.toFixed(1) + "°C 💧 " + hum_inside.toFixed(0) + "%"}</Text>
 
                             <Divider />
                             <Text>Basement</Text>
-                            {/*
-                            <CircularProgress
-                            color={interpolateColor(temp_basement, tempColors)}
-                            size={"4rem"}
-                            min={0}
-                            max={30}
-                            capIsRound={true}
-                            value={temp_basement} >
-                            <CircularProgressLabel>{temp_basement.toFixed(1) + "°C"}</CircularProgressLabel>
-                        </CircularProgress>
-                        <Divider />
-                        */
-                            }
-                            <Text >{"🌡️" + temp_basement.toFixed(1) + "°C"}</Text>
+                            <Text >{"🌡️ " + temp_basement.toFixed(1) + "°C"}</Text>
 
                             <Divider />
                             <Text>Outside</Text>
-                            {
-                                /*
-                            <HStack>
-                                <CircularProgress
-                                    color={interpolateColor(temp_outside, tempColors)}
-                                    size={"4rem"}
-                                    min={0}
-                                    max={30}
-                                    capIsRound={true}
-                                    value={temp_outside} >
-                                    <CircularProgressLabel>{temp_outside.toFixed(1) + "°C"}</CircularProgressLabel>
-                                </CircularProgress>
-                                <CircularProgress
-                                    color={interpolateColor(hum_outside, humColors)}
-                                    size={"4rem"}
-                                    min={0}
-                                    max={100}
-                                    capIsRound={true}
-                                    value={hum_outside} >
-                                    <CircularProgressLabel>{hum_outside.toFixed(0) + "%"}</CircularProgressLabel>
-                                </CircularProgress>
-                            </HStack>
-                                */
-                            }
-                            <Text >{"🌡️" + temp_outside.toFixed(1) + "°C  💧" + hum_outside.toFixed(0) + "%"}</Text>
+                            <Text >{"🌡️ " + temp_outside.toFixed(1) + "°C 💧 " + hum_outside.toFixed(0) + "%"}</Text>
 
                         </VStack>
                         :
